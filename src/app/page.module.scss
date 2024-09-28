@@ -1,0 +1,9 @@
+.main {
+    display: flex;
+    justify-content: center;
+    background-color: red;
+
+    &__test {
+        color: var(--test);
+    }
+}
