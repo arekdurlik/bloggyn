@@ -1,3 +1,53 @@
 :root {
-    --test: #f0f;
+    --color-black:                  hsl(241, 0%, 0%);
+    --color-gray-5:                 hsl(241, 0%, 5%);
+    --color-gray-10:                hsl(241, 0%, 10%);
+    --color-gray-20:                hsl(241, 0%, 20%);
+    --color-gray-30:                hsl(241, 0%, 30%);
+    --color-gray-40:                hsl(241, 0%, 40%);
+    --color-gray-50:                hsl(241, 0%, 50%);
+    --color-gray-60:                hsl(241, 0%, 60%);
+    --color-gray-70:                hsl(241, 0%, 70%);
+    --color-gray-80:                hsl(241, 0%, 80%);
+    --color-gray-90:                hsl(241, 0%, 90%);
+    --color-gray-95:                hsl(241, 0%, 95%);
+    --color-white:                  hsl(241, 0%, 100%);
+
+    --color-primary-dark:           hsl(241, 40%, 35%);
+    --color-primary:                hsl(241, 40%, 45%);
+    --color-primary-light:          hsl(241, 40%, 55%);
+
+    --color-error:                  hsl(0, 70%, 50%);
+    --color-success:                hsl(138, 70%, 50%);
+
+    --background:                   var(--color-white);
+    --text-heading:                 var(--color-black);
+    --text:                         var(--color-gray-20);
+    --text-subtle:                  var(--color-gray-50);
+    --text-barely-visible:          var(--color-gray-80);
+
+    --control-default-fgColor: var(--color-gray-30);
+    --control-default-bgColor: var(--background);
+    --control-default-borderColor: var(--border-light);
+
+    --transition-fast: 125ms;
+    --transition-default: 250ms;
+    --transition-slow: 500ms;
+
+    --spacing-small: 2.5px;
+    --spacing-default: 5px;
+    --spacing-large: 10px;
+    --spacing-xl: 15px;
+    --spacing-xxl: 20px;
+
+    --rounded-small: 2.5px;
+    --rounded-default: 5px;
+    --rounded-large: 10px;
+
+    --text-small: 0.75rem;
+    --text-default: 1rem;
+    --text-logo: 2.5rem;
+
+    --border: var(--color-gray-30);
+    --border-light: var(--color-gray-90);
 }

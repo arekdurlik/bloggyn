@@ -1,0 +1,27 @@
+.button {
+    padding: var(--spacing-large) var(--spacing-xl);
+    border-radius: var(--rounded-large);
+    border: 1px solid var(--control-default-borderColor);
+    transition: var(--transition-fast);
+    background-color: var(--control-default-bgColor);
+    color: var(--control-default-fgColor);
+    cursor: pointer;
+
+    height: 40px;
+    min-width: 100px;
+
+    &:hover {
+        background-color: var(--color-gray-95);
+        border-color: var(--color-gray-30);
+
+        .content {
+            color: var(--color-gray-30);
+            transition: var(--transition-slow);
+        }
+    }
+}
+
+.content {
+    transition: var(--transition-fast);
+
+}

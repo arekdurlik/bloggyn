@@ -1,0 +1,14 @@
+.navbar {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-large) var(--spacing-xxl);
+    border-bottom: 1px solid var(--border-light);
+}
+
+.logo {
+    font-size: var(--text-logo);
+    font-weight: 800;
+    letter-spacing: 1px;
+}
