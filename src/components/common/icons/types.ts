@@ -5,4 +5,5 @@ export type Props = {
     height?: number;
     className?: string;
     svgRef?: ForwardedRef<SVGSVGElement>;
+    fill?: boolean;
 };

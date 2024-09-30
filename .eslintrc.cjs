@@ -5,8 +5,13 @@ const config = {
         project: true,
     },
     plugins: ['@typescript-eslint', 'drizzle'],
-    extends: ['next/core-web-vitals', 'plugin:@typescript-eslint/recommended-type-checked', 'plugin:@typescript-eslint/stylistic-type-checked'],
+    extends: [
+        'next/core-web-vitals',
+        'plugin:@typescript-eslint/recommended-type-checked',
+        'plugin:@typescript-eslint/stylistic-type-checked',
+    ],
     rules: {
+        '@typescript-eslint/prefer-nullish-coalescing': 'off',
         '@typescript-eslint/no-unused-expressions': 'off',
         '@typescript-eslint/no-floating-promises': 'off',
         '@typescript-eslint/no-unsafe-return': 'off',

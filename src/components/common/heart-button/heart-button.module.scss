@@ -1,0 +1,63 @@
+.wrapper {
+    position: relative;
+    cursor: pointer;
+
+    &:before {
+        background-position: 0% 0%;
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, transparent, transparent, #ffffff66, transparent);
+        background-size: 275% 275%;
+        z-index: 1;
+    }
+
+    svg {
+        fill: transparent;
+        transition: none;
+    }
+
+    &.active {
+        transition: var(--transition-fast);
+
+        @keyframes activate {
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        animation-name: activate;
+        animation-timing-function: cubic-bezier(0.785, 0.135, 0.15, 0.86);
+        animation-duration: var(--transition-default);
+
+        &:before {
+            content: '';
+
+            @keyframes shine {
+                0% {
+                    opacity: 0;
+                    background-position: 0% 0%;
+                }
+                15% {
+                    opacity: 1;
+                }
+                50% {
+                    background-position: 100% 100%;
+                }
+                100% {
+                    background-position: 100% 100%;
+                }
+            }
+
+            animation-name: shine;
+            animation-duration: 3s;
+        }
+
+        svg {
+            fill: red;
+            stroke: red;
+        }
+    }
+}

@@ -5,7 +5,7 @@
     white-space: nowrap;
     cursor: pointer;
     border-radius: var(--rounded-default);
-    transition: var(--transition-fast);
+    transition: background-color var(--transition-fast);
 
     &.hovered {
         background-color: var(--control-default-bgColor-hover);

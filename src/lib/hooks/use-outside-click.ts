@@ -2,7 +2,11 @@ import { type MutableRefObject, useEffect, useRef } from 'react';
 import { difference } from '../helpers';
 
 const DEFAULT_OPTIONS = { cancelOnDrag: false, dragCancelThreshold: 32 };
-export function useOutsideClick(ref: MutableRefObject<HTMLElement>, callback: (event: MouseEvent) => void, options?: { cancelOnDrag?: boolean; dragCancelThreshold?: number }) {
+export function useOutsideClick(
+    ref: MutableRefObject<HTMLElement | null>,
+    callback: (event: MouseEvent) => void,
+    options?: { cancelOnDrag?: boolean; dragCancelThreshold?: number }
+) {
     const opts = { ...DEFAULT_OPTIONS, ...options };
     const mouseDown = useRef({ x: 0, y: 0 });
 
@@ -13,7 +17,12 @@ export function useOutsideClick(ref: MutableRefObject<HTMLElement>, callback: (e
                     if (opts.cancelOnDrag) {
                         const { x, y } = mouseDown.current;
 
-                        if (difference(event.clientX, x) > opts.dragCancelThreshold || difference(event.clientY, y) > opts.dragCancelThreshold) {
+                        if (
+                            difference(event.clientX, x) >
+                                opts.dragCancelThreshold ||
+                            difference(event.clientY, y) >
+                                opts.dragCancelThreshold
+                        ) {
                             return;
                         }
                     }
@@ -31,7 +40,8 @@ export function useOutsideClick(ref: MutableRefObject<HTMLElement>, callback: (e
         };
 
         document.addEventListener('click', handleClick, true);
-        opts.cancelOnDrag && document.addEventListener('mousedown', handleMouseDown, true);
+        opts.cancelOnDrag &&
+            document.addEventListener('mousedown', handleMouseDown, true);
         return () => {
             document.removeEventListener('click', handleClick, true);
             document.removeEventListener('mousedown', handleMouseDown, true);

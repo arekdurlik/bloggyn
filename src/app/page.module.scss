@@ -1,5 +1,17 @@
 .main {
     display: flex;
     justify-content: center;
+    min-height: 100%;
+}
 
+.content {
+    max-width: 850px;
+    width: 100%;
+    margin-top: 100px;
+}
+
+.posts {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxxl);
 }

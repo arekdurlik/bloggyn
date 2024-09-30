@@ -2,7 +2,7 @@
     padding: var(--spacing-default) var(--spacing-xl);
     border-radius: var(--rounded-large);
     border: 1px solid var(--control-default-borderColor-rest);
-    transition: var(--transition-fast);
+    transition: background-color var(--transition-fast), border-color var(--transition-fast);
     background-color: var(--control-default-bgColor-rest);
     color: var(--control-default-fgColor);
     display: flex;

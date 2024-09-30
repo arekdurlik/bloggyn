@@ -1,0 +1,11 @@
+export declare const author: string;
+export declare const authorImage: string;
+export declare const authorName: string;
+export declare const container: string;
+export declare const content: string;
+export declare const contentImage: string;
+export declare const contentInfo: string;
+export declare const contentInfoSubtitle: string;
+export declare const footer: string;
+export declare const footerLeft: string;
+export declare const withIcon: string;

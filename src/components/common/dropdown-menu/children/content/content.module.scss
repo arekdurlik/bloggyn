@@ -1,12 +1,17 @@
 .container {
     overflow: hidden;
     position: absolute;
-    background-color: var(--background);
+    background-color: var(--bgColor-default);
     z-index: 99;
     border: 1px solid var(--border);
     border-radius: var(--rounded-large);
-    padding: var(--spacing-default) var(--spacing-large);
+    padding: var(--spacing-default);
     box-shadow: var(--shadow-large);
+    pointer-events: all;
+
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-small);
 
     @keyframes slide-in {
         0% {
@@ -21,10 +26,4 @@
 
     animation-name: slide-in;
     animation-duration: var(--transition-default);
-}
-
-.list {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-small);
 }

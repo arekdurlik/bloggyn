@@ -2,7 +2,7 @@ import '@/styles/main.scss';
 
 import { GeistSans } from 'geist/font/sans';
 import { type Metadata } from 'next';
-import Navbar from '../components/navbar';
+import Header from '../components/header';
 import SessionProvider from './session-provider';
 import { getServerAuthSession } from '@/server/auth';
 
@@ -19,7 +19,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
             <body className={GeistSans.className}>
                 <div id="next">
                     <SessionProvider session={session}>
-                        <Navbar />
+                        <Header />
                         {children}
                     </SessionProvider>
                 </div>

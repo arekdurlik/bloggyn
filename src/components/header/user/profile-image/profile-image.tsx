@@ -23,7 +23,7 @@ const ProfileImage = forwardRef<HTMLDivElement, Props>(({ onClick, onKey }, ref)
         }
     }
     return (
-        <div ref={ref} tabIndex={0} className={styles.image} onClick={onClick} onKeyDown={handleKey}>
+        <div ref={ref} className={styles.image} onClick={onClick} onKeyDown={handleKey}>
             {data?.user.image && (
                 <Image src={data.user.image} fill alt="Profile picture"/>
             )}
