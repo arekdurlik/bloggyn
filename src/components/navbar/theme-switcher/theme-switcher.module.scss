@@ -10,7 +10,7 @@ $expanded: calc($collapsed * 2);
     overflow: hidden;
     border-bottom-left-radius: var(--rounded-default);
     border-bottom-right-radius: var(--rounded-default);
-    border: 1px solid var(--border-light);
+    border: 1px solid var(--border);
     cursor: pointer;
 
     &::before {

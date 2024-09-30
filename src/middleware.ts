@@ -1,13 +1,6 @@
-import { type NextRequest, NextResponse } from 'next/server';
-import { getServerAuthSession } from './server/auth';
+import { NextResponse } from 'next/server';
 
-export async function middleware(request: NextRequest) {
-    const user = await getServerAuthSession();
-
-    if (!user) {
-        return NextResponse.redirect(new URL('/', request.url));
-    }
-
+export async function middleware() {
     return NextResponse.next();
 }
 

@@ -4,11 +4,14 @@
     justify-content: space-between;
     align-items: center;
     padding: var(--spacing-large) var(--spacing-xxl);
-    border-bottom: 1px solid var(--border-light);
+    border-bottom: 1px solid var(--border);
 }
 
 .logo {
     font-size: var(--text-logo);
     font-weight: 800;
     letter-spacing: 1px;
+    cursor: pointer;
+    user-select: none;
+    color: var(--fgColor-default);
 }

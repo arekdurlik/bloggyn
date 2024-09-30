@@ -1,18 +1,22 @@
 .button {
-    padding: var(--spacing-large) var(--spacing-xl);
+    padding: var(--spacing-default) var(--spacing-xl);
     border-radius: var(--rounded-large);
-    border: 1px solid var(--control-default-borderColor);
+    border: 1px solid var(--control-default-borderColor-rest);
     transition: var(--transition-fast);
-    background-color: var(--control-default-bgColor);
+    background-color: var(--control-default-bgColor-rest);
     color: var(--control-default-fgColor);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    outline-offset: 1px;
     cursor: pointer;
 
     height: 40px;
     min-width: 100px;
 
     &:hover {
-        background-color: var(--color-gray-95);
-        border-color: var(--color-gray-30);
+        background-color: var(--control-default-bgColor-hover);
+        border-color: var(--control-default-borderColor-hover);
 
         .content {
             color: var(--color-gray-30);
@@ -23,5 +27,12 @@
 
 .content {
     transition: var(--transition-fast);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-large);
 
+    svg {
+        stroke: var(--control-default-fgColor);
+    }
 }

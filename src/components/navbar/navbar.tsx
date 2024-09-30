@@ -1,27 +1,30 @@
 'use client';
 
-import { signOut, useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import styles from './navbar.module.scss';
-import { useRouter } from 'next/navigation';
-import Button from '../common/button/button';
+import Button, { ButtonLink } from '../common/button';
 import ThemeSwitcher from './theme-switcher';
-import ButtonGroup from '../common/layout/button-group/button-group';
+import ButtonGroup from '../common/layout/button-group';
+import User from './user/user';
+import Write from '../common/icons/write';
+import Link from 'next/link';
 
 export default function Navbar() {
     const { data: session } = useSession();
-    const { push } = useRouter();
 
     return (
         <nav className={styles.navbar}>
-            <span className={styles.logo}>bloggyn</span>
+            <Link href={'/'} className={styles.logo}>bloggyn</Link>
             <ThemeSwitcher/>
             {session?.user?.name ? (
                 <ButtonGroup>
-                    <Button onClick={() => signOut()}>New post</Button>
-                    {/* <Button onClick={() => {}}>Sign out</Button> */}
+                    <ButtonLink href='/new-post'><Write/>New post</ButtonLink>
+                    <User/>
                 </ButtonGroup>
             ) : (
-                <Button onClick={() => push('/api/auth/signin')}>Sign in</Button>
+                <Link href='/api/auth/signin'>
+                    <Button>Sign in</Button>
+                </Link>
             )}
         </nav>
     );

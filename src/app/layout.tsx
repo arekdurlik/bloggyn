@@ -1,10 +1,10 @@
-import '~/styles/main.scss';
+import '@/styles/main.scss';
 
 import { GeistSans } from 'geist/font/sans';
 import { type Metadata } from 'next';
 import Navbar from '../components/navbar';
 import SessionProvider from './session-provider';
-import { getServerAuthSession } from '~/server/auth';
+import { getServerAuthSession } from '@/server/auth';
 
 export const metadata: Metadata = {
     title: 'bloggyn',
@@ -17,10 +17,13 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
     return (
         <html lang="en">
             <body className={GeistSans.className}>
-                <SessionProvider session={session}>
-                    <Navbar />
-                    {children}
-                </SessionProvider>
+                <div id="next">
+                    <SessionProvider session={session}>
+                        <Navbar />
+                        {children}
+                    </SessionProvider>
+                </div>
+                <div id="overlay"/>
             </body>
         </html>
     );

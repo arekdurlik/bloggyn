@@ -1,0 +1,30 @@
+.container {
+    overflow: hidden;
+    position: absolute;
+    background-color: var(--background);
+    z-index: 99;
+    border: 1px solid var(--border);
+    border-radius: var(--rounded-large);
+    padding: var(--spacing-default) var(--spacing-large);
+    box-shadow: var(--shadow-large);
+
+    @keyframes slide-in {
+        0% {
+            transform: translateY(-10px);
+            opacity: 0;
+        }
+        100% {
+            transform: translateY(0px);
+            opacity: 1;
+        }
+    }
+
+    animation-name: slide-in;
+    animation-duration: var(--transition-default);
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-small);
+}
