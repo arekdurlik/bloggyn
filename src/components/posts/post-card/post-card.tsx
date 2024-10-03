@@ -11,18 +11,31 @@ export default function PostCard() {
                 <div className={styles.contentInfo}>
                     <div className={styles.author}>
                         <div className={styles.authorImage}>
-                            <Image src="https://picsum.photos/250/150" fill alt="Author image" />
+                            <Image
+                                src="https://picsum.photos/250/150"
+                                fill
+                                alt="Author image"
+                            />
                         </div>
                         <span className={styles.authorName}>Arek Durlik</span>
                     </div>
-                    <h2>A basic question in security Interview: How do you store passwords in the database?</h2>
+                    <h2>
+                        A basic question in security Interview: How do you store
+                        passwords in the database?
+                    </h2>
                     <span className={styles.contentInfoSubtitle}>
-                        In this article, we’ll explore how to implement these design patterns in a React application
-                        using functional...
+                        In this article, we’ll explore how to implement these
+                        design patterns in a React application using
+                        functional...
                     </span>
                 </div>
                 <div className={styles.contentImage}>
-                    <Image src="https://picsum.photos/250/150" width={250} height={150} alt="Post image" />
+                    <Image
+                        src="https://picsum.photos/250/150"
+                        width={250}
+                        height={150}
+                        alt="Post image"
+                    />
                 </div>
             </div>
             <div className={styles.footer}>

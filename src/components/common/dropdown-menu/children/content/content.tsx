@@ -17,32 +17,31 @@ export default function DropdownMenuContent({
     const [{ open, triggerRef }, set] = useDropdownContext();
     const ref = useRef<HTMLUListElement | null>(null);
 
-    useOutsideClick(ref, (event) => {
+    useOutsideClick(ref, event => {
         if (!triggerRef.current?.contains(event.target as Node)) {
-            set((v) => ({ ...v, open: false }));
+            set(v => ({ ...v, open: false }));
         }
     });
 
     useEffect(() => {
         function calculatePosition() {
-            if (open && ref.current && triggerRef.current) {
-                const trigger = triggerRef.current;
+            if (!open || !ref.current || !triggerRef.current) return;
 
-                let alignment = 0;
+            const trigger = triggerRef.current;
 
-                if (align === 'center') {
-                    alignment =
-                        -(ref.current.offsetWidth - trigger.offsetWidth) / 2;
-                } else if (align === 'right') {
-                    alignment = -(
-                        ref.current.offsetWidth - trigger.offsetWidth
-                    );
-                }
+            let alignment = 0;
 
-                ref.current.style.left = trigger.offsetLeft + alignment + 'px';
-                ref.current.style.top =
-                    trigger.offsetTop + trigger.offsetHeight + offsetTop + 'px';
+            if (align === 'center') {
+                alignment =
+                    -(ref.current.offsetWidth - trigger.offsetWidth) / 2;
+            } else if (align === 'right') {
+                alignment = -(ref.current.offsetWidth - trigger.offsetWidth);
             }
+
+            const left = trigger.offsetLeft + alignment;
+            const right = trigger.offsetTop + trigger.offsetHeight + offsetTop;
+            ref.current.style.left = left + 'px';
+            ref.current.style.top = right + 'px';
         }
 
         calculatePosition();
@@ -60,14 +59,14 @@ export default function DropdownMenuContent({
 
         const tabbable: HTMLElement[] = [];
 
-        items.forEach((item) => {
+        items.forEach(item => {
             if (item.hasAttribute('tabIndex')) {
                 tabbable.push(item);
             }
         });
 
         if (items) {
-            set((v) => ({ ...v, items: tabbable }));
+            set(v => ({ ...v, items: tabbable }));
         }
 
         items[0]?.focus();

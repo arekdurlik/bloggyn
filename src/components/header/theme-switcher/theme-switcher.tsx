@@ -5,7 +5,8 @@ export default function ThemeSwitcher() {
     const [active, setActive] = useState(false);
 
     return (
-        <div className={`${styles.container} ${active ? styles.active : ''}`}
+        <div
+            className={`${styles.container} ${active ? styles.active : ''}`}
             onMouseEnter={() => setActive(true)}
             onMouseLeave={() => setActive(false)}
         >
@@ -14,5 +15,5 @@ export default function ThemeSwitcher() {
             <div className={styles.item}/>
             <div className={styles.item}/>
         </div>
-    )
+    );
 }

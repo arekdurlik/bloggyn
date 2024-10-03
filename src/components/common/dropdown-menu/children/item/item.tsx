@@ -17,13 +17,14 @@ export default function DropdownMenuItem({ icon, label, onClick }: Props) {
         switch (event.key) {
             case 'Enter':
             case ' ':
+                event.preventDefault();
                 onClick?.();
                 break;
             case 'ArrowDown':
             case 'ArrowUp': {
                 event.preventDefault();
 
-                const currentIndex = items.findIndex((i) => i === ref.current);
+                const currentIndex = items.findIndex(i => i === ref.current);
                 let newIndex = currentIndex;
 
                 if (event.key === 'ArrowDown') {

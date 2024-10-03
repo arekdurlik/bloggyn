@@ -1,5 +1,14 @@
 import { relations, sql } from 'drizzle-orm';
-import { index, integer, pgTableCreator, primaryKey, serial, text, timestamp, varchar } from 'drizzle-orm/pg-core';
+import {
+    index,
+    integer,
+    pgTableCreator,
+    primaryKey,
+    serial,
+    text,
+    timestamp,
+    varchar,
+} from 'drizzle-orm/pg-core';
 import { type AdapterAccount } from 'next-auth/adapters';
 
 /**
@@ -8,7 +17,7 @@ import { type AdapterAccount } from 'next-auth/adapters';
  *
  * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
  */
-export const createTable = pgTableCreator((name) => `bloggyn_${name}`);
+export const createTable = pgTableCreator(name => `bloggyn_${name}`);
 
 export const posts = createTable(
     'post',
@@ -21,9 +30,11 @@ export const posts = createTable(
         createdAt: timestamp('created_at', { withTimezone: true })
             .default(sql`CURRENT_TIMESTAMP`)
             .notNull(),
-        updatedAt: timestamp('updated_at', { withTimezone: true }).$onUpdate(() => new Date()),
+        updatedAt: timestamp('updated_at', { withTimezone: true }).$onUpdate(
+            () => new Date()
+        ),
     },
-    (example) => ({
+    example => ({
         createdByIdIdx: index('created_by_idx').on(example.createdById),
         nameIndex: index('name_idx').on(example.name),
     })
@@ -53,7 +64,9 @@ export const accounts = createTable(
         userId: varchar('user_id', { length: 255 })
             .notNull()
             .references(() => users.id, { onDelete: 'cascade' }),
-        type: varchar('type', { length: 255 }).$type<AdapterAccount['type']>().notNull(),
+        type: varchar('type', { length: 255 })
+            .$type<AdapterAccount['type']>()
+            .notNull(),
         provider: varchar('provider', { length: 255 }).notNull(),
         providerAccountId: varchar('provider_account_id', {
             length: 255,
@@ -67,7 +80,7 @@ export const accounts = createTable(
         id_token: text('id_token'),
         session_state: varchar('session_state', { length: 255 }),
     },
-    (account) => ({
+    account => ({
         compoundKey: primaryKey({
             columns: [account.provider, account.providerAccountId],
         }),

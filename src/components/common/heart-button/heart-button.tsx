@@ -8,8 +8,11 @@ export default function HeartButton() {
     const [active, setActive] = useState(false);
 
     return (
-        <div className={`${styles.wrapper} ${active ? styles.active : ''}`} onClick={() => setActive(v => !v)}>
-            <Heart/>
+        <div
+            className={`${styles.wrapper} ${active ? styles.active : ''}`}
+            onClick={() => setActive(v => !v)}
+        >
+            <Heart />
         </div>
     );
 }

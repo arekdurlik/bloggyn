@@ -2,7 +2,7 @@
 
 import { useSession } from 'next-auth/react';
 import styles from './header.module.scss';
-import Button, { ButtonLink } from '../common/button';
+import { ButtonLink } from '../common/button';
 import ThemeSwitcher from './theme-switcher';
 import ButtonGroup from '../common/layout/button-group';
 import User from './user/user';
