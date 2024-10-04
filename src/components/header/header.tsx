@@ -8,13 +8,17 @@ import ButtonGroup from '../common/layout/button-group';
 import User from './user/user';
 import Write from '../common/icons/write';
 import Link from 'next/link';
+import { useRef } from 'react';
+import { useHideOnScroll } from './hide-on-scroll';
 
 export default function Header() {
     const { data: session } = useSession();
+    const ref = useRef<HTMLDivElement>(null);
+    useHideOnScroll(ref);
 
     return (
-        <nav className={styles.container}>
-            <Link href={'/'} className={styles.logo}>
+        <nav ref={ref} className={styles.container}>
+            <Link href="/" className={styles.logo}>
                 bloggyn
             </Link>
             <ThemeSwitcher />
