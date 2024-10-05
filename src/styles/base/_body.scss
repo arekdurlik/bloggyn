@@ -31,3 +31,24 @@ body {
         outline-width: 2px;
     }
 }
+
+.page-transition {
+    transition: opacity var(--transition-fast);
+
+    &-active {
+        opacity: 0;
+    }
+
+    &-loader {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        opacity: 0;
+        pointer-events: none;
+
+        &.active {
+            opacity: 1;
+        }
+    }
+}

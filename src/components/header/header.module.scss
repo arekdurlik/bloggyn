@@ -2,20 +2,59 @@
     position: fixed;
     z-index: 2;
     width: 100%;
+    height: var(--headerHeight);
     background-color: var(--header-bgColor);
     backdrop-filter: blur(10px);
+
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     padding: var(--spacing-large) var(--spacing-xxl);
     border-bottom: 1px solid var(--border);
+    transition: transform var(--transition-slow);
+}
+
+.content {
+    max-width: 1280px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
 }
 
 .logo {
+    position: relative;
     font-size: var(--text-logo);
     font-weight: 800;
     letter-spacing: 1px;
     cursor: pointer;
     user-select: none;
     color: var(--fgColor-default);
+    transition: 0s;
+
+    span {
+        &:hover {
+            @keyframes shine {
+                50% {
+                    color: #888;
+                }
+            }
+
+            animation: shine var(--transition-slow);
+        }
+    }
+}
+
+.hidden {
+    top: 0 !important;
+    transform: translateY(-100%) !important;
+}
+
+.logoText {
+    position: relative;
+}
+
+.logoPicker {
+    position: absolute;
+    width: 100%;
+    transform: translateY(11px);
 }

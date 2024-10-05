@@ -17,11 +17,13 @@
   "dependencies": {
     "@auth/drizzle-adapter": "^1.1.0",
     "@t3-oss/env-nextjs": "^0.10.1",
+    "@tiptap/extension-placeholder": "^2.8.0",
     "@tiptap/pm": "^2.7.4",
     "@tiptap/react": "^2.7.4",
     "@tiptap/starter-kit": "^2.7.4",
     "drizzle-orm": "^0.33.0",
     "geist": "^1.3.0",
+    "lucide-react": "^0.447.0",
     "next": "^14.2.4",
     "next-auth": "^4.24.7",
     "postgres": "^3.4.4",

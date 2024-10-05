@@ -4,14 +4,22 @@
     min-height: 100%;
 }
 
-.content {
-    max-width: 850px;
+.container {
+    position: relative;
+    height: 100%;
     width: 100%;
-    margin-top: 100px;
+    display: flex;
+    justify-content: center;
 }
 
 .posts {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-xxxl);
+}
+
+.content {
+    padding-top: 100px;
+    max-width: 750px;
+    width: 100%;
 }

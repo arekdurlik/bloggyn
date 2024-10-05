@@ -1,0 +1,30 @@
+.page-transition {
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    &-loader {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s;
+        transition-delay: 0s;
+        svg {
+            animation: spin 1s linear infinite;
+        }
+
+        &.active {
+            transition-delay: 100ms;
+            opacity: 1;
+
+        }
+    }
+}

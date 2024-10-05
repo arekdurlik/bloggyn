@@ -5,6 +5,8 @@ import {
     type RefObject,
     type SetStateAction,
     useContext,
+    useEffect,
+    useRef,
     useState,
 } from 'react';
 
@@ -27,14 +29,27 @@ type Props = {
 };
 
 export default function DropdownMenu({ children }: Props) {
-    const contextValue = useState<DropdownContextType>({
+    const [value, setValue] = useState<DropdownContextType>({
         open: false,
         triggerRef: createRef(),
         items: [],
     });
+    const openRef = useRef(value.open);
+    openRef.current = value.open;
+
+    useEffect(() => {
+        if (!value.open) return;
+
+        function close() {
+            setValue(v => ({ ...v, open: false }));
+        }
+
+        window.addEventListener('scroll', close);
+        return () => window.removeEventListener('scroll', close);
+    }, [value]);
 
     return (
-        <DropdownContext.Provider value={contextValue}>
+        <DropdownContext.Provider value={[value, setValue]}>
             {children}
         </DropdownContext.Provider>
     );

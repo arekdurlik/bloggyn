@@ -1,0 +1,49 @@
+.menu-bar {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+
+    display: flex;
+    align-items: flex-end;
+
+    padding: var(--spacing-default);
+
+    margin-bottom: var(--spacing-large);
+    margin-top: -39px;
+
+    margin-inline: -10px;
+    padding-inline: 15px;
+
+    height: var(--headerHeight);
+    background-color: var(--header-bgColor);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+
+    button {
+        border-radius: var(--rounded-default);
+        width: 30px;
+        height: 30px;
+        transition: background-color var(--transition-fast);
+
+        svg {
+            width: 20px;
+        }
+
+        &:hover {
+            background-color: var(--control-default-bgColor-hover);
+        }
+
+        &:active {
+            background-color: var(--control-default-bgColor-active);
+        }
+    }
+
+    &:before {
+        content: '';
+        position: absolute;
+        top: -100px;
+        width: 100%;
+        background-color: var(--bgColor-default);
+        height: 100px;
+    }
+}

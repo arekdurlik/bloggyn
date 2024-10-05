@@ -1,28 +1,31 @@
 import { type ButtonHTMLAttributes } from 'react';
 import styles from './button.module.scss';
 import Link, { type LinkProps } from 'next/link';
+import TransitionLink from '@/components/common/page-transition/transition-link';
 
-type Props = {
-    onClick?: () => void;
-    children?: React.ReactNode;
-} & ButtonHTMLAttributes<HTMLButtonElement>;
-
-export default function Button({ onClick, children, ...props }: Props) {
+export default function Button({ className, ...props }: ButtonHTMLAttributes<HTMLButtonElement>) {
     return (
-        <button className={styles.button} onClick={onClick} {...props}>
-            <span className={styles.content}>{children}</span>
+        <button className={`${styles.button} ${className}`} {...props}>
+            <span className={styles.content}>{props.children}</span>
         </button>
     );
 }
 
 type ButtonLinkProps = {
+    transitionId?: string;
     children?: React.ReactNode;
 } & LinkProps;
 
-export function ButtonLink({ children, ...props }: ButtonLinkProps) {
-    return (
+export function ButtonLink(props: ButtonLinkProps) {
+    const children = <span className={styles.content}>{props.children}</span>;
+
+    return props.transitionId ? (
+        <TransitionLink id={props.transitionId} className={styles.button} {...props}>
+            {children}
+        </TransitionLink>
+    ) : (
         <Link className={styles.button} {...props}>
-            <span className={styles.content}>{children}</span>
+            {children}
         </Link>
     );
 }

@@ -1,0 +1,14 @@
+.title {
+    font-size: var(--text-h1);
+    font-weight: 700;
+
+    width: 100%;
+    resize: none;
+    outline: none;
+    border: none;
+    overflow: hidden;
+
+    &::placeholder {
+        color: var(--fgColor-barely-visible);
+    }
+}

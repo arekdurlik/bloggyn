@@ -13,7 +13,6 @@ export default function ThemeSwitcher() {
             <div className={styles.item}/>
             <div className={styles.item}/>
             <div className={styles.item}/>
-            <div className={styles.item}/>
         </div>
     );
 }

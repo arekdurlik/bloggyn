@@ -1,4 +1,6 @@
 :root {
+    --headerHeight: 61px;
+
     --color-black:                  hsl(241, 0%, 0%);
     --color-gray-5:                 hsl(241, 0%, 5%);
     --color-gray-10:                hsl(241, 0%, 10%);
@@ -45,6 +47,7 @@
     --control-default-fgColor: var(--color-gray-30);
     --control-default-bgColor-rest: var(--background);
     --control-default-bgColor-hover: var(--color-gray-95);
+    --control-default-bgColor-active: var(--color-gray-90);
     --control-default-borderColor-rest: var(--border);
     --control-default-borderColor-hover: var(--color-gray-80);
     --control-default-borderColor: var(--border);

@@ -10,6 +10,8 @@ import Write from '../common/icons/write';
 import Link from 'next/link';
 import { useRef } from 'react';
 import { useHideOnScroll } from './hide-on-scroll';
+import { HEADER_ID } from '@/lib/constants';
+import TransitionLink from '../common/page-transition/transition-link';
 
 export default function Header() {
     const { data: session } = useSession();
@@ -17,22 +19,24 @@ export default function Header() {
     useHideOnScroll(ref);
 
     return (
-        <nav ref={ref} className={styles.container}>
-            <Link href="/" className={styles.logo}>
-                bloggyn
-            </Link>
-            <ThemeSwitcher />
-            {session?.user?.name ? (
-                <ButtonGroup style={{ gap: 22 }}>
-                    <ButtonLink href="/new-post">
-                        <Write />
-                        New post
-                    </ButtonLink>
-                    <User />
-                </ButtonGroup>
-            ) : (
-                <ButtonLink href="/api/auth/signin">Sign in</ButtonLink>
-            )}
+        <nav ref={ref} id={HEADER_ID} className={`${styles.container}`}>
+            <div className={styles.content}>
+                <TransitionLink id="home" href="/" className={styles.logo}>
+                    <span>bloggyn</span>
+                    <ThemeSwitcher />
+                </TransitionLink>
+                {session?.user?.name ? (
+                    <ButtonGroup style={{ gap: 22 }}>
+                        <ButtonLink transitionId="home" href="/new-post">
+                            <Write />
+                            New post
+                        </ButtonLink>
+                        <User />
+                    </ButtonGroup>
+                ) : (
+                    <ButtonLink href="/api/auth/signin">Sign in</ButtonLink>
+                )}
+            </div>
         </nav>
     );
 }
