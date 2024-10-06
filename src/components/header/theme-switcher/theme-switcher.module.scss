@@ -33,13 +33,13 @@ $maxVisibleHalf: calc($maxVisible / 2);
     }
 }
 
-@keyframes opacity-slow {
+@keyframes blur-slow {
     20% {
         filter: blur(10px);
     }
 }
 
-@keyframes opacity-fast {
+@keyframes blur-fast {
     20% {
         filter: blur(30px);
     }
@@ -54,23 +54,28 @@ $maxVisibleHalf: calc($maxVisible / 2);
 
     &.slide-right {
         &-1 {
-            animation: opacity-slow var(--transition-theme) forwards;
-
-            transition: transform var(--transition-theme);
+            @media (prefers-reduced-motion: no-preference) {
+                animation: blur-slow var(--transition-theme) forwards;
+                transition: transform var(--transition-theme);
+            }
             transform: translateX(round(down, calc(100% / $maxVisible), 1px));
         }
     }
 
     &.slide-left {
         &-1 {
-            animation: opacity-slow var(--transition-theme) forwards;
-            transition: transform var(--transition-theme);
+            @media (prefers-reduced-motion: no-preference) {
+                animation: blur-slow var(--transition-theme) forwards;
+                transition: transform var(--transition-theme);
+            }
             transform: translateX(round(down, calc(-100% / $maxVisible), 1px));
         }
 
         &-2 {
-            animation: opacity-fast var(--transition-theme) forwards;
-            transition: transform var(--transition-theme);
+            @media (prefers-reduced-motion: no-preference) {
+                animation: blur-fast var(--transition-theme) forwards;
+                transition: transform var(--transition-theme);
+            }
             transform: translateX(round(down, calc(-100% / $maxVisibleHalf), 1px));
         }
     }

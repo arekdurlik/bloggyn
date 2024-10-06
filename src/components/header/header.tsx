@@ -14,7 +14,7 @@ import TransitionLink from '../common/page-transition/transition-link';
 import { usePathname } from 'next/navigation';
 import PageTransition from '../common/page-transition/page-transition';
 
-export default function Header() {
+export default function Header({ theme }: { theme?: string }) {
     const { data: session } = useSession();
     const pathname = usePathname();
     const ref = useRef<HTMLDivElement>(null);
@@ -27,7 +27,7 @@ export default function Header() {
                     <TransitionLink id="home" href="/">
                         bloggyn
                     </TransitionLink>
-                    <ThemeSwitcher />
+                    <ThemeSwitcher theme={theme}/>
                 </div>
                 {session?.user?.name ? (
                     <ButtonGroup style={{ gap: 22 }}>

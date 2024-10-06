@@ -1,6 +1,6 @@
 import styles from './theme-switcher.module.scss';
 
-export const ALL_THEMES = ['dark', 'sepia', 'light', 'brand'];
+export const ALL_THEMES = ['brand', 'light', 'sepia', 'dark'];
 
 export const THEME_CLASSES = {
     light: styles.itemLight,

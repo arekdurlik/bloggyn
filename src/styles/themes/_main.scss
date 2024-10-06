@@ -3,6 +3,10 @@
 @forward './brand';
 
 .transitioning {
+    @media (prefers-reduced-motion: reduce) {
+        --transition-theme: none;
+    }
+
     --transition-fast: var(--transition-theme);
     --transition-default: var(--transition-theme);
     --transition-slow: var(--transition-theme);

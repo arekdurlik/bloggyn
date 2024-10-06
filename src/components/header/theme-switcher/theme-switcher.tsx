@@ -2,9 +2,12 @@ import { cn } from '@/lib/helpers';
 import { useEffect, useRef, useState } from 'react';
 import styles from './theme-switcher.module.scss';
 import { ALL_THEMES, MAX_VISIBLE, MIDDLE_INDEX, THEME_CLASSES } from './utils';
+import { setCookie } from 'cookies-next';
 
-export default function ThemeSwitcher() {
-    const [activeIndex, setActiveIndex] = useState(0);
+export default function ThemeSwitcher({ theme = 'light' }: { theme: string }) {
+    const [activeIndex, setActiveIndex] = useState(
+        ALL_THEMES.findIndex(t => t === theme)
+    );
     const [themes, setThemes] = useState(getWrappedThemes(activeIndex));
     const items = useRef<HTMLDivElement>(null!);
     const isSliding = () =>
@@ -41,7 +44,7 @@ export default function ThemeSwitcher() {
         if (!theme) return;
 
         document.documentElement.dataset.theme = theme;
-        localStorage.setItem('theme', theme);
+        setCookie('theme', theme);
 
         document.body.classList.add('transitioning');
 
@@ -57,13 +60,25 @@ export default function ThemeSwitcher() {
                 break;
         }
 
-        items.current.addEventListener('animationend', () => {
+        function setTheme() {
             document.body.classList.remove('transitioning');
             const i = ALL_THEMES.findIndex(t => t === themes[listindex]);
 
             setThemes(getWrappedThemes(i));
             setActiveIndex(listindex);
-        });
+        }
+
+        const reduced = window.matchMedia(
+            '(prefers-reduced-motion: reduce)'
+        ).matches;
+
+        if (reduced) {
+            setTimeout(setTheme);
+        } else {
+            items.current.addEventListener('animationend', setTheme, {
+                once: true,
+            });
+        }
     }
 
     return (
