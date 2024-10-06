@@ -1,18 +1,89 @@
-import { useState } from 'react';
+import { cn } from '@/lib/helpers';
+import { useEffect, useRef, useState } from 'react';
 import styles from './theme-switcher.module.scss';
+import { ALL_THEMES, MAX_VISIBLE, MIDDLE_INDEX, THEME_CLASSES } from './utils';
 
 export default function ThemeSwitcher() {
-    const [active, setActive] = useState(false);
+    const [activeIndex, setActiveIndex] = useState(0);
+    const [themes, setThemes] = useState(getWrappedThemes(activeIndex));
+    const items = useRef<HTMLDivElement>(null!);
+    const isSliding = () =>
+        items.current.classList.contains(styles.slideLeft1) ||
+        items.current.classList.contains(styles.slideRight1) ||
+        items.current.classList.contains(styles.slideLeft2);
+
+    useEffect(() => {
+        items.current.classList.remove(
+            styles.slideLeft1,
+            styles.slideRight1,
+            styles.slideLeft2
+        );
+    }, [themes]);
+
+    function getWrappedThemes(activeIndex: number) {
+        const l = ALL_THEMES.length;
+
+        const newThemes = [];
+
+        for (let i = 0; i < MAX_VISIBLE + 3; i++) {
+            newThemes[i] =
+                ALL_THEMES[(activeIndex + l - (MAX_VISIBLE - 2) + i) % l];
+        }
+
+        return newThemes as string[];
+    }
+
+    function handleSelect(listindex: number) {
+        if (isSliding()) return;
+
+        const theme = themes[listindex];
+
+        if (!theme) return;
+
+        document.documentElement.dataset.theme = theme;
+        localStorage.setItem('theme', theme);
+
+        document.body.classList.add('transitioning');
+
+        switch (listindex - 1 - MIDDLE_INDEX) {
+            case -1:
+                items.current.classList.add(styles.slideRight1);
+                break;
+            case 1:
+                items.current.classList.add(styles.slideLeft1);
+                break;
+            case 2:
+                items.current.classList.add(styles.slideLeft2);
+                break;
+        }
+
+        items.current.addEventListener('animationend', () => {
+            document.body.classList.remove('transitioning');
+            const i = ALL_THEMES.findIndex(t => t === themes[listindex]);
+
+            setThemes(getWrappedThemes(i));
+            setActiveIndex(listindex);
+        });
+    }
 
     return (
         <div
-            className={`${styles.container} ${active ? styles.active : ''}`}
-            onMouseEnter={() => setActive(true)}
-            onMouseLeave={() => setActive(false)}
+            className={cn(styles.container, 'theme-switcher')}
+            draggable="false"
         >
-            <div className={styles.item}/>
-            <div className={styles.item}/>
-            <div className={styles.item}/>
+            <div ref={items} className={styles.items} draggable="false">
+                {themes.map((theme, index) => (
+                    <div
+                        key={index + theme}
+                        className={cn(
+                            styles.item,
+                            THEME_CLASSES[theme as keyof typeof THEME_CLASSES]
+                        )}
+                        onClick={() => handleSelect(index)}
+                        draggable="false"
+                    ></div>
+                ))}
+            </div>
         </div>
     );
 }

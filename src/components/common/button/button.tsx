@@ -1,4 +1,4 @@
-import { type ButtonHTMLAttributes } from 'react';
+import { type CSSProperties, type ButtonHTMLAttributes } from 'react';
 import styles from './button.module.scss';
 import Link, { type LinkProps } from 'next/link';
 import TransitionLink from '@/components/common/page-transition/transition-link';
@@ -13,14 +13,15 @@ export default function Button({ className, ...props }: ButtonHTMLAttributes<HTM
 
 type ButtonLinkProps = {
     transitionId?: string;
+    style?: CSSProperties;
     children?: React.ReactNode;
 } & LinkProps;
 
-export function ButtonLink(props: ButtonLinkProps) {
+export function ButtonLink({ transitionId, ...props }: ButtonLinkProps) {
     const children = <span className={styles.content}>{props.children}</span>;
 
-    return props.transitionId ? (
-        <TransitionLink id={props.transitionId} className={styles.button} {...props}>
+    return transitionId ? (
+        <TransitionLink id={transitionId} className={styles.button} {...props}>
             {children}
         </TransitionLink>
     ) : (

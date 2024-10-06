@@ -3,6 +3,7 @@ import { useCurrentEditor } from '../editor';
 import styles from './menu-bar.module.scss';
 import { Bold, Italic } from 'lucide-react';
 import { useHeader } from '@/lib/hooks/use-header';
+import Button from '@/components/common/button';
 
 export default function MenuBar() {
     const { editor } = useCurrentEditor();
@@ -32,30 +33,35 @@ export default function MenuBar() {
     return (
         <div ref={menuBarRef} className={styles.menuBar}>
             {editor && (
-                <Fragment>
-                    <button
-                        onClick={() =>
-                            editor.chain().focus().toggleItalic().run()
-                        }
-                        disabled={
-                            !editor.can().chain().focus().toggleItalic().run()
-                        }
-                        className={editor.isActive('italic') ? 'active' : ''}
-                    >
-                        <Bold />
-                    </button>
-                    <button
-                        onClick={() =>
-                            editor.chain().focus().toggleItalic().run()
-                        }
-                        disabled={
-                            !editor.can().chain().focus().toggleItalic().run()
-                        }
-                        className={editor.isActive('italic') ? 'active' : ''}
-                    >
-                        <Italic />
-                    </button>
-                </Fragment>
+                <div className={styles.content}>
+                    <div className={styles.buttons}>
+                        <button
+                            onClick={() =>
+                                editor.chain().focus().toggleItalic().run()
+                            }
+                            disabled={
+                                !editor.can().chain().focus().toggleItalic().run()
+                            }
+                            className={editor.isActive('italic') ? 'active' : ''}
+                        >
+                            <Bold />
+                        </button>
+                        <button
+                            onClick={() =>
+                                editor.chain().focus().toggleItalic().run()
+                            }
+                            disabled={
+                                !editor.can().chain().focus().toggleItalic().run()
+                            }
+                            className={editor.isActive('italic') ? 'active' : ''}
+                        >
+                            <Italic />
+                        </button>
+                    </div>
+                    <div className={styles.buttons}>
+                        <Button>Publish</Button>
+                    </div>
+                </div>
             )}
         </div>
     );

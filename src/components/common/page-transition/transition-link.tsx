@@ -4,7 +4,7 @@ import Link, { type LinkProps } from 'next/link';
 import React, { type CSSProperties } from 'react';
 import { type Url } from 'next/dist/shared/lib/router/router';
 import { useTransitionProvider } from './transition-provider';
-import { usePathname } from 'next/navigation';
+import { navigate } from '@/app/actions';
 
 type ButtonLinkProps = {
     id: string;
@@ -27,7 +27,10 @@ export default function TransitionLink({
     ) => {
         e.preventDefault();
 
-        if (!elements.current) return;
+        if (!elements.current?.size) {
+            await navigate(href as string);
+            return;
+        };
 
         const cbs = elements.current.get(id);
 

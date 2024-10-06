@@ -1,5 +1,9 @@
+@use 'variables';
+
 @use 'base/reset';
 @use 'base/body';
 @use 'base/typography';
+@use 'themes/main';
 @use 'tiptap';
-@use 'variables';
+@use 'page-transition';
+@use 'loader';

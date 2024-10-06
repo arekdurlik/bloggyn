@@ -23,3 +23,7 @@ export function getComponentDisplayName(element: React.ReactElement) {
             : type;
     return displayName;
 }
+
+export function cn(...classnames: unknown[]) {
+    return classnames.filter(c => typeof c === 'string' && c.length).join(' ');
+}

@@ -1,0 +1,10 @@
+[data-theme="sepia"] {
+    --bgColor-default: var(--color-sepia);
+    --header-bgColor: var(--color-sepia);
+
+    --fgColor-default: hsl(40, 6%, 20%);
+    --fgColor-subtle: hsl(40, 6%, 40%);
+    --fgColor-barely-visible: hsl(40, 6%, 50%);
+    --control-default-fgColor: black;
+    --border: color-mix(in hsl, #000, var(--color-sepia) 85%);
+}

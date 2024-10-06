@@ -2,9 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import styles from './title.module.scss';
 
 export default function Title() {
-    const [value, setValue] = useState(
-        'Making witch type characters based on the Terraria Bosses, Part 2: The Eater of Worlds'
-    );
+    const [value, setValue] = useState('');
     const ref = useRef<HTMLTextAreaElement>(null!);
 
     useEffect(() => {

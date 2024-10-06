@@ -11,7 +11,7 @@
     align-items: center;
     padding: var(--spacing-large) var(--spacing-xxl);
     border-bottom: 1px solid var(--border);
-    transition: transform var(--transition-slow);
+    transition: background-color var(--transition-theme), border var(--transition-theme), transform var(--transition-slow);
 }
 
 .content {
@@ -28,18 +28,21 @@
     letter-spacing: 1px;
     cursor: pointer;
     user-select: none;
-    color: var(--fgColor-default);
+
     transition: 0s;
 
-    span {
+    a {
+        color: var(--fgColor-default);
+        transition: color var(--transition-theme);
+
         &:hover {
             @keyframes shine {
                 50% {
-                    color: #888;
+                    opacity: 0.75;
                 }
             }
 
-            animation: shine var(--transition-slow);
+            animation: shine 1s ease-out;
         }
     }
 }

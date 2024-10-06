@@ -1,35 +1,36 @@
 :root {
     --headerHeight: 61px;
 
-    --color-black:                  hsl(241, 0%, 0%);
-    --color-gray-5:                 hsl(241, 0%, 5%);
-    --color-gray-10:                hsl(241, 0%, 10%);
-    --color-gray-20:                hsl(241, 0%, 20%);
-    --color-gray-30:                hsl(241, 0%, 30%);
-    --color-gray-40:                hsl(241, 0%, 40%);
-    --color-gray-50:                hsl(241, 0%, 50%);
-    --color-gray-60:                hsl(241, 0%, 60%);
-    --color-gray-70:                hsl(241, 0%, 70%);
-    --color-gray-80:                hsl(241, 0%, 80%);
-    --color-gray-85:                hsl(241, 0%, 85%);
-    --color-gray-90:                hsl(241, 0%, 90%);
-    --color-gray-95:                hsl(241, 0%, 95%);
-    --color-white:                  hsl(241, 0%, 100%);
+    --color-black:                  hsl(0, 0%, 0%);
+    --color-gray-5:                 hsl(0, 0%, 5%);
+    --color-gray-10:                hsl(0, 0%, 10%);
+    --color-gray-20:                hsl(0, 0%, 20%);
+    --color-gray-30:                hsl(0, 0%, 30%);
+    --color-gray-40:                hsl(0, 0%, 40%);
+    --color-gray-50:                hsl(0, 0%, 50%);
+    --color-gray-60:                hsl(0, 0%, 60%);
+    --color-gray-70:                hsl(0, 0%, 70%);
+    --color-gray-80:                hsl(0, 0%, 80%);
+    --color-gray-85:                hsl(0, 0%, 85%);
+    --color-gray-90:                hsl(0, 0%, 90%);
+    --color-gray-95:                hsl(0, 0%, 95%);
+    --color-white:                  hsl(0, 0%, 100%);
 
-    --color-primary-dark:           hsl(241, 40%, 35%);
-    --color-primary:                hsl(241, 40%, 45%);
-    --color-primary-light:          hsl(241, 40%, 55%);
+    --color-light: var(--color-white);
+    --color-dark:  var(--color-black);
+    --color-brand: hsl(241, 40%, 45%);
+    --color-sepia: #dfcdad;
 
     --color-error:                  hsl(0, 70%, 50%);
     --color-success:                hsl(138, 70%, 50%);
 
-    --bgColor-default:              var(--color-white);
+    --bgColor-default:              var(--color-light);
     --text-heading:                 var(--color-black);
     --fgColor-default:              var(--color-gray-20);
     --fgColor-subtle:                  var(--color-gray-50);
     --fgColor-barely-visible:          var(--color-gray-80);
 
-    --header-bgColor: color-mix(in hsl, var(--bgColor-default), transparent 10%);
+    --header-bgColor: var(--bgColor-default);
 
     --text-small: 0.75rem;
     --text-default: 1rem;
@@ -52,9 +53,13 @@
     --control-default-borderColor-hover: var(--color-gray-80);
     --control-default-borderColor: var(--border);
 
-    --transition-fast: 125ms;
-    --transition-default: 250ms;
-    --transition-slow: 500ms;
+    --transition-fast: 100ms;
+    --transition-default: 150ms;
+    --transition-slow: 250ms;
+    --transition-sloth: 500ms;
+
+    --transition-page: 75ms ease-out;
+    --transition-theme: 150ms;
 
     --spacing-small: 2.5px;
     --spacing-default: 5px;

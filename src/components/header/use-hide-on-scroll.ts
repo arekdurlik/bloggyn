@@ -2,7 +2,7 @@ import { clamp } from '@/lib/helpers';
 import { type RefObject, useEffect, useRef } from 'react';
 
 export function useHideOnScroll(ref: RefObject<HTMLElement>) {
-    const previousScroll = useRef(window.scrollY);
+    const previousScroll = useRef(0);
     const currentPosition = useRef(0);
 
     useEffect(() => {

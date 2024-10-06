@@ -1,0 +1,22 @@
+.loader {
+    &-container {
+        width: 100%;
+        height: 100%;
+        display: grid;
+        place-items: center;
+    }
+
+    &-spinner {
+        color: var(--fgColor-barely-visible);
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        animation: spin 2s linear infinite;
+    }
+}

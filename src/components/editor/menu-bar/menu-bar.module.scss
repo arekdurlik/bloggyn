@@ -1,5 +1,6 @@
 .menu-bar {
     position: sticky;
+    width: 100%;
     top: 0;
     z-index: 1;
 
@@ -46,4 +47,15 @@
         background-color: var(--bgColor-default);
         height: 100px;
     }
+}
+
+.content {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+}
+
+.buttons {
+    display: flex;
+    gap: var(--spacing-default);
 }

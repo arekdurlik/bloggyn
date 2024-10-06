@@ -6,8 +6,7 @@ import { type Metadata } from 'next';
 import Header from '../components/header';
 import SessionProvider from './session-provider';
 import { getServerAuthSession } from '@/server/auth';
-import PageTransition from '@/components/common/page-transition/page-transition';
-import TransitionProvider from '@/components/common/page-transition/transition-provider';
+import Providers from '@/components/common/providers';
 
 export const metadata: Metadata = {
     title: 'bloggyn',
@@ -20,19 +19,25 @@ export default async function RootLayout({
     const session = await getServerAuthSession();
 
     return (
-        <html lang="en">
+        <html
+            lang="en"
+            // data-theme will appear on the client
+            suppressHydrationWarning
+        >
+            <head>
+                {/* eslint-disable-next-line @next/next/no-sync-scripts */}
+                <script src="/theme-toggle.js" />
+            </head>
             <body className={GeistSans.className}>
-                <TransitionProvider>
+                <Providers>
                     <div className={styles.container}>
                         <SessionProvider session={session}>
                             <Header />
-                            <PageTransition id="home">
-                                <div className={styles.content}>{children}</div>
-                            </PageTransition>
+                            <div className={styles.content}>{children}</div>
                         </SessionProvider>
                     </div>
                     <div id="overlay" />
-                </TransitionProvider>
+                </Providers>
             </body>
         </html>
     );

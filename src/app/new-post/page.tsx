@@ -1,11 +1,5 @@
-import { Suspense } from 'react';
-import Editor from '../../components/editor'
-import TransitionLink from '@/components/common/page-transition/transition-link';
+import Editor from '../../components/editor';
 
 export default function Home() {
-    return <div>
-        <Suspense fallback={null}>
-            <Editor/>
-        </Suspense>
-    </div>;
+    return <Editor />;
 }

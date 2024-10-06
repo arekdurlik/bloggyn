@@ -6,9 +6,9 @@
     overflow: hidden !important;
     cursor: pointer;
     background-color: #000;
-    transition: var(--transition-default);
 
     img {
+        transition: var(--transition-default);
         pointer-events: none;
         user-select: none;
     }

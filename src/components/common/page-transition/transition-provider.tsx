@@ -11,12 +11,12 @@ import {
 
 type TransitionContextType = {
     elements: RefObject<Map<string, ((href: Url) => Promise<void>)[]>>;
-    register: (key: string, elem: (href: Url) => Promise<void>) => void;
+    register: (key: string, elem: (href: Url) => Promise<void>) => () => void;
 };
 
 const TransitionProviderContext = createContext<TransitionContextType>({
     elements: createRef(),
-    register: () => void {},
+    register: () => () => void {},
 });
 
 export const useTransitionProvider = () =>
@@ -39,6 +39,15 @@ export default function TransitionProvider({
             elements.current.set(key, arr);
         } else {
             elements.current.set(key, [cb]);
+        }
+
+        return () => {
+            const arr = elements.current.get(key);
+            if (arr) {
+                const index = arr?.indexOf(cb);
+                arr.splice(index!, 1);
+                elements.current.set(key, arr);
+            }
         }
     }
 

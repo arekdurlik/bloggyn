@@ -19,7 +19,8 @@
     font-variant-numeric: oldstyle-nums !important;
     p.is-editor-empty:first-child::before {
         content: attr(data-placeholder);
-        color: #adb5bd;
+        color: var(--fgColor-barely-visible);
+        font-weight: 500;
         float: left;
         height: 0;
         pointer-events: none;

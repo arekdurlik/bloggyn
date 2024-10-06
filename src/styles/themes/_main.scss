@@ -1,0 +1,31 @@
+@forward './dark';
+@forward './sepia';
+@forward './brand';
+
+.transitioning {
+    --transition-fast: var(--transition-theme);
+    --transition-default: var(--transition-theme);
+    --transition-slow: var(--transition-theme);
+
+    h1, h2, h3, h4, p, span {
+        transition: color var(--transition-theme);
+    }
+
+    svg {
+        transition: stroke var(--transition-theme);
+    }
+
+    div, button {
+        transition:
+            background-color var(--transition-theme),
+            border-color var(--transition-theme);
+    }
+
+    .theme-switcher {
+        transition:
+            background-color var(--transition-theme),
+            border-color var(--transition-theme),
+            height var(--transition-theme);
+    }
+
+}

@@ -8,6 +8,9 @@
     border: none;
     overflow: hidden;
 
+    background-color: transparent;
+    color: var(--fgColor-default);
+
     &::placeholder {
         color: var(--fgColor-barely-visible);
     }

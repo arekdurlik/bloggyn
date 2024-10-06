@@ -2,7 +2,6 @@
     padding: var(--spacing-default) var(--spacing-xl);
     border-radius: var(--rounded-large);
     border: 1px solid var(--control-default-borderColor-rest);
-    transition: background-color var(--transition-fast), border-color var(--transition-fast);
     background-color: var(--control-default-bgColor-rest);
     color: var(--control-default-fgColor);
     display: flex;
@@ -14,13 +13,17 @@
     height: 40px;
     min-width: 100px;
 
+    transition:
+        background-color var(--transition-default),
+        border-color var(--transition-default);
+
     &:hover {
         background-color: var(--control-default-bgColor-hover);
         border-color: var(--control-default-borderColor-hover);
 
         .content {
             color: var(--color-gray-30);
-            transition: var(--transition-slow);
+            transition: var(--transition-default);
         }
     }
 }
