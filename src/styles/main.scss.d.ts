@@ -8,5 +8,6 @@ export declare const pageTransition: string;
 export declare const pageTransitionActive: string;
 export declare const pageTransitionLoader: string;
 export declare const spin: string;
+export declare const themeSwitcher: string;
 export declare const tiptap: string;
 export declare const transitioning: string;

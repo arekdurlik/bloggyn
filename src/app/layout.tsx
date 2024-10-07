@@ -7,6 +7,7 @@ import SessionProvider from './session-provider';
 import { getServerAuthSession } from '@/server/auth';
 import Providers from '@/components/common/providers';
 import { cookies } from 'next/headers';
+import { trpc } from '@/trpc/client';
 
 export const metadata: Metadata = {
     title: 'bloggyn',

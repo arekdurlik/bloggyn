@@ -2,7 +2,7 @@
 
 import { type Url } from 'next/dist/shared/lib/router/router';
 import { usePathname } from 'next/navigation';
-import { createContext, ReactNode, useContext, useEffect, useRef } from 'react';
+import { createContext, type ReactNode, useContext, useEffect, useRef } from 'react';
 import { useTransitionProvider } from './transition-provider';
 import { navigate } from '@/app/actions';
 import { sleep } from '@/lib/helpers';
@@ -43,7 +43,7 @@ export default function PageTransition({ children, id }: PageTransitionProps) {
 
         if (pathnameRef.current !== href) {
             ref.current.classList.add('page-transition-active');
-            await sleep(75);
+            await sleep(125);
         }
 
         await navigate(href as string);
