@@ -1,16 +1,18 @@
 import { getServerAuthSession } from '@/server/auth';
+import { db } from '@/server/db';
 import { initTRPC, TRPCError } from '@trpc/server';
-import { cache } from 'react';
 
-export const createContext = cache(async () => {
+export const createTRPCContext = async (opts: { headers: Headers }) => {
     const session = await getServerAuthSession();
 
     return {
+        db,
         session,
+        ...opts,
     };
-});
+};
 
-export type Context = Awaited<ReturnType<typeof createContext>>;
+export type Context = Awaited<ReturnType<typeof createTRPCContext>>;
 
 const trpc = initTRPC.context<Context>().create();
 
@@ -19,9 +21,6 @@ export const createCallerFactory = trpc.createCallerFactory;
 
 export const procedure = trpc.procedure;
 
-/**
- * Protected procedure
- */
 export const protectedProcedure = trpc.procedure.use(function isAuthed(opts) {
     if (!opts.ctx.session?.user?.email) {
         throw new TRPCError({
@@ -30,7 +29,6 @@ export const protectedProcedure = trpc.procedure.use(function isAuthed(opts) {
     }
     return opts.next({
         ctx: {
-            // Infers the `session` as non-nullable
             session: opts.ctx.session,
         },
     });

@@ -1,21 +1,21 @@
 .image {
     position: relative;
-    border-radius: 9999px;
+    border-radius: 50%;
     width: 40px;
     height: 40px;
     overflow: hidden !important;
     cursor: pointer;
-    background-color: #000;
 
     img {
-        transition: var(--transition-default);
+        transition: filter var(--transition-default);
         pointer-events: none;
         user-select: none;
     }
 
+
     &:hover {
         img {
-            opacity: 0.9;
+            filter: brightness(0.8);
             border-radius: 9999px;
         }
     }

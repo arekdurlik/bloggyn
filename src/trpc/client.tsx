@@ -9,6 +9,7 @@ import { makeQueryClient } from './query-client';
 import { type AppRouter } from '../server';
 
 export const trpc = createTRPCReact<AppRouter>();
+
 let clientQueryClientSingleton: QueryClient;
 
 function getQueryClient() {

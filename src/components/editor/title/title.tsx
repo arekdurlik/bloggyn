@@ -1,8 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import styles from './title.module.scss';
+import { useEditorStore } from '../store';
 
 export default function Title() {
-    const [value, setValue] = useState('');
+    const title = useEditorStore(state => state.data.title);
+    const setTitle = useEditorStore(state => state.api.setTitle);
     const ref = useRef<HTMLTextAreaElement>(null!);
 
     useEffect(() => {
@@ -18,14 +20,14 @@ export default function Title() {
 
     return (
         <textarea
-            value={value}
+            value={title}
             ref={ref}
             className={styles.title}
             placeholder="Title"
             spellCheck="false"
             rows={1}
             onInput={adjustSize}
-            onChange={e => setValue(e.target.value)}
+            onChange={e => setTitle(e.target.value)}
             maxLength={100}
         />
     );
