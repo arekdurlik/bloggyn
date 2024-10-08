@@ -3,14 +3,14 @@
 import Image from 'next/image';
 import styles from './profile-image.module.scss';
 import { useSession } from 'next-auth/react';
-import { forwardRef, type KeyboardEvent, type MouseEvent } from 'react';
+import { type KeyboardEvent, type MouseEvent } from 'react';
 
 type Props = {
     onClick?: (event: MouseEvent<HTMLDivElement>) => void
     onKey?: (event: KeyboardEvent<HTMLDivElement>) => void
 }
 
-const ProfileImage = forwardRef<HTMLDivElement, Props>(({ onClick, onKey }, ref) => {
+export default function ProfileImage({ onClick, onKey }: Props) {
     const { data } = useSession();
 
     function handleKey(event: KeyboardEvent<HTMLDivElement>) {
@@ -23,13 +23,10 @@ const ProfileImage = forwardRef<HTMLDivElement, Props>(({ onClick, onKey }, ref)
         }
     }
     return (
-        <div ref={ref} className={styles.image} onClick={onClick} onKeyDown={handleKey}>
+        <div className={styles.image} onClick={onClick} onKeyDown={handleKey}>
             {data?.user.image && (
                 <Image src={data.user.image} fill alt="Profile picture"/>
             )}
         </div>
     );
-});
-
-ProfileImage.displayName = 'ProfileImage';
-export default ProfileImage;
+}

@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import Heart from '../icons/heart';
 import styles from './heart-button.module.scss';
+import { Heart } from 'lucide-react';
 
 export default function HeartButton() {
     const [active, setActive] = useState(false);

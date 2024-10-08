@@ -1,0 +1,41 @@
+
+.wrapper {
+    label {
+        display: inline-block;
+        margin-bottom: var(--spacing-default);
+        font-weight: 600;
+    }
+}
+
+.input {
+    display: flex;
+    width: fit-content;
+    gap: var(--spacing-large);
+    border-radius: var(--rounded-default);
+    border: 1px solid var(--border);
+    padding: var(--spacing-default) var(--spacing-large);
+
+    &:focus-within {
+        svg {
+            color: var(--fgColor-default)
+        }
+    }
+
+    &.focused {
+        outline: var(--outline);
+
+        svg {
+            transition: none;
+        }
+    }
+
+    svg {
+        color: var(--fgColor-subtle);
+        width: 20px;
+        transition: color var(--transition-fast);
+    }
+
+    input {
+        outline: none;
+    }
+}

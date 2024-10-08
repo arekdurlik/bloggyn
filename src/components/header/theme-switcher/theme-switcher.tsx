@@ -4,7 +4,7 @@ import styles from './theme-switcher.module.scss';
 import { ALL_THEMES, MAX_VISIBLE, MIDDLE_INDEX, THEME_CLASSES } from './utils';
 import { setCookie } from 'cookies-next';
 
-export default function ThemeSwitcher({ theme = 'light' }: { theme: string }) {
+export default function ThemeSwitcher({ theme = 'light' }: { theme?: string }) {
     const [activeIndex, setActiveIndex] = useState(
         ALL_THEMES.findIndex(t => t === theme)
     );
@@ -83,7 +83,7 @@ export default function ThemeSwitcher({ theme = 'light' }: { theme: string }) {
 
     return (
         <div
-            className={cn(styles.container, 'theme-switcher')}
+            className={styles.container}
             draggable="false"
         >
             <div ref={items} className={styles.items} draggable="false">

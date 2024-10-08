@@ -11,6 +11,7 @@ const config = {
         'plugin:@typescript-eslint/stylistic-type-checked',
     ],
     rules: {
+        '@typescript-eslint/no-empty-object-type': 'off',
         '@typescript-eslint/prefer-for-of': 'off',
         '@typescript-eslint/prefer-nullish-coalescing': 'off',
         '@typescript-eslint/no-unused-expressions': 'off',

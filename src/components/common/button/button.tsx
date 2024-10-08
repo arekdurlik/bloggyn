@@ -1,7 +1,8 @@
 import { type CSSProperties, type ButtonHTMLAttributes } from 'react';
 import styles from './button.module.scss';
-import Link, { type LinkProps } from 'next/link';
+import { type LinkProps } from 'next/link';
 import TransitionLink from '@/components/common/page-transition/transition-link';
+import { Link } from 'next-view-transitions';
 
 export default function Button({ className, ...props }: ButtonHTMLAttributes<HTMLButtonElement>) {
     return (

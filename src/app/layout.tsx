@@ -7,7 +7,10 @@ import SessionProvider from './session-provider';
 import { getServerAuthSession } from '@/server/auth';
 import Providers from '@/components/common/providers';
 import { cookies } from 'next/headers';
-import { trpc } from '@/trpc/client';
+import { OVERLAY_ID } from '@/lib/constants';
+import { ViewTransitions } from 'next-view-transitions';
+import { cn } from '@/lib/helpers';
+import shared from '@/styles/shared.module.scss';
 
 export const metadata: Metadata = {
     title: 'bloggyn',
@@ -21,22 +24,20 @@ export default async function RootLayout({
     const theme = cookies().get('theme')?.value ?? 'light';
 
     return (
-        <html
-            lang="en"
-            data-theme={theme}
-            suppressHydrationWarning
-        >
-            <body className={GeistSans.className}>
-                <Providers>
-                    <div className={styles.container}>
-                        <SessionProvider session={session}>
-                            <Header theme={theme} />
-                            <div className={styles.content}>{children}</div>
-                        </SessionProvider>
-                    </div>
-                    <div id="overlay" />
-                </Providers>
-            </body>
+        <html lang="en" data-theme={theme} suppressHydrationWarning>
+            <ViewTransitions>
+                <body className={GeistSans.className}>
+                    <Providers>
+                        <div className={cn(styles.container, shared.buttonGroup)}>
+                            <SessionProvider session={session}>
+                                <Header theme={theme} />
+                                <div className={styles.content}>{children}</div>
+                            </SessionProvider>
+                        </div>
+                        <div id={OVERLAY_ID} />
+                    </Providers>
+                </body>
+            </ViewTransitions>
         </html>
     );
 }

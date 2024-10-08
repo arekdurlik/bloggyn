@@ -9,11 +9,26 @@ import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
 import MenuBar from './menu-bar/menu-bar';
 import Title from './title/title';
-import { Fragment } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { useEditorStore } from './store';
+import { useNavigationGuard } from 'next-navigation-guard';
 
 export default function Editor() {
     const api = useEditorStore(state => state.api);
+    const [isDirty, setIsDirty] = useState(false);
+
+    useNavigationGuard({
+        enabled: isDirty,
+        confirm: () =>
+            window.confirm('You have unsaved changes that will be lost.'),
+    });
+
+    useEffect(() => {
+        useEditorStore.subscribe(
+            state => state.data,
+            () => setIsDirty(true)
+        );
+    }, []);
 
     const extensions = [
         StarterKit,
@@ -31,6 +46,10 @@ export default function Editor() {
         onUpdate: ({ editor }) => api.setContent(editor.getHTML()),
         onCreate: ({ editor }) => api.setEditor(editor),
     });
+
+    useEffect(() => {
+        return () => api.reset();
+    }, []);
 
     return (
         <Fragment>

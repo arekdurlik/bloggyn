@@ -1,0 +1,14 @@
+
+.form {
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: var(--spacing-xxxl);
+    padding: var(--spacing-large);
+}
+
+.header {
+    text-align: center;
+}

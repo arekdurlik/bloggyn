@@ -1,6 +1,8 @@
 :root {
     --headerHeight: 61px;
 
+    --github-color: rgb(23, 21, 21);
+
     --color-black:                  hsl(0, 0%, 0%);
     --color-gray-5:                 hsl(0, 0%, 5%);
     --color-gray-10:                hsl(0, 0%, 10%);
@@ -75,6 +77,9 @@
     --text-small: 0.8rem;
     --text-default: 1rem;
     --text-logo: 2.5rem;
+
+    --outline-color: black;
+    --outline: 2px solid var(--outline-color);
 
 
 }

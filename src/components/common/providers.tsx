@@ -1,13 +1,13 @@
 import { TRPCProvider } from '@/trpc/client';
-import TransitionProvider from './page-transition/transition-provider';
 import { type ReactNode } from 'react';
+import { NavigationGuardProvider } from 'next-navigation-guard';
 
 export default function Providers({ children }: { children: ReactNode }) {
     return (
         <TRPCProvider>
-            <TransitionProvider>
+            <NavigationGuardProvider>
                 {children}
-            </TransitionProvider>
+            </NavigationGuardProvider>
         </TRPCProvider>
     );
 }

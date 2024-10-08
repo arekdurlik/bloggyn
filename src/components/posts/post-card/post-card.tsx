@@ -1,8 +1,6 @@
 import Image from 'next/image';
 import styles from './post-card.module.scss';
-import Heart from '@/components/common/icons/heart';
-import Bookmark from '@/components/common/icons/bookmark';
-import Comment from '@/components/common/icons/comment';
+import { Bookmark, Heart, MessageSquareMore } from 'lucide-react';
 
 export default function PostCard() {
     return (
@@ -46,7 +44,7 @@ export default function PostCard() {
                         <Heart />3
                     </span>
                     <span className={styles.withIcon}>
-                        <Comment />
+                        <MessageSquareMore />
                         20
                     </span>
                 </div>

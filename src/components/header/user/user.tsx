@@ -1,7 +1,5 @@
 import { signOut } from 'next-auth/react';
-import SignOut from '@/components/common/icons/signout';
 import ProfileImage from './profile-image';
-import Settings from '@/components/common/icons/settings';
 import styles from './user.module.scss';
 import {
     DropdownMenu,
@@ -9,6 +7,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/common/dropdown-menu';
+import { LogOut, Settings } from 'lucide-react';
 
 export default function User() {
     return (
@@ -22,7 +21,7 @@ export default function User() {
                     label="Settings"
                 />
                 <DropdownMenuItem
-                    icon={<SignOut />}
+                    icon={<LogOut />}
                     label="Sign out"
                     onClick={() => signOut()}
                 />

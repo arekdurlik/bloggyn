@@ -1,3 +1,5 @@
+import classnamesMinifier from '@nimpl/classnames-minifier';
+const withClassnamesMinifier = classnamesMinifier.default;
 /**
  * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially useful
  * for Docker builds.
@@ -44,4 +46,7 @@ const nextConfig = {
     },
 };
 
-export default nextConfig;
+export default withClassnamesMinifier({
+    reservedNames: ['_en', '_de'],
+    disabled: process.env.NODE_ENV === 'development',
+  })(nextConfig);
