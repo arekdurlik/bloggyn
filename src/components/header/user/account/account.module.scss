@@ -1,0 +1,6 @@
+.image {
+    transition: var(--transition-default);
+    &:hover {
+        filter: brightness(0.8);
+    }
+}

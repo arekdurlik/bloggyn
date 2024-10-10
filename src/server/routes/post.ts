@@ -3,6 +3,8 @@ import { z } from 'zod';
 import { posts } from '../db/schema';
 import slugify from 'slug';
 import { like } from 'drizzle-orm';
+import { getServerSocket } from '@/sockets/serverSocket';
+import { SOCKET_EV } from '@/lib/constants';
 
 export const postRouter = router({
     getPosts: protectedProcedure.query(async () => {
@@ -38,5 +40,10 @@ export const postRouter = router({
                 slug,
                 title: input.title,
             });
+
+            getServerSocket().emit(
+                SOCKET_EV.NOTIFY,
+                '728a35fc-dcef-419a-96a5-5bed4207d900'
+            );
         }),
 });

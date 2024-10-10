@@ -13,6 +13,7 @@ import { Link } from 'next-view-transitions';
 import shared from '@/styles/shared.module.scss';
 import styles from './header.module.scss';
 import { Pencil } from 'lucide-react';
+import Notifications from './user/notifications';
 
 export default function Header({ theme }: { theme?: string }) {
     const { data: session } = useSession();

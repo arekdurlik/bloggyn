@@ -21,6 +21,11 @@ svg {
 }
 
 #overlay {
+    background-image: url('/bg.jpg');
+    background-size: cover;
+    opacity: 0.3;
+    filter: brightness(0.9) contrast(3) saturate(0);
+    mix-blend-mode: darken;
     position: fixed;
     inset: 0;
     z-index: 3;

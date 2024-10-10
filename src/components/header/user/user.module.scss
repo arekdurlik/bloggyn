@@ -1,3 +1,20 @@
-.dropdown-trigger {
-    border-radius: 9999px;
+.container {
+    margin-left: var(--spacing-large);
+    display: flex;
+    gap: var(--spacing-large);
+}
+
+.circle-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+
+    &.no-border {
+        border: none;
+    }
 }

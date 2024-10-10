@@ -1,42 +1,24 @@
+@import 'src/styles/mixins';
+
 .button {
-    padding: var(--spacing-default) var(--spacing-xl);
-    border-radius: var(--rounded-large);
-    border: 1px solid var(--control-default-borderColor-rest);
-    background-color: var(--control-default-bgColor-rest);
-    color: var(--control-default-fgColor);
+    @include control;
     display: flex;
     justify-content: center;
     align-items: center;
+
+    padding: var(--spacing-default) var(--spacing-xl);
+    border-radius: var(--rounded-large);
+    border: 1px solid var(--control-default-borderColor-rest);
     outline-offset: 1px;
-    cursor: pointer;
 
     height: 40px;
     width: fit-content;
     min-width: 100px;
-
-    transition:
-        background-color var(--transition-default),
-        border-color var(--transition-default);
-
-    &:hover {
-        background-color: var(--control-default-bgColor-hover);
-        border-color: var(--control-default-borderColor-hover);
-
-        .content {
-            color: var(--color-gray-30);
-            transition: var(--transition-default);
-        }
-    }
 }
 
 .content {
-    transition: var(--transition-fast);
     display: flex;
     justify-content: center;
     align-items: center;
     gap: var(--spacing-large);
-
-    svg {
-        stroke: var(--control-default-fgColor);
-    }
 }

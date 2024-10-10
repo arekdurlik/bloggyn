@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { useDropdownContext } from '../dropdown-menu';
+import { useDropdownContext } from './dropdown-menu';
 
 type Props = {
     children: React.ReactNode;

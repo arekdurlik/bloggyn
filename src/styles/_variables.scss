@@ -47,14 +47,6 @@
 
     --border: var(--color-gray-85);
 
-    --control-default-fgColor: var(--color-gray-30);
-    --control-default-bgColor-rest: var(--background);
-    --control-default-bgColor-hover: var(--color-gray-95);
-    --control-default-bgColor-active: var(--color-gray-90);
-    --control-default-borderColor-rest: var(--border);
-    --control-default-borderColor-hover: var(--color-gray-80);
-    --control-default-borderColor: var(--border);
-
     --transition-fast: 100ms;
     --transition-default: 150ms;
     --transition-slow: 250ms;
@@ -81,5 +73,14 @@
     --outline-color: black;
     --outline: 2px solid var(--outline-color);
 
+    --control-default-fgColor-rest: var(--color-gray-30);
+    --control-default-fgColor-hover: var(--color-gray-30);
+    --control-default-bgColor-rest: var(--background);
+    --control-default-bgColor-hover: var(--color-gray-95);
+    --control-default-bgColor-active: var(--color-gray-90);
+    --control-default-borderColor-rest: var(--border);
+    --control-default-borderColor-hover: var(--color-gray-80);
+    --control-default-borderColor: var(--border);
+    --control-default-transition: color var(--transition-default), background-color var(--transition-default), border-color var(--transition-default);
 
 }

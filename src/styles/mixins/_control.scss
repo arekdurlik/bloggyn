@@ -1,0 +1,15 @@
+@mixin control {
+    background-color: var(--control-default-bgColor-rest);
+    color: var(--control-default-fgColor-rest);
+    stroke: var(--control-default-fgColor-rest);
+    border-color: var(--control-default-borderColor-rest);
+    transition: var(--control-default-transition);
+    cursor: pointer;
+
+    &:hover {
+        background-color: var(--control-default-bgColor-hover);
+        color: var(--control-default-fgColor-hover);
+        stroke: var(--control-default-fgColor-hover);
+        border-color: var(--control-default-borderColor-hover);
+    }
+}

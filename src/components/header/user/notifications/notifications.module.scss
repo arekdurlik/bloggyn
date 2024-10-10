@@ -1,0 +1,48 @@
+@import 'src/styles/mixins';
+
+@keyframes pop-up {
+    50% {
+        transform: translateX(14px) translateY(-14px) scale(1.2);
+    }
+
+}
+
+@keyframes ring {
+    25% {
+        rotate: 10deg;
+    }
+    50% {
+        rotate: -10deg;
+    }
+}
+
+.button {
+    @include control;
+}
+
+.counter {
+    position: absolute;
+    border-radius: 9999px;
+    height: 18px;
+    min-width: 18px;
+    padding: 4px;
+    background-color: rgb(225, 68, 68);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 12px;
+    font-weight: 500;
+
+    transform: translateX(14px) translateY(-14px);
+}
+
+.new-notification {
+    .bell {
+        animation: ring var(--transition-sloth) ease-in-out;
+    }
+    .counter {
+        animation: pop-up var(--transition-default) ease-out;
+    }
+}
