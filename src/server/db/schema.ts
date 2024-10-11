@@ -24,6 +24,7 @@ export const posts = createTable('post', {
     title: varchar('title', { length: 200 }).notNull(),
     slug: varchar('slug', { length: 230 }).notNull(),
     content: varchar('content').notNull(),
+    readTime: integer('read_time').notNull(),
     createdById: varchar('created_by', { length: 255 })
         .notNull()
         .references(() => users.id),

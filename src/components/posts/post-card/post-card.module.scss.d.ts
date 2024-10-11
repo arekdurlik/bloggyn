@@ -8,4 +8,5 @@ export declare const contentInfo: string;
 export declare const contentInfoSubtitle: string;
 export declare const footer: string;
 export declare const footerLeft: string;
+export declare const title: string;
 export declare const withIcon: string;

@@ -1,30 +1,33 @@
 import Image from 'next/image';
 import styles from './post-card.module.scss';
 import { Bookmark, Heart, MessageSquareMore } from 'lucide-react';
+import { type PostRouterOutput } from '@/server/routes/post';
+import { Link } from 'next-view-transitions';
 
-export default function PostCard() {
+export default function PostCard({
+    post,
+}: {
+    post: PostRouterOutput['getPosts'][number];
+}) {
     return (
-        <div className={styles.container}>
+        <Link href={post.slug} className={styles.container}>
             <div className={styles.content}>
                 <div className={styles.contentInfo}>
                     <div className={styles.author}>
                         <div className={styles.authorImage}>
-                            <Image
-                                src="https://picsum.photos/250/150"
-                                fill
-                                alt="Author image"
-                            />
+                            {post.avatar && (
+                                <Image
+                                    src={post.avatar}
+                                    fill
+                                    alt="Author image"
+                                />
+                            )}
                         </div>
-                        <span className={styles.authorName}>Arek Durlik</span>
+                        <span className={styles.authorName}>{post.name}</span>
                     </div>
-                    <h2>
-                        A basic question in security Interview: How do you store
-                        passwords in the database?
-                    </h2>
+                    <h2 className={styles.title}>{post.title}</h2>
                     <span className={styles.contentInfoSubtitle}>
-                        In this article, we’ll explore how to implement these
-                        design patterns in a React application using
-                        functional...
+                        {post.summary}
                     </span>
                 </div>
                 <div className={styles.contentImage}>
@@ -38,8 +41,8 @@ export default function PostCard() {
             </div>
             <div className={styles.footer}>
                 <div className={styles.footerLeft}>
-                    <span>30 Sep</span>
-                    <span>2 min read</span>
+                    <span>{post.createdAt}</span>
+                    <span>{post.readTime} min read</span>
                     <span className={styles.withIcon}>
                         <Heart />3
                     </span>
@@ -54,6 +57,6 @@ export default function PostCard() {
                     </span>
                 </div>
             </div>
-        </div>
+        </Link>
     );
 }

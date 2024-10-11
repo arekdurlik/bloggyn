@@ -15,6 +15,9 @@ function handler(req: NextRequest) {
         router: appRouter,
         req,
         createContext: () => createContext(req),
+        onError: opts => {
+            console.error(opts.error);
+        },
     });
 }
 

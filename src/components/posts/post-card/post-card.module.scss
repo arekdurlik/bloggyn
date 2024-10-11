@@ -8,10 +8,13 @@
 }
 
 .content {
+    position: relative;
     flex: 1;
     display: flex;
     gap: var(--spacing-xxxl);
+
     &-info {
+        overflow: hidden;
         display: flex;
         flex-direction: column;
         gap: var(--spacing-large);
@@ -22,6 +25,7 @@
     }
 
     &-image {
+        flex: 1;
         position: relative;
         width: 300px;
 
@@ -42,13 +46,17 @@
 
     &-image {
         position: relative;
-        border-radius: 9999px;
+        border-radius: var(--rounded-full);
         overflow: hidden;
         width: 30px;
         height: 30px;
     }
 }
 
+.title {
+    overflow-wrap: break-word;
+    hyphens: manual;
+}
 .footer {
     display: flex;
     justify-content: space-between;
