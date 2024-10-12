@@ -1,12 +1,13 @@
 'use client';
 import { getClientSocket } from '@/sockets/clientSocket';
 import { useEffect, useRef, useState } from 'react';
-import userStyles from '../user.module.scss';
 import { Bell } from 'lucide-react';
 import { cn } from '@/lib/helpers';
-import styles from './notifications.module.scss';
 import { useUpdateEffect } from '@/lib/hooks/use-update-effect';
 import { SOCKET_EV } from '@/lib/constants';
+
+import styles from './notifications.module.scss';
+import actionStyles from '../../actions.module.scss';
 
 export default function Notifications() {
     const [count, setCount] = useState(0);
@@ -45,9 +46,11 @@ export default function Notifications() {
     }, []);
 
     return (
-        <div className={cn(userStyles.circleIcon, styles.button)}>
+        <div className={cn(actionStyles.actionIcon, styles.button)}>
             <div ref={countRef}>
-                {count > 0 && <span className={styles.counter}>{count}</span>}
+                <span className={cn(styles.counter, count && styles.visible)}>
+                    {count}
+                </span>
                 <Bell className={styles.bell} />
             </div>
         </div>

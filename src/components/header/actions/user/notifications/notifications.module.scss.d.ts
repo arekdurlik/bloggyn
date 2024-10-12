@@ -4,3 +4,4 @@ export declare const counter: string;
 export declare const newNotification: string;
 export declare const popUp: string;
 export declare const ring: string;
+export declare const visible: string;

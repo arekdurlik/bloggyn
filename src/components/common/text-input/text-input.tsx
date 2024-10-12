@@ -1,18 +1,31 @@
 'use client';
 
-import { forwardRef, useRef, useState } from 'react';
+import {
+    type ChangeEvent,
+    forwardRef,
+    type InputHTMLAttributes,
+    type MouseEvent,
+    useRef,
+    useState,
+} from 'react';
 import styles from './text-input.module.scss';
 import { cn } from '@/lib/helpers';
+import { X } from 'lucide-react';
 
 type Props = {
+    value: string;
+    onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
     label?: string;
     icon?: React.ReactNode;
-};
+    clearButton?: boolean;
+} & InputHTMLAttributes<HTMLInputElement>;
 
 const TextInput = forwardRef<HTMLInputElement, Props>(
-    ({ label, icon }, ref) => {
+    ({ value, onChange, label, icon, clearButton, ...props }, ref) => {
         const [focused, setFocused] = useState(false);
+        const inputRef = useRef<HTMLInputElement>(null!);
         const focusedViaMouse = useRef(false);
+        const notEmpty = value?.length > 0;
 
         function handleClick() {
             focusedViaMouse.current = true;
@@ -29,19 +42,47 @@ const TextInput = forwardRef<HTMLInputElement, Props>(
             setFocused(false);
         }
 
+        function handleClear(event: MouseEvent<HTMLButtonElement>) {
+            event.stopPropagation();
+            onChange?.({
+                target: { value: '' },
+            } as ChangeEvent<HTMLInputElement>);
+
+            inputRef.current.focus();
+        }
+
         return (
             <div className={styles.wrapper}>
                 {label && <label htmlFor={label}>{label}</label>}
-                <div className={cn(styles.input, focused && styles.focused)}>
+                <div className={cn(styles.inputWrapper, focused && styles.focused)}>
                     {icon && icon}
                     <input
-                        ref={ref}
+                        ref={node => {
+                            node && (inputRef.current = node);
+                            if (typeof ref === 'function') {
+                                ref(node);
+                            } else if (ref) {
+                                ref.current = node;
+                            }
+                        }}
                         id={label}
+                        value={value}
+                        onChange={onChange}
                         type="text"
                         onMouseDown={handleClick}
                         onFocus={handleFocus}
                         onBlur={handleBlur}
+                        {...props}
                     />
+                    {clearButton && notEmpty && (
+                        <button
+                            className={styles.clearButton}
+                            type="button"
+                            onClick={handleClear}
+                        >
+                            <X />
+                        </button>
+                    )}
                 </div>
             </div>
         );

@@ -2,6 +2,7 @@ import { useDropdownContext } from '../../dropdown-menu';
 import styles from './content.module.scss';
 import { useEffect, useRef } from 'react';
 import { useOutsideClick } from '@/lib/hooks/use-outside-click';
+import { cn } from '@/lib/helpers';
 
 type Props = {
     children: React.ReactNode;
@@ -74,7 +75,7 @@ export default function DropdownMenuContent({
 
     return (
         open && (
-            <ul ref={ref} className={`${styles.container} `}>
+            <ul ref={ref} className={cn(styles.container, 'animation--slide-in')}>
                 {children}
             </ul>
         )

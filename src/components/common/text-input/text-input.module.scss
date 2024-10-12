@@ -1,5 +1,7 @@
 
 .wrapper {
+    width: fit-content;
+    min-height: 40px;
     label {
         display: inline-block;
         margin-bottom: var(--spacing-default);
@@ -7,13 +9,17 @@
     }
 }
 
-.input {
+.input-wrapper {
     display: flex;
+    align-items: center;
+    min-height: 40px;
     width: fit-content;
     gap: var(--spacing-large);
-    border-radius: var(--rounded-default);
+    border-radius: var(--rounded-large);
     border: 1px solid var(--border);
     padding: var(--spacing-default) var(--spacing-large);
+    outline-color: transparent;
+    transition: outline-color var(--transition-default), border-color var(--transition-default);
 
     &:focus-within {
         svg {
@@ -31,11 +37,38 @@
 
     svg {
         color: var(--fgColor-subtle);
-        width: 20px;
+        min-width: 20px;
+        height: 20px;
         transition: color var(--transition-fast);
     }
 
     input {
         outline: none;
+        background-color: transparent;
+        color: var(--fgColor-default);
+        transition: color var(--transition-default);
+
+        &::placeholder {
+            transition: color var(--transition-default);
+            color: var(--fgColor-barely-visible);
+        }
+    }
+}
+
+.clear-button {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    border-radius: var(--rounded-full);
+
+
+    padding: var(--spacing-default);
+    transition: var(--control-default-transition);
+
+    &:hover {
+        svg {
+            color: var(--control-default-fgColor-hover);
+        }
+        background-color: var(--control-default-bgColor-hover);
     }
 }

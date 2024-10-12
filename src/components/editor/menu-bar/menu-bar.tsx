@@ -74,7 +74,6 @@ export default function MenuBar() {
                     <button>Aa</button>
                 </div>
                 <div className={styles.buttons}>
-                    <Button onClick={handlePublish}>Publish</Button>
                 </div>
             </div>
         </div>

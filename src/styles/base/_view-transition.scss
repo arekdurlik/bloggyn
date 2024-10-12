@@ -1,3 +1,7 @@
 ::view-transition-group(root) {
     animation-duration: var(--transition-default);
 }
+
+::view-transition-group(header-action) {
+    animation-duration: 2s;
+}

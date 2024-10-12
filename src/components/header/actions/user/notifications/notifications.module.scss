@@ -22,20 +22,28 @@
 
 .counter {
     position: absolute;
-    border-radius: 9999px;
+    border-radius: var(--rounded-full);
     height: 18px;
     min-width: 18px;
     padding: 4px;
-    background-color: rgb(225, 68, 68);
+    background: linear-gradient(45deg, rgb(212, 58, 58), rgb(228, 80, 129));
 
     display: flex;
     justify-content: center;
     align-items: center;
     color: white;
     font-size: 12px;
-    font-weight: 500;
+    font-weight: 400;
 
     transform: translateX(14px) translateY(-14px);
+
+    transition: transform var(--transition-slow);
+    scale: 0;
+    box-shadow: var(--shadow-default);
+}
+
+.visible {
+        scale: 1;
 }
 
 .new-notification {

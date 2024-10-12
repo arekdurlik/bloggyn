@@ -1,0 +1,15 @@
+$breakpoints: (
+  "xs": "max-width: 430px",
+  "sm": "max-width: 568px",
+  "md": "max-width: 750px",
+  "lg": "max-width: 940px",
+  "xl": "max-width: 1024px",
+);
+
+@mixin responsive($size) {
+    $query: map-get($breakpoints, $size);
+
+      @media (#{$query}) {
+        @content;
+    }
+  }

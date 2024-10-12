@@ -39,3 +39,11 @@ svg {
         outline-width: 2px;
     }
 }
+
+a {
+    border-radius: var(--rounded-large);
+}
+
+h1, h2, h3 {
+    color: var(--fgColor-heading);
+}

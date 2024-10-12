@@ -10,6 +10,7 @@
     --transition-fast: var(--transition-theme);
     --transition-default: var(--transition-theme);
     --transition-slow: var(--transition-theme);
+    --control-default-transition: var(--transition-theme)
 
     h1, h2, h3, h4, p, span {
         transition: color var(--transition-theme);

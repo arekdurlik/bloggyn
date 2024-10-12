@@ -7,13 +7,16 @@
     align-items: center;
 
     padding: var(--spacing-default) var(--spacing-xl);
-    border-radius: var(--rounded-large);
+    border-radius: var(--rounded-full);
     border: 1px solid var(--control-default-borderColor-rest);
-    outline-offset: 1px;
-
     height: 40px;
     width: fit-content;
     min-width: 100px;
+    transition: var(--transition-default);
+}
+
+.inverted {
+    @include control-inverted;
 }
 
 .content {

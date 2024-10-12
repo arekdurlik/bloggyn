@@ -1,0 +1,12 @@
+@import 'src/styles/mixins';
+
+.container {
+    margin-left: var(--spacing-large);
+    display: flex;
+    gap: var(--spacing-large);
+    transition: margin-left var(--transition-default);
+
+    @include responsive('lg') {
+        margin-left: 0;
+    }
+}

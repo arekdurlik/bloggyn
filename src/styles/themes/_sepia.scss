@@ -2,9 +2,10 @@
     --bgColor-default: var(--color-sepia);
     --header-bgColor: var(--color-sepia);
 
-    --fgColor-default: hsl(40, 10%, 20%);
-    --fgColor-subtle: hsl(35, 10%, 35%);
-    --fgColor-barely-visible: hsl(35, 21%, 65%);
+    --fgColor-heading: hsl(35, 20%, 25%);
+    --fgColor-default: hsl(35, 20%, 32%);
+    --fgColor-subtle: hsl(35, 20%, 40%);
+    --fgColor-barely-visible: hsl(35, 25%, 60%);
     --control-default-fgColor: black;
     --border: color-mix(in hsl, #000, var(--color-sepia) 89%);
 }

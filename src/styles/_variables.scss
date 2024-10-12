@@ -20,14 +20,14 @@
 
     --color-light: var(--color-white);
     --color-dark:  var(--color-black);
-    --color-brand: hsl(241, 40%, 45%);
+    --color-brand: hsl(241, 40%, 35%);
     --color-sepia: #dfcdad;
 
     --color-error:                  hsl(0, 70%, 50%);
     --color-success:                hsl(138, 70%, 50%);
 
     --bgColor-default:              var(--color-light);
-    --text-heading:                 var(--color-black);
+    --fgColor-heading:                 var(--color-black);
     --fgColor-default:              var(--color-gray-20);
     --fgColor-subtle:                  var(--color-gray-50);
     --fgColor-barely-visible:          var(--color-gray-80);
@@ -39,6 +39,10 @@
     --text-h3: 1.25rem;
     --text-h2: 1.5rem;
     --text-h1: 2rem;
+
+    --breakpoint-small: 768px;
+    --breakpoint-medium: 1024px;
+    --breakpoint-large: 1440px;
 
     --shadow-xsmall: 0px 1px 0px 0px #1f23281a;
     --shadow-small: 0px 1px 0px 0px #1f23280a;
@@ -65,6 +69,7 @@
     --rounded-small: 2.5px;
     --rounded-default: 5px;
     --rounded-large: 10px;
+    --rounded-xl: 20px;
     --rounded-full: 9999px;
 
     --text-small: 0.8rem;
@@ -74,8 +79,8 @@
     --outline-color: black;
     --outline: 2px solid var(--outline-color);
 
-    --control-default-fgColor-rest: var(--color-gray-30);
-    --control-default-fgColor-hover: var(--color-gray-30);
+    --control-default-fgColor-rest: var(--fgColor-default);
+    --control-default-fgColor-hover: var(--fgColor-default);
     --control-default-bgColor-rest: var(--background);
     --control-default-bgColor-hover: var(--color-gray-95);
     --control-default-bgColor-active: var(--color-gray-90);
@@ -83,5 +88,14 @@
     --control-default-borderColor-hover: var(--color-gray-80);
     --control-default-borderColor: var(--border);
     --control-default-transition: color var(--transition-default), background-color var(--transition-default), border-color var(--transition-default);
+
+    --control-inverted-fgColor-rest: var(--color-gray-95);
+    --control-inverted-fgColor-hover: var(--color-gray-95);
+    --control-inverted-bgColor-disabled: var(--color-gray-40);
+    --control-inverted-bgColor-rest: var(--color-black);
+    --control-inverted-bgColor-hover: var(--color-gray-20);
+    --control-inverted-bgColor-active: var(--color-gray-30);
+    --control-inverted-borderColor-rest: var(--control-inverted-bgColor-rest);
+    --control-inverted-borderColor-hover: var(--control-inverted-bgColor-rest);
 
 }

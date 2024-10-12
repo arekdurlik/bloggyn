@@ -1,3 +1,11 @@
+.trigger {
+    border-radius: 50%;
+
+    & > div {
+        border: none;
+    }
+}
+
 .image {
     transition: var(--transition-default);
     &:hover {

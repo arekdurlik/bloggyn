@@ -8,6 +8,8 @@ $maxVisibleHalf: calc($maxVisible / 2);
     display: flex;
     width: round(100%, 1px);
     overflow: hidden;
+    min-width: 100px;
+    z-index: 1;
     cursor: pointer;
 
     transform: translateY(10px);
@@ -16,7 +18,7 @@ $maxVisibleHalf: calc($maxVisible / 2);
     border: 1px solid var(--border);
     height: $collapsed;
 
-    transition: height var(--transition-theme);
+    transition: height var(--transition-theme), border-color var(--transition-theme);
 
     &::before {
         /* content: ''; */

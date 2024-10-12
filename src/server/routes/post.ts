@@ -5,6 +5,8 @@ import slugify from 'slug';
 import { desc, eq, like, sql } from 'drizzle-orm';
 import { type inferRouterOutputs, TRPCError } from '@trpc/server';
 import { stripHtml } from 'string-strip-html';
+import { getServerSocket } from '@/sockets/serverSocket';
+import { SOCKET_EV } from '@/lib/constants';
 
 export type PostRouterOutput = inferRouterOutputs<typeof postRouter>;
 

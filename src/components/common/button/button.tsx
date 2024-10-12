@@ -1,33 +1,42 @@
 import { type CSSProperties, type ButtonHTMLAttributes } from 'react';
 import styles from './button.module.scss';
 import { type LinkProps } from 'next/link';
-import TransitionLink from '@/components/common/page-transition/transition-link';
 import { Link } from 'next-view-transitions';
+import { cn } from '@/lib/helpers';
 
-export default function Button({ className, ...props }: ButtonHTMLAttributes<HTMLButtonElement>) {
+type ButtonProps = {
+    inverted?: boolean;
+} & ButtonHTMLAttributes<HTMLButtonElement>;
+
+export default function Button({ inverted, className, ...props }: ButtonProps) {
     return (
-        <button className={`${styles.button} ${className}`} {...props}>
+        <button
+            className={cn(
+                styles.button,
+                inverted && styles.inverted,
+                className
+            )}
+            {...props}
+        >
             <span className={styles.content}>{props.children}</span>
         </button>
     );
 }
 
 type ButtonLinkProps = {
-    transitionId?: string;
+    inverted?: boolean;
     style?: CSSProperties;
+    className?: string;
     children?: React.ReactNode;
 } & LinkProps;
 
-export function ButtonLink({ transitionId, ...props }: ButtonLinkProps) {
-    const children = <span className={styles.content}>{props.children}</span>;
-
-    return transitionId ? (
-        <TransitionLink id={transitionId} className={styles.button} {...props}>
-            {children}
-        </TransitionLink>
-    ) : (
-        <Link className={styles.button} {...props}>
-            {children}
+export function ButtonLink({ inverted, className, ...props }: ButtonLinkProps) {
+    return (
+        <Link
+            className={cn(styles.button, inverted && styles.inverted, className)}
+            {...props}
+        >
+            <span className={styles.content}>{props.children}</span>
         </Link>
     );
 }

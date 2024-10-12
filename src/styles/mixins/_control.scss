@@ -1,15 +1,51 @@
 @mixin control {
+    cursor: pointer;
+
     background-color: var(--control-default-bgColor-rest);
     color: var(--control-default-fgColor-rest);
     stroke: var(--control-default-fgColor-rest);
     border-color: var(--control-default-borderColor-rest);
-    transition: var(--control-default-transition);
-    cursor: pointer;
 
     &:hover {
         background-color: var(--control-default-bgColor-hover);
         color: var(--control-default-fgColor-hover);
         stroke: var(--control-default-fgColor-hover);
         border-color: var(--control-default-borderColor-hover);
+    }
+
+    &:active {
+        background-color: var(--control-default-bgColor-active);
+    }
+
+    &:disabled {
+        cursor: default;
+        background-color: var(--control-inverted-bgColor-hover);
+    }
+}
+
+@mixin control-inverted {
+    @include control;
+
+    background-color: var(--control-inverted-bgColor-rest);
+    color: var(--control-inverted-fgColor-rest);
+    stroke: var(--control-inverted-fgColor-rest);
+    border-color: var(--control-inverted-borderColor-rest);
+
+    &:hover {
+        background-color: var(--control-inverted-bgColor-hover);
+        color: var(--control-inverted-fgColor-hover);
+        stroke: var(--control-inverted-fgColor-hover);
+        border-color: var(--control-inverted-borderColor-hover);
+    }
+
+    &:active {
+        background-color: var(--control-inverted-bgColor-active);
+    }
+
+    &:disabled {
+        background-color: var(--color-gray-50);
+        border-color: var(--color-gray-50);
+
+        color: var(--color-gray-80);
     }
 }

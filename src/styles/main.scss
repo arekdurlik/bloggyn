@@ -1,7 +1,8 @@
 @use 'variables';
 
+@use 'base/animations';
 @use 'base/reset';
-@use 'base/body';
+@use 'base/base';
 @use 'base/typography';
 @use 'base/page-transition';
 @use 'base/view-transition';

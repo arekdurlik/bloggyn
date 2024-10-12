@@ -1,0 +1,52 @@
+@import 'src/styles/mixins';
+
+.action-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: border-color var(--transition-default), color var(--transition-default);
+
+    &.no-border {
+        border: none;
+    }
+}
+
+.center-action {
+    display: flex;
+    align-items: center;
+}
+
+a.new-post {
+
+    & span > span {
+        transition: width var(--transition-default), opacity var(--transition-default);
+        width: 75px;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+
+    @include responsive('lg') {
+        min-width: 0px;
+        width: 40px;
+        padding: 5px;
+
+        & > span {
+            overflow: hidden;
+            gap: 0;
+        }
+
+        svg {
+            min-width: 20px;
+        }
+
+        span > span {
+            opacity: 0;
+            width: 0px;
+        }
+    }
+}

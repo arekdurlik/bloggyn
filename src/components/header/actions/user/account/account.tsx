@@ -5,24 +5,23 @@ import {
     DropdownMenuTrigger,
 } from '@/components/common/dropdown-menu';
 import { LogOut, Settings } from 'lucide-react';
-import { signOut, useSession } from 'next-auth/react';
+import { signOut } from 'next-auth/react';
 import Image from 'next/image';
 import { cn } from '@/lib/helpers';
 
 import styles from './account.module.scss';
-import userStyles from './../user.module.scss';
+import actionStyles from './../../actions.module.scss';
+import { type Session } from 'next-auth';
 
-export default function Account() {
-    const { data } = useSession();
-
+export default function Account({ session }: { session: Session }) {
     return (
         <DropdownMenu>
-            <DropdownMenuTrigger>
-                <div className={cn(userStyles.circleIcon, userStyles.noBorder)}>
-                    {data?.user.image && (
+            <DropdownMenuTrigger className={styles.trigger}>
+                <div className={cn(actionStyles.actionIcon)}>
+                    {session.user.image && (
                         <Image
                             className={styles.image}
-                            src={data.user.image}
+                            src={session.user.image}
                             width={40}
                             height={40}
                             alt="Profile picture"
