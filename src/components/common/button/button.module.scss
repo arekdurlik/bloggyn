@@ -12,7 +12,7 @@
     height: 40px;
     width: fit-content;
     min-width: 100px;
-    transition: var(--transition-default);
+    transition: border-color var(--transition-default), color var(--transition-default), background-color var(--transition-default);
 }
 
 .inverted {

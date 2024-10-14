@@ -1,4 +1,5 @@
 export declare const active: string;
+export declare const animationSlideIn: string;
 export declare const articleContent: string;
 export declare const isEditorEmpty: string;
 export declare const loaderContainer: string;

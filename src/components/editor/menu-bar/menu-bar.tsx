@@ -4,7 +4,6 @@ import { useEffect, useRef } from 'react';
 import styles from './menu-bar.module.scss';
 import { Bold, Italic } from 'lucide-react';
 import { useHeader } from '@/lib/hooks/use-header';
-import Button from '@/components/common/button';
 import { useEditorStore } from '../store';
 import { trpc } from '@/trpc/client';
 

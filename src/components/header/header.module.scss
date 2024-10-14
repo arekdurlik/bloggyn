@@ -17,6 +17,16 @@
 
     view-transition-name: header;
     contain: layout;
+
+    &:before {
+        content: '';
+        position: absolute;
+        background-color: var(--border);
+        bottom: -1px;
+        width: 100%;
+        height: 1px;
+        z-index: 4;
+    }
 }
 
 .content {

@@ -2,6 +2,7 @@
 
 import {
     type ChangeEvent,
+    type FocusEvent,
     forwardRef,
     type InputHTMLAttributes,
     type MouseEvent,
@@ -11,19 +12,37 @@ import {
 import styles from './text-input.module.scss';
 import { cn } from '@/lib/helpers';
 import { X } from 'lucide-react';
+import { on } from 'events';
 
 type Props = {
     value: string;
-    onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
     label?: string;
+    id?: string;
     icon?: React.ReactNode;
     clearButton?: boolean;
+    onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
+    onFocus?: (event: FocusEvent<HTMLElement>) => void;
+    onBlur?: (event: FocusEvent<HTMLElement>) => void;
 } & InputHTMLAttributes<HTMLInputElement>;
 
 const TextInput = forwardRef<HTMLInputElement, Props>(
-    ({ value, onChange, label, icon, clearButton, ...props }, ref) => {
+    (
+        {
+            value,
+            onChange,
+            onFocus,
+            onBlur,
+            label,
+            id,
+            icon,
+            clearButton,
+            ...props
+        },
+        ref
+    ) => {
         const [focused, setFocused] = useState(false);
         const inputRef = useRef<HTMLInputElement>(null!);
+        const wrapperRef = useRef<HTMLDivElement>(null!);
         const focusedViaMouse = useRef(false);
         const notEmpty = value?.length > 0;
 
@@ -35,11 +54,16 @@ const TextInput = forwardRef<HTMLInputElement, Props>(
             if (!focusedViaMouse.current) {
                 setFocused(true);
             }
+            focusedViaMouse.current = false;
         }
 
-        function handleBlur() {
-            focusedViaMouse.current = false;
+        function handleBlur(event: FocusEvent<HTMLElement>) {
+            event.stopPropagation();
             setFocused(false);
+
+            if (!wrapperRef.current.contains(event.relatedTarget)) {
+                onBlur?.(event);
+            }
         }
 
         function handleClear(event: MouseEvent<HTMLButtonElement>) {
@@ -48,13 +72,23 @@ const TextInput = forwardRef<HTMLInputElement, Props>(
                 target: { value: '' },
             } as ChangeEvent<HTMLInputElement>);
 
+            focusedViaMouse.current = true;
             inputRef.current.focus();
         }
 
         return (
-            <div className={styles.wrapper}>
+            <div
+                ref={wrapperRef}
+                onMouseDown={handleClick}
+                className={styles.wrapper}
+            >
                 {label && <label htmlFor={label}>{label}</label>}
-                <div className={cn(styles.inputWrapper, focused && styles.focused)}>
+                <div
+                    className={cn(
+                        styles.inputWrapper,
+                        focused && styles.focused
+                    )}
+                >
                     {icon && icon}
                     <input
                         ref={node => {
@@ -65,12 +99,14 @@ const TextInput = forwardRef<HTMLInputElement, Props>(
                                 ref.current = node;
                             }
                         }}
-                        id={label}
+                        id={label ?? id}
                         value={value}
-                        onChange={onChange}
                         type="text"
-                        onMouseDown={handleClick}
-                        onFocus={handleFocus}
+                        onChange={onChange}
+                        onFocus={e => {
+                            handleFocus();
+                            onFocus?.(e);
+                        }}
                         onBlur={handleBlur}
                         {...props}
                     />
@@ -78,7 +114,10 @@ const TextInput = forwardRef<HTMLInputElement, Props>(
                         <button
                             className={styles.clearButton}
                             type="button"
+                            onMouseDown={handleClick}
                             onClick={handleClear}
+                            onFocus={handleFocus}
+                            onBlur={handleBlur}
                         >
                             <X />
                         </button>

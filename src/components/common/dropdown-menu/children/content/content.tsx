@@ -3,6 +3,7 @@ import styles from './content.module.scss';
 import { useEffect, useRef } from 'react';
 import { useOutsideClick } from '@/lib/hooks/use-outside-click';
 import { cn } from '@/lib/helpers';
+import AnimatedUnmount from '@/components/common/animate-unmount/animate-unmount';
 
 type Props = {
     children: React.ReactNode;
@@ -24,26 +25,27 @@ export default function DropdownMenuContent({
         }
     });
 
-    useEffect(() => {
-        function calculatePosition() {
-            if (!open || !ref.current || !triggerRef.current) return;
+    function calculatePosition() {
+        if (!ref.current || !triggerRef.current) return;
 
-            const trigger = triggerRef.current;
+        const trigger = triggerRef.current;
 
-            let alignment = 0;
+        let alignment = 0;
 
-            if (align === 'center') {
-                alignment =
-                    -(ref.current.offsetWidth - trigger.offsetWidth) / 2;
-            } else if (align === 'right') {
-                alignment = -(ref.current.offsetWidth - trigger.offsetWidth);
-            }
-
-            const left = trigger.offsetLeft + alignment;
-            const right = trigger.offsetTop + trigger.offsetHeight + offsetTop;
-            ref.current.style.left = left + 'px';
-            ref.current.style.top = right + 'px';
+        if (align === 'center') {
+            alignment = -(ref.current.offsetWidth - trigger.offsetWidth) / 2;
+        } else if (align === 'right') {
+            alignment = -(ref.current.offsetWidth - trigger.offsetWidth);
         }
+
+        const left = trigger.offsetLeft + alignment;
+        const right = trigger.offsetTop + trigger.offsetHeight + offsetTop;
+        ref.current.style.left = left + 'px';
+        ref.current.style.top = right + 'px';
+    }
+
+    useEffect(() => {
+        if (!open) return;
 
         calculatePosition();
 
@@ -74,10 +76,13 @@ export default function DropdownMenuContent({
     }, [open, ref]);
 
     return (
-        open && (
-            <ul ref={ref} className={cn(styles.container, 'animation--slide-in')}>
+        <AnimatedUnmount mounted={open} onRender={calculatePosition}>
+            <ul
+                ref={ref}
+                className={cn(styles.container, 'animation--slide-in')}
+            >
                 {children}
             </ul>
-        )
+        </AnimatedUnmount>
     );
 }

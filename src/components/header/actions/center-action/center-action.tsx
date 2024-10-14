@@ -1,65 +1,35 @@
 import { usePathname } from 'next/navigation';
 import styles from './center-action.module.scss';
-import { BookCheck } from 'lucide-react';
+import { BookCheck, SearchIcon } from 'lucide-react';
 import Button from '@/components/common/button';
 import { cn } from '@/lib/helpers';
-import { type FocusEvent, Fragment, useEffect, useRef, useState } from 'react';
-import Search from '../search/search';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-} from '@/components/common/dropdown-menu';
+import { Fragment } from 'react';
+import SearchBar from './search/search-bar/search-bar';
+import { useSearchState } from '@/stores/search';
+import Search from './search';
 
 export default function CenterAction() {
-    const [focused, setFocused] = useState(false);
-    const [query, setQuery] = useState('');
     const pathname = usePathname();
-    const focusedViaMouse = useRef(false);
-    const ref = useRef<HTMLDivElement>(null!);
-
-    function handleClick() {
-        focusedViaMouse.current = true;
-    }
-
-    function handleFocus() {
-        if (!focusedViaMouse.current) {
-            setFocused(true);
-        }
-    }
-
-    function handleBlur(event: FocusEvent<HTMLDivElement>) {
-        if (!ref.current.contains(event.relatedTarget)) {
-            focusedViaMouse.current = false;
-            setFocused(false);
-        }
-    }
-
+    const api = useSearchState(state => state.api);
     return (
         <Fragment>
             <div
-                ref={ref}
                 className={cn(
                     styles.wrapper,
-                    pathname === '/new-post' && styles.newPost,
-                    focused && styles.focused
+                    pathname === '/new-post' && styles.newPost
                 )}
-                onMouseDown={handleClick}
-                onFocus={handleFocus}
-                onBlur={handleBlur}
             >
                 {pathname === '/new-post' ? (
-                    <div className={cn(styles.container, styles.publish)}>
+                    <div className={styles.container}>
                         <Button>
                             <BookCheck />
                             Publish
                         </Button>
                     </div>
                 ) : (
-                    <Fragment>
-                        <div className={cn(styles.container, styles.search)}>
-                            <Search query={query} setQuery={setQuery} />
-                        </div>
-                    </Fragment>
+                    <div className={cn(styles.container, styles.search)}>
+                        <Search />
+                    </div>
                 )}
             </div>
         </Fragment>

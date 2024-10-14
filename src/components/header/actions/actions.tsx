@@ -9,7 +9,7 @@ import CenterAction from './center-action/center-action';
 import { cn } from '@/lib/helpers';
 
 import styles from './actions.module.scss';
-import SearchResults from '../search-results/search-results';
+import SearchResults from './center-action/search/search-results/search-results';
 
 export default function Actions() {
     const { data: session } = useSession();
@@ -18,7 +18,6 @@ export default function Actions() {
     return (
         <div className={cn(shared.buttonGroup, styles.centerAction)}>
             <CenterAction/>
-            <SearchResults />
             {session?.user ? (
                 <Fragment>
                     {pathname !== '/new-post' && (

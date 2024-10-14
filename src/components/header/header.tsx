@@ -8,8 +8,6 @@ import { Link } from 'next-view-transitions';
 
 import styles from './header.module.scss';
 import Actions from './actions/actions';
-import { DropdownMenu, DropdownMenuContent } from '../common/dropdown-menu';
-import SearchResults from './search-results/search-results';
 
 export default function Header({ theme }: { theme?: string }) {
     const ref = useRef<HTMLDivElement>(null);
@@ -27,7 +25,6 @@ export default function Header({ theme }: { theme?: string }) {
                     </div>
                     <Actions />
                 </div>
-
             </nav>
         </Fragment>
     );

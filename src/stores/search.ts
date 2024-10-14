@@ -1,14 +1,14 @@
-import { RefObject } from 'react';
 import { create } from 'zustand';
 
 type SearchState = {
     active: boolean;
     query: string;
-    ignoreOnOutsideClick: RefObject<HTMLElement>[];
     api: {
         setActive: (active: boolean) => void;
+        activate: () => void;
+        deactivate: () => void;
+        toggleActive: () => void;
         setQuery: (query: string) => void;
-        ignoreOnOutsideClick: (elem: RefObject<HTMLElement>) => void;
     };
 };
 export const useSearchState = create<SearchState>((set, get) => ({
@@ -17,10 +17,9 @@ export const useSearchState = create<SearchState>((set, get) => ({
     ignoreOnOutsideClick: [],
     api: {
         setActive: active => set({ active }),
+        activate: () => set({ active: true }),
+        deactivate: () => set({ active: false }),
+        toggleActive: () => set({ active: !get().active }),
         setQuery: query => set({ query }),
-        ignoreOnOutsideClick: elem =>
-            set({
-                ignoreOnOutsideClick: [...get().ignoreOnOutsideClick, elem],
-            }),
     },
 }));
