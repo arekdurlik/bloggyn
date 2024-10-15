@@ -28,7 +28,10 @@ export const posts = createTable('post', {
     createdById: varchar('created_by', { length: 255 })
         .notNull()
         .references(() => users.id),
-    createdAt: timestamp('created_at', { withTimezone: true })
+    createdAt: timestamp('created_at', {
+        mode: 'string',
+        withTimezone: true,
+    })
         .default(sql`CURRENT_TIMESTAMP`)
         .notNull(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).$onUpdate(

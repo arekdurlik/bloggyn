@@ -1,0 +1,1 @@
+export const FEED_INFINITE_SCROLL_LIMIT = 5;

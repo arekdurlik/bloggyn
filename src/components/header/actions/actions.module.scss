@@ -9,7 +9,7 @@
     display: grid;
     place-items: center;
     cursor: pointer;
-    transition: border-color var(--transition-default), color var(--transition-default);
+    transition: border-color var(--transition-default), color var(--transition-default), background-color var(--transition-default);
 
     &.no-border {
         border: none;

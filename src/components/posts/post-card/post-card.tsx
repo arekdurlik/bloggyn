@@ -41,7 +41,7 @@ export default function PostCard({
             </div>
             <div className={styles.footer}>
                 <div className={styles.footerLeft}>
-                    <span>{post.createdAt}</span>
+                    <span>{post.createdAtFormatted}</span>
                     <span>{post.readTime} min read</span>
                     <span className={styles.withIcon}>
                         <Heart />3

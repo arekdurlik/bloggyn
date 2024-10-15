@@ -2,11 +2,9 @@ import { procedure, protectedProcedure, router } from '@/trpc';
 import { z } from 'zod';
 import { posts, users } from '../db/schema';
 import slugify from 'slug';
-import { desc, eq, like, sql } from 'drizzle-orm';
+import { and, desc, eq, like, lt, lte, or, sql } from 'drizzle-orm';
 import { type inferRouterOutputs, TRPCError } from '@trpc/server';
 import { stripHtml } from 'string-strip-html';
-import { getServerSocket } from '@/sockets/serverSocket';
-import { SOCKET_EV } from '@/lib/constants';
 
 export type PostRouterOutput = inferRouterOutputs<typeof postRouter>;
 
@@ -14,29 +12,76 @@ const SUMMARY_LENGTH = 130;
 const READ_TIME = 225;
 
 export const postRouter = router({
-    getPosts: procedure.query(async ({ ctx: { db } }) => {
-        try {
-            return await db
-                .select({
-                    title: posts.title,
-                    slug: posts.slug,
-                    summary: sql<string>`CONCAT(TRIM(SUBSTRING(${posts.content}, 4, ${SUMMARY_LENGTH})), '...')`,
-                    createdAt: sql<string>`to_char(${posts.createdAt}, 'Mon DD')`,
-                    readTime: posts.readTime,
-                    avatar: users.image,
-                    name: users.name,
-                })
-                .from(posts)
-                .leftJoin(users, eq(posts.createdById, users.id))
-                .orderBy(desc(posts.createdAt))
-                .limit(10);
-        } catch {
-            throw new TRPCError({
-                message: 'Error getting posts',
-                code: 'INTERNAL_SERVER_ERROR',
-            });
-        }
-    }),
+    getPosts: procedure
+        .input(
+            z.object({
+                query: z.string().nullish(),
+                limit: z.number().min(1).max(50).nullish(),
+                cursor: z
+                    .object({
+                        id: z.number(),
+                        createdAt: z.string(),
+                    })
+                    .nullish(), // <-- "cursor" needs to exist, but can be any type
+            })
+        )
+        .query(async ({ input, ctx: { db } }) => {
+            const limit = input.limit ?? 10;
+            const { cursor, query } = input;
+
+            try {
+                const items = await db
+                    .select({
+                        id: posts.id,
+                        title: posts.title,
+                        slug: posts.slug,
+                        summary: sql<string>`CONCAT(TRIM(SUBSTRING(${posts.content}, 4, ${SUMMARY_LENGTH})), '...')`,
+                        createdAt: posts.createdAt,
+                        createdAtFormatted: sql<string>`to_char(${posts.createdAt}, 'Mon DD')`,
+                        readTime: posts.readTime,
+                        avatar: users.image,
+                        name: users.name,
+                    })
+                    .from(posts)
+                    .where(
+                        and(
+                            query ? like(posts.title, `%${query}%`) : undefined,
+                            cursor
+                                ? or(
+                                      lte(posts.createdAt, cursor.createdAt),
+                                      and(
+                                          eq(posts.createdAt, cursor.createdAt),
+                                          lt(posts.id, cursor.id)
+                                      )
+                                  )
+                                : undefined
+                        )
+                    )
+                    .leftJoin(users, eq(posts.createdById, users.id))
+                    .orderBy(desc(posts.createdAt), desc(posts.id))
+                    .limit(limit + 1);
+
+                let nextCursor: typeof cursor | undefined = undefined;
+
+                if (items.length > limit) {
+                    const nextItem = items.pop();
+                    nextCursor = {
+                        id: nextItem!.id,
+                        createdAt: nextItem!.createdAt.toString(),
+                    };
+                }
+
+                return {
+                    items,
+                    nextCursor,
+                };
+            } catch {
+                throw new TRPCError({
+                    message: 'Error getting posts',
+                    code: 'INTERNAL_SERVER_ERROR',
+                });
+            }
+        }),
 
     submitPost: protectedProcedure
         .input(

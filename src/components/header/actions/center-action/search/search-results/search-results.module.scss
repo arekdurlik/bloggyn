@@ -10,7 +10,7 @@
 .wrapper {
     position: relative;
     top: 100%;
-    padding: var(--spacing-xxl);
+    padding: var(--spacing-large);
     margin: 0 auto;
     display: flex;
     flex-direction: column;
@@ -73,8 +73,11 @@
     border: 1px solid var(--border);
     border-radius: var(--rounded-xl);
     min-height: 80px;
-    width: 600px;
+    width: 400px;
     max-width: 100%;
     margin: 0 auto;
     box-shadow: var(--shadow-large);
+    overflow: hidden;
+
+    padding: var(--spacing-large);
 }

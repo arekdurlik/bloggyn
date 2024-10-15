@@ -12,7 +12,7 @@
     height: 40px;
     width: fit-content;
     min-width: 100px;
-    transition: border-color var(--transition-default), color var(--transition-default), background-color var(--transition-default);
+    transition: border-color var(--transition-default), background-color var(--transition-default);
 }
 
 .inverted {
@@ -24,4 +24,5 @@
     justify-content: center;
     align-items: center;
     gap: var(--spacing-large);
+    transition: color var(--transition-default);
 }

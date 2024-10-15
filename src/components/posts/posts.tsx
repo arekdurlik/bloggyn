@@ -3,15 +3,31 @@
 import { trpc } from '@/trpc/client';
 import PostCard from './post-card';
 import styles from './posts.module.scss';
-export default function Posts() {
-    const posts = trpc.getPosts.useQuery();
+import { useRef } from 'react';
+import { useInView } from '@/lib/hooks/use-in-view';
+import { FEED_INFINITE_SCROLL_LIMIT } from '@/lib/config';
 
-    if (!posts.data) return null;
+export default function Posts() {
+    const { data: postsRaw, fetchNextPage } = trpc.getPosts.useInfiniteQuery(
+        { limit: FEED_INFINITE_SCROLL_LIMIT },
+        {
+            getNextPageParam: lastPage => lastPage.nextCursor,
+            refetchOnMount: false,
+        }
+    );
+
+    const posts = postsRaw?.pages.flatMap(page => page.items) ?? [];
+    const trigger = useRef<HTMLHRElement>(null!);
+    useInView(trigger, fetchNextPage, { rootMargin: '200px'});
+
+    if (!posts) return null;
+
     return (
         <div className={styles.container}>
-            {posts.data.map(post => (
+            {posts.map(post => (
                 <PostCard key={post.slug} post={post} />
             ))}
+            <hr ref={trigger} />
         </div>
     );
 }
