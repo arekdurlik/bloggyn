@@ -11,7 +11,7 @@ import { OVERLAY_ID } from '@/lib/constants';
 import { ViewTransitions } from 'next-view-transitions';
 import { cn } from '@/lib/helpers';
 import shared from '@/styles/shared.module.scss';
-import SearchResults from '@/components/header/search-results/search-results';
+import { redirect, useRouter } from 'next/navigation';
 
 export const metadata: Metadata = {
     title: 'bloggyn',

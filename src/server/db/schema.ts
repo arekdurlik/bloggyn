@@ -44,13 +44,11 @@ export const users = createTable('user', {
         .notNull()
         .primaryKey()
         .$defaultFn(() => crypto.randomUUID()),
+    username: varchar('username', { length: 36 }),
     name: varchar('name', { length: 255 }),
     email: varchar('email', { length: 255 }).notNull(),
-    emailVerified: timestamp('email_verified', {
-        mode: 'date',
-        withTimezone: true,
-    }).default(sql`CURRENT_TIMESTAMP`),
     image: varchar('image', { length: 255 }),
+    cover_image: varchar('cover_image', { length: 255 }),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({

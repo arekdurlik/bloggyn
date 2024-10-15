@@ -1,6 +1,5 @@
 import { useSession } from 'next-auth/react';
 import User from './user/user';
-import shared from '@/styles/shared.module.scss';
 import { usePathname } from 'next/navigation';
 import { Fragment } from 'react';
 import { ButtonLink } from '@/components/common/button';
@@ -9,7 +8,7 @@ import CenterAction from './center-action/center-action';
 import { cn } from '@/lib/helpers';
 
 import styles from './actions.module.scss';
-import SearchResults from './center-action/search/search-results/search-results';
+import shared from '@/styles/shared.module.scss';
 
 export default function Actions() {
     const { data: session } = useSession();
@@ -17,7 +16,7 @@ export default function Actions() {
 
     return (
         <div className={cn(shared.buttonGroup, styles.centerAction)}>
-            <CenterAction/>
+            <CenterAction />
             {session?.user ? (
                 <Fragment>
                     {pathname !== '/new-post' && (
@@ -29,7 +28,10 @@ export default function Actions() {
                     <User session={session} />
                 </Fragment>
             ) : (
-                <ButtonLink href="/sign-in">Sign in</ButtonLink>
+                <div className={shared.buttonGroup}>
+                    <ButtonLink href="/sign-in">Sign in</ButtonLink>
+                    <ButtonLink href="/sign-up" inverted>Join</ButtonLink>
+                </div>
             )}
         </div>
     );

@@ -8,6 +8,7 @@ import { type Adapter } from 'next-auth/adapters';
 import { db } from '@/server/db';
 import { accounts, users } from '@/server/db/schema';
 import GitHubProvider from 'next-auth/providers/github';
+import { isNotNull } from 'drizzle-orm';
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -35,18 +36,40 @@ declare module 'next-auth' {
  *
  * @see https://next-auth.js.org/configuration/options
  */
+
 export const authOptions: NextAuthOptions = {
+    pages: {
+        signIn: '/sign-in',
+        error: '/sign-in',
+        newUser: '/complete-sign-up',
+    },
     session: {
         strategy: 'jwt',
     },
     callbacks: {
-        session: ({ session, token }) => ({
-            ...session,
-            user: {
-                ...session.user,
-                id: token.sub,
-            },
-        }),
+        jwt: async ({ token, trigger, session }) => {
+            if (trigger === 'update' && session.onboarded === true) {
+                token.onboarded = true;
+            }
+
+            if (token.username === undefined) {
+                const res = await db.query.users.findFirst({
+                    where: isNotNull(users.username),
+                });
+                token.username = res?.username;
+            }
+            return token;
+        },
+        session: ({ session, token }) => {
+            return {
+                ...session,
+                user: {
+                    ...session.user,
+                    id: token.sub,
+                    username: token.username,
+                },
+            };
+        },
     },
     adapter: DrizzleAdapter(db, {
         usersTable: users,
