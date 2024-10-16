@@ -1,16 +1,26 @@
 import { usePathname } from 'next/navigation';
 import styles from './center-action.module.scss';
-import { BookCheck, SearchIcon } from 'lucide-react';
+import { BookCheck } from 'lucide-react';
 import Button from '@/components/common/button';
 import { cn } from '@/lib/helpers';
 import { Fragment } from 'react';
-import SearchBar from './search/search-bar/search-bar';
-import { useSearchState } from '@/stores/search';
 import Search from './search';
+import { useEditorStore } from '@/components/editor/store';
+import { trpc } from '@/trpc/client';
 
 export default function CenterAction() {
     const pathname = usePathname();
-    const api = useSearchState(state => state.api);
+    const editorState = useEditorStore();
+    const submitPost = trpc.submitPost.useMutation();
+
+    function handlePublish() {
+        const content = editorState.editor?.getHTML();
+
+        if (content) {
+            submitPost.mutate({ ...editorState.data, content });
+        }
+    }
+
     return (
         <Fragment>
             <div
@@ -21,7 +31,7 @@ export default function CenterAction() {
             >
                 {pathname === '/new-post' ? (
                     <div className={styles.container}>
-                        <Button>
+                        <Button onClick={handlePublish}>
                             <BookCheck />
                             Publish
                         </Button>

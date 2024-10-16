@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 
 const allowedWithoutCompletedSignUp = [
-    '/complete-sign-up',
+    '/onboarding',
     '/sign-up',
     '/sign-in',
     '/api/auth/signout',
@@ -29,7 +29,7 @@ export async function middleware(request: NextRequest) {
                 )
             ) {
                 return NextResponse.redirect(
-                    new URL('/complete-sign-up', request.url),
+                    new URL('/onboarding', request.url),
                     {
                         headers: request.headers,
                     }

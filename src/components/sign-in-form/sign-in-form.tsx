@@ -8,7 +8,7 @@ import { signIn } from 'next-auth/react';
 export default function SignInForm() {
     return (
         <div className={styles.form}>
-            <h2 className={styles.header}>Welcome back!</h2>
+            <h2 className={styles.header}>Sign in</h2>
 
             <Button onClick={() => signIn('github', { callbackUrl: '/' })}>
                 <Github />

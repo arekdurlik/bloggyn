@@ -11,8 +11,8 @@
     & > * > * {
         width: 100% !important;
         border-radius: var(--rounded-full) !important;
-        background-color: var(--bgColor-default);
-        transition: background-color var(--transition-default), border-color var(--transition-default);
+        background-color: var(--bgColor-default) !important;
+        transition: background-color var(--transition-default), border-color var(--transition-default) !important;
     }
 }
 

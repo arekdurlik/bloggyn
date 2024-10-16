@@ -6,19 +6,24 @@ import {
     forwardRef,
     type InputHTMLAttributes,
     type MouseEvent,
+    useEffect,
     useRef,
     useState,
 } from 'react';
 import styles from './text-input.module.scss';
 import { cn } from '@/lib/helpers';
 import { X } from 'lucide-react';
-import { on } from 'events';
+import AnimatedUnmount from '../animate-unmount/animate-unmount';
 
 type Props = {
     value: string;
-    label?: string;
     id?: string;
-    icon?: React.ReactNode;
+    required?: boolean;
+    prefixIcon?: React.ReactNode;
+    suffixIcon?: React.ReactNode;
+    label?: string;
+    error?: string;
+    helpText?: string;
     clearButton?: boolean;
     onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
     onFocus?: (event: FocusEvent<HTMLElement>) => void;
@@ -29,13 +34,17 @@ const TextInput = forwardRef<HTMLInputElement, Props>(
     (
         {
             value,
+            id,
+            required,
+            prefixIcon,
+            suffixIcon,
+            label,
+            error,
+            helpText,
+            clearButton,
             onChange,
             onFocus,
             onBlur,
-            label,
-            id,
-            icon,
-            clearButton,
             ...props
         },
         ref
@@ -82,14 +91,20 @@ const TextInput = forwardRef<HTMLInputElement, Props>(
                 onMouseDown={handleClick}
                 className={styles.wrapper}
             >
-                {label && <label htmlFor={label}>{label}</label>}
+                {label && (
+                    <label htmlFor={label}>
+                        {label}
+                        {required && <span className={styles.required}>*</span>}
+                    </label>
+                )}
                 <div
                     className={cn(
                         styles.inputWrapper,
-                        focused && styles.focused
+                        focused && styles.focused,
+                        error && styles.error
                     )}
                 >
-                    {icon && icon}
+                    {prefixIcon && prefixIcon}
                     <input
                         ref={node => {
                             node && (inputRef.current = node);
@@ -122,7 +137,14 @@ const TextInput = forwardRef<HTMLInputElement, Props>(
                             <X />
                         </button>
                     )}
+                    {suffixIcon && <span className={styles.suffixIcon}>{suffixIcon}</span>}
                 </div>
+                {helpText && (
+                    <span className={styles.helpText}>{helpText}</span>
+                )}
+                <span className={cn(styles.errorText)}>
+                    {error && <span>{error}</span>}
+                </span>
             </div>
         );
     }

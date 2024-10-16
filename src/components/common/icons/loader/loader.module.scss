@@ -1,0 +1,36 @@
+.loader {
+    position: relative;
+    height: 100%;
+    height: 16px;
+
+    svg {
+        inset: 0;
+        will-change: transform;
+    }
+
+
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.background {
+    transform: rotate(180deg);
+    z-index: 0;
+    animation: spin 1s -0.5s infinite linear;
+    stroke: var(--fgColor-barely-visible);
+    stroke-width: 1px;
+}
+
+.spinner {
+    position: absolute;
+    stroke: var(--fgColor-default);
+    z-index: 1;
+    animation: spin 1s infinite linear;
+}

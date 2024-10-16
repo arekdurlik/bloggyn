@@ -44,7 +44,7 @@ export const users = createTable('user', {
         .notNull()
         .primaryKey()
         .$defaultFn(() => crypto.randomUUID()),
-    username: varchar('username', { length: 36 }),
+    username: varchar('username', { length: 36 }).unique(),
     name: varchar('name', { length: 255 }),
     email: varchar('email', { length: 255 }).notNull(),
     image: varchar('image', { length: 255 }),

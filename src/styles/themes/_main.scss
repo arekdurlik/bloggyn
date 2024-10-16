@@ -12,7 +12,7 @@
     --transition-slow: var(--transition-theme);
     --control-default-transition: var(--transition-theme);
 
-    h1, h2, h3, h4, p, span, button {
+    h1, h2, h3, h4, p, span, button, label {
         transition: color var(--transition-theme);
     }
 

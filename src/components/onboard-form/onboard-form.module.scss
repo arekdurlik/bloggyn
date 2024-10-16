@@ -4,7 +4,6 @@
     padding-bottom: 40px;
     display: flex;
     justify-content: center;
-    align-items: center;
 }
 
 .header {
@@ -13,21 +12,22 @@
     gap: var(--spacing-xl);
 }
 .container {
+    position: relative;
     border-radius: var(--rounded-xl);
     padding: var(--spacing-xxxl);
     width: 500px;
-    min-height: 600px;
 
     display: flex;
     flex-direction: column;
     gap: var(--spacing-xxxl);
 
-    div {
-        width: 100%;
-    }
-
     button {
         margin: 0 auto;
     }
+}
 
+.fields {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-large);
 }

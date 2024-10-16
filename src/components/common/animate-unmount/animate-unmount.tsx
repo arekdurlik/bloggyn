@@ -10,13 +10,13 @@ type Props = {
 export default function AnimatedUnmount({
     mounted,
     children,
-    time = 100,
+    time = 500,
     onRender,
 }: Props) {
-    const [shouldRender, setShouldRender] = useState(false);
+    const [shouldRender, setShouldRender] = useState(mounted);
     const unmountedStyle = {
         opacity: 0,
-        transition: `opacity ${time}ms ease-in`,
+        transition: `opacity ${time}ms`,
     };
 
     useEffect(() => {
