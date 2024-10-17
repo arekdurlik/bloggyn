@@ -10,7 +10,7 @@ export default function SignUpForm() {
         <div className={styles.form}>
             <h2 className={styles.header}>Sign up</h2>
 
-            <Button onClick={() => signIn('github', { callbackUrl: '/' }, { test: '2' })}>
+            <Button onClick={() => signIn('github', { redirect: false })}>
                 <Github />
                 Sign in with Github
             </Button>

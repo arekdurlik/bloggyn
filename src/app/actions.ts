@@ -1,7 +1,7 @@
 'use server';
 
-import { redirect } from 'next/navigation';
+import { redirect, type RedirectType } from 'next/navigation';
 
-export async function navigate(href: string) {
-    redirect(href);
+export async function navigate(href: string, type?: RedirectType) {
+    redirect(href, type);
 }

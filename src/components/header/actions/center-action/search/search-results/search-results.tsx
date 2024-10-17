@@ -6,26 +6,33 @@ import { cn } from '@/lib/helpers';
 import { useEffect, useRef, useState } from 'react';
 import { useHeaderScrollVisibility } from '@/lib/hooks/use-header-scroll-visibility';
 import AnimatedUnmount from '@/components/common/animate-unmount/animate-unmount';
-import { usePathname } from 'next/navigation';
 import SearchBar from '../search-bar/search-bar';
+import { trpc } from '@/trpc/client';
+import { useDebounce } from '@/lib/hooks/use-debounce';
+import { usePathname} from 'next/navigation';
 
 export default function SearchResults() {
     const { active, query, api } = useSearchState();
+    const { debouncedValue: debouncedQuery } = useDebounce(query, 250);
     const ref = useRef<HTMLDivElement>(null!);
     const [overBreakpoint, setOverBreakpoint] = useState(true);
     const pathname = usePathname();
+    const show = debouncedQuery.length > 1 && overBreakpoint;
 
-    useEffect(() => {
-        api.setQuery('');
-    }, [pathname]);
+    const results = trpc.search.useQuery(
+        { query: debouncedQuery },
+        { refetchOnMount: false, enabled: debouncedQuery.length > 1 }
+    );
 
     useHeaderScrollVisibility(
         setOverBreakpoint,
         0.5,
-        active && query.length > 1
+        active && debouncedQuery.length > 1
     );
 
-    const show = query.length > 1 && overBreakpoint;
+    useEffect(() => {
+        api.setQuery('');
+    }, [pathname]);
 
     return (
         <AnimatedUnmount
@@ -57,7 +64,16 @@ export default function SearchResults() {
                             aria-live="polite"
                             role="region"
                             aria-atomic="true"
-                        ></div>
+                        >
+                            {results.data?.people.length ? (
+                                <span>
+                                    <p>PEOPLE</p>
+                                    {results.data.people.map((peep, i) => (
+                                        <div key={i}>{peep.name}</div>
+                                    ))}
+                                </span>
+                            ) : null}
+                        </div>
                     </AnimatedUnmount>
                 </div>
             </div>

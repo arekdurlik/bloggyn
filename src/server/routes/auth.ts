@@ -1,9 +1,10 @@
 import { protectedProcedure, router } from '@/trpc';
-import { TRPCError, type inferRouterOutputs } from '@trpc/server';
+import { type inferRouterOutputs } from '@trpc/server';
 import { users } from '../db/schema';
 import { eq, sql } from 'drizzle-orm';
-import { onboardSchema } from '@/validation/onboard';
+import { OnboardError, onboardSchema } from '@/validation/onboard';
 import { z } from 'zod';
+import { XTRPCError } from '@/validation/xtrpc-error';
 
 export type AuthRouterOutput = inferRouterOutputs<typeof authRouter>;
 
@@ -23,8 +24,9 @@ export const authRouter = router({
             });
 
             if (alreadyTaken) {
-                throw new TRPCError({
+                throw new XTRPCError({
                     code: 'CONFLICT',
+                    key: OnboardError.USERNAME_TAKEN,
                     message: 'Username already taken',
                 });
             }
@@ -40,15 +42,17 @@ export const authRouter = router({
                 });
 
                 if (!user) {
-                    throw new TRPCError({
+                    throw new XTRPCError({
                         code: 'NOT_FOUND',
+                        key: OnboardError.NOT_FOUND,
                         message: 'User not found',
                     });
                 }
 
                 if (user.username?.length) {
-                    throw new TRPCError({
+                    throw new XTRPCError({
                         code: 'CONFLICT',
+                        key: OnboardError.ALREADY_ONBOARDED,
                         message: 'User already onboarded',
                     });
                 }
@@ -58,8 +62,9 @@ export const authRouter = router({
                 });
 
                 if (alreadyTaken) {
-                    throw new TRPCError({
+                    throw new XTRPCError({
                         code: 'CONFLICT',
+                        key: OnboardError.USERNAME_TAKEN,
                         message: 'Username already taken',
                     });
                 }
@@ -73,9 +78,9 @@ export const authRouter = router({
                     .where(eq(users.id, session.user.id));
             } catch (error) {
                 if (error instanceof Error && error.message) {
-                    throw new TRPCError({
-                        message: error.message,
+                    throw new XTRPCError({
                         code: 'INTERNAL_SERVER_ERROR',
+                        message: error.message,
                     });
                 } else {
                     throw error;

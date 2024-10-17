@@ -4,7 +4,7 @@ export function useDebouncedEffect(
     callback: () => unknown,
     delay: number,
     deps: DependencyList,
-    enabled?: boolean | number
+    enabled: boolean | number = true
 ) {
     useEffect(() => {
         if (!enabled) return;
