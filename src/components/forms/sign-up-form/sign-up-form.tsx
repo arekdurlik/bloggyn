@@ -2,14 +2,15 @@
 
 import { signIn } from 'next-auth/react';
 import { useState } from 'react';
-import { ArrowRight, Lock, Mail } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { trpc } from '@/trpc/client';
-import TextInput from '@/components/common/text-input/text-input';
 import Button from '@/components/common/button';
 import Github from '@/components/common/icons/github';
 
 import formStyles from '../forms.module.scss';
 import Google from '@/components/common/icons/google';
+import Email from './inputs/email';
+import Password from './inputs/password';
 
 export default function SignUpForm() {
     const [formData, setFormData] = useState({
@@ -67,26 +68,14 @@ export default function SignUpForm() {
                     or continue with e-mail
                 </div>
                 <div className={formStyles.inputGroup}>
-                    <TextInput
-                        prefixIcon={<Mail />}
-                        label="E-mail"
-                        placeholder="you@example.com"
+                    <Email
                         value={formData.email}
-                        onChange={e =>
-                            setFormData({ ...formData, email: e.target.value })
-                        }
+                        onChange={v => setFormData({ ...formData, email: v })}
                     />
-                    <TextInput
-                        prefixIcon={<Lock />}
-                        label="Password"
-                        type="password"
-                        placeholder="At least 8 characters"
+                    <Password
                         value={formData.password}
-                        onChange={e =>
-                            setFormData({
-                                ...formData,
-                                password: e.target.value,
-                            })
+                        onChange={v =>
+                            setFormData({ ...formData, password: v })
                         }
                     />
                     <Button

@@ -1,0 +1,41 @@
+[data-theme="navy"] {
+    color-scheme: light dark;
+    --outline-color: white;
+
+    --color-base-10:    hsl(var(--navy-hue), var(--navy-sat), 10%);
+    --color-base-20:    hsl(var(--navy-hue), var(--navy-sat), 20%);
+    --color-base-25:    hsl(var(--navy-hue), var(--navy-sat), 25%);
+    --color-base-30:    hsl(var(--navy-hue), var(--navy-sat), 30%);
+    --color-base-35:    hsl(var(--navy-hue), var(--navy-sat), 35%);
+    --color-base-40:    hsl(var(--navy-hue), var(--navy-sat), 40%);
+    --color-base-50:    hsl(var(--navy-hue), var(--navy-sat), 50%);
+    --color-base-60:    hsl(var(--navy-hue), var(--navy-sat), 60%);
+    --color-base-70:    hsl(var(--navy-hue), var(--navy-sat), 70%);
+    --color-base-75:    hsl(var(--navy-hue), var(--navy-sat), 75%);
+    --color-base-80:    hsl(var(--navy-hue), var(--navy-sat), 80%);
+    --color-base-85:    hsl(var(--navy-hue), var(--navy-sat), 85%);
+    --color-base-90:    hsl(var(--navy-hue), var(--navy-sat), 90%);
+    --color-base-95:    hsl(var(--navy-hue), var(--navy-sat), 95%);
+    --color-base-100:   hsl(var(--navy-hue), var(--navy-sat), 100%);
+
+    --color-github: #fff;
+
+    --bgColor-default: var(--color-base-20);
+    --header-bgColor: var(--color-base-20);
+
+    --fgColor-heading: var(--color-base-90);
+    --fgColor-default: hsl(var(--navy-hue), calc(var(--navy-sat) - 10%), 80%);
+    --fgColor-subtle: hsl(var(--navy-hue), calc(var(--navy-sat) - 20%), 55%);
+    --fgColor-barely-visible: hsl(var(--navy-hue), calc(var(--navy-sat) - 5%), 25%);
+    --border: hsl(var(--navy-hue), calc(var(--navy-sat) - 5%), 27%);
+
+    --control-default-bgColor-hover: var(--color-base-25);
+    --control-default-bgColor-active: var(--color-base-30);
+    --control-default-borderColor-hover: var(--color-base-30);
+    --control-default-borderColor-active: var(--fgColor-subtle);
+
+    --control-inverted-fgColor-rest: var(--bgColor-default);
+    --control-inverted-bgColor-rest: var(--fgColor-heading);
+    --control-inverted-bgColor-hover: var(--color-base-80);
+    --control-inverted-bgColor-active: var(--color-base-75);
+}

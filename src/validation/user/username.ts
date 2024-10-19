@@ -1,18 +1,9 @@
 import { z } from 'zod';
+import { UserError } from '../errors';
 
 const REG = /^[A-Za-z0-9_]+$/;
 export const USERNAME_MIN = 3;
-export const DISPLAY_NAME_MIN = 3;
 export const USERNAME_MAX = 25;
-export const DISPLAY_NAME_MAX = 40;
-
-export enum UserError {
-    USERNAME_TAKEN = 'username_taken',
-    EMAIL_TAKEN = 'email_taken',
-    INVALID_EMAIL = 'invalid_email',
-    ALREADY_ONBOARDED = 'already_onboarded',
-    NOT_FOUND = 'not_found',
-}
 
 export const usernameErrors = {
     [UserError.USERNAME_TAKEN]: [
@@ -36,20 +27,3 @@ export const usernameSchema = z
         USERNAME_MAX,
         `Username must be at most ${USERNAME_MAX} characters long.`
     );
-
-export const displayNameSchema = z
-    .string({ required_error: 'Display name is required.' })
-    .min(
-        DISPLAY_NAME_MIN,
-        `Display name must be at least ${DISPLAY_NAME_MIN} characters long.`
-    )
-    .max(
-        DISPLAY_NAME_MAX,
-        `Display name must be at most ${DISPLAY_NAME_MAX} characters long.`
-    )
-    .trim();
-
-export const onboardSchema = z.object({
-    username: usernameSchema,
-    displayName: displayNameSchema,
-});

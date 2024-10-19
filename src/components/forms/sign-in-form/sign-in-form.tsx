@@ -1,9 +1,9 @@
 'use client';
 
+import Button from '@/components/common/button';
 import styles from './sign-in-form.module.scss';
-import Button from '../common/button';
-import Github from '../common/icons/github';
 import { signIn } from 'next-auth/react';
+import Github from '@/components/common/icons/github';
 
 export default function SignInForm() {
     return (

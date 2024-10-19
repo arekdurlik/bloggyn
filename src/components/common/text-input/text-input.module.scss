@@ -16,19 +16,22 @@
     width: 100%;
     gap: var(--spacing-large);
     border-radius: var(--rounded-large);
-    border: 1px solid var(--border);
+    border: 1px solid var(--control-default-borderColor-rest);
     padding-inline: var(--spacing-xl);
     outline-color: transparent;
     transition: outline-color var(--transition-default), border-color var(--transition-default);
 
     &:focus-within {
-        svg {
+        border-color: var(--control-default-borderColor-active);
+
+        /* svg {
             color: var(--fgColor-default)
-        }
+        } */
     }
 
     &.focused {
         outline: var(--outline);
+        outline-offset: -1px;
 
         svg {
             transition: none;
@@ -74,6 +77,7 @@
 }
 
 .suffix-icon {
+    display: flex;
     svg {
         color: var(--fgColor-default);
     }
@@ -92,7 +96,7 @@
 }
 
 .error {
-    border-color: var(--color-error);
+    border-color: var(--color-error) !important;
     outline-color: var(--color-error) !important;
 }
 
@@ -102,7 +106,12 @@
     color: var(--color-error);
     font-size: var(--text-small);
     padding-block: 2px;
-    min-height: 20px;
+    height: 20px;
+    transition: height var(--transition-fast);
+
+    &:empty {
+        height: 0px;
+    }
 
     span {
         animation: appear var(--transition-fast);

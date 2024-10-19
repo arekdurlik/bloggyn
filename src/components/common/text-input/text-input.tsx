@@ -138,14 +138,14 @@ const TextInput = forwardRef<HTMLInputElement, Props>(
                         </button>
                     )}
                     {suffixIcon && (
-                        <span className={styles.suffixIcon}>{suffixIcon}</span>
+                        <div className={styles.suffixIcon}>{suffixIcon}</div>
                     )}
                 </div>
                 {helpText && (
                     <span className={styles.helpText}>{helpText}</span>
                 )}
                 {error !== undefined && (
-                    <span className={cn(styles.errorText)}>{error}</span>
+                    <div className={cn(styles.errorText)}>{error && <span>{error}</span>}</div>
                 )}
             </div>
         );

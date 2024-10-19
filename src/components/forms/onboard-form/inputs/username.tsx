@@ -30,7 +30,7 @@ export default function Username() {
         errors: { username: error },
         api,
     } = useOnboardFormStore();
-    const checkAvailability = trpc.checkAvailability.useQuery(
+    const checkAvailability = trpc.checkUsernameAvailability.useQuery(
         { username },
         { enabled: false, retry: false }
     );

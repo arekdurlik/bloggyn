@@ -28,7 +28,7 @@ export default function SearchBar({ onChange }: Props) {
                     value={query}
                     onFocus={api.activate}
                     onChange={handleChange}
-                    icon={<SearchIcon />}
+                    prefixIcon={<SearchIcon />}
                     clearButton
                     placeholder="Search..."
                     aria-label="Search"

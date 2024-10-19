@@ -5,4 +5,5 @@ export declare const header: string;
 export declare const inputGroup: string;
 export declare const spin: string;
 export declare const spinner: string;
+export declare const spinnerBig: string;
 export declare const terms: string;

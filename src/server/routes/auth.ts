@@ -2,14 +2,41 @@ import { procedure, protectedProcedure, router } from '@/trpc';
 import { type inferRouterOutputs } from '@trpc/server';
 import { accounts, type User, users } from '../db/schema';
 import { desc, eq, sql } from 'drizzle-orm';
-import { UserError, onboardSchema } from '@/validation/user';
+import { EmailError, UserError } from '@/validation/errors';
 import { z } from 'zod';
 import { XTRPCError } from '@/validation/xtrpc-error';
 import bcrypt from 'bcrypt';
+import { usernameSchema } from '@/validation/user/username';
+import { displayNameSchema } from '@/validation/user/displayName';
+import { emailSchema } from '@/validation/user/email';
 
 export type AuthRouterOutput = inferRouterOutputs<typeof authRouter>;
 
 export const authRouter = router({
+    checkEmailAvailability: procedure
+        .input(
+            z.object({
+                email: emailSchema,
+            })
+        )
+        .query(async ({ input, ctx: { db } }) => {
+            const alreadyTaken = await db.query.users.findFirst({
+                where: eq(
+                    sql`lower(${users.email})`,
+                    input.email.toLowerCase()
+                ),
+            });
+
+            if (alreadyTaken) {
+                throw new XTRPCError({
+                    code: 'CONFLICT',
+                    key: EmailError.EMAIL_TAKEN,
+                    message: 'E-mail already taken',
+                });
+            }
+
+            return 'ok';
+        }),
     signUp: procedure
         .input(
             z.object({
@@ -93,10 +120,10 @@ export const authRouter = router({
                 }
             }
         }),
-    checkAvailability: protectedProcedure
+    checkUsernameAvailability: protectedProcedure
         .input(
             z.object({
-                username: z.string(),
+                username: usernameSchema,
             })
         )
         .query(async ({ input, ctx: { db } }) => {
@@ -118,7 +145,12 @@ export const authRouter = router({
             return 'ok';
         }),
     completeSignUp: protectedProcedure
-        .input(onboardSchema)
+        .input(
+            z.object({
+                username: usernameSchema,
+                displayName: displayNameSchema,
+            })
+        )
         .mutation(async ({ input, ctx: { session, db } }) => {
             try {
                 const user = await db.query.users.findFirst({
