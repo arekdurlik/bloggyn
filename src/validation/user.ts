@@ -6,21 +6,23 @@ export const DISPLAY_NAME_MIN = 3;
 export const USERNAME_MAX = 25;
 export const DISPLAY_NAME_MAX = 40;
 
-export enum OnboardError {
+export enum UserError {
     USERNAME_TAKEN = 'username_taken',
+    EMAIL_TAKEN = 'email_taken',
+    INVALID_EMAIL = 'invalid_email',
     ALREADY_ONBOARDED = 'already_onboarded',
     NOT_FOUND = 'not_found',
 }
 
 export const usernameErrors = {
-    [OnboardError.USERNAME_TAKEN]: [
+    [UserError.USERNAME_TAKEN]: [
         'Username not available, give it another shot 🙂',
         "Someone's already using that username 😅",
         'Oops, that username is not available 😬',
         'Sorry, that username is already taken 😓',
     ],
-    [OnboardError.ALREADY_ONBOARDED]: ['User already onboarded.'],
-    [OnboardError.NOT_FOUND]: ['User not found.'],
+    [UserError.ALREADY_ONBOARDED]: ['User already onboarded.'],
+    [UserError.NOT_FOUND]: ['User not found.'],
 };
 
 export const usernameSchema = z

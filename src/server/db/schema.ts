@@ -39,6 +39,7 @@ export const posts = createTable('post', {
     ),
 });
 
+export type User = typeof users.$inferSelect;
 export const users = createTable('user', {
     id: varchar('id', { length: 255 })
         .notNull()
@@ -46,7 +47,8 @@ export const users = createTable('user', {
         .$defaultFn(() => crypto.randomUUID()),
     username: varchar('username', { length: 36 }).unique(),
     name: varchar('name', { length: 255 }),
-    email: varchar('email', { length: 255 }).notNull(),
+    email: varchar('email', { length: 255 }).notNull().unique(),
+    emailVerified: timestamp('emailVerified', { mode: 'date' }),
     image: varchar('image', { length: 255 }),
     cover_image: varchar('cover_image', { length: 255 }),
 });
@@ -61,6 +63,7 @@ export const accounts = createTable(
         userId: varchar('user_id', { length: 255 })
             .notNull()
             .references(() => users.id, { onDelete: 'cascade' }),
+        password: text('password'),
         type: varchar('type', { length: 255 })
             .$type<AdapterAccount['type']>()
             .notNull(),

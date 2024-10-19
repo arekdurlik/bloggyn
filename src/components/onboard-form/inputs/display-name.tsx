@@ -6,7 +6,7 @@ import {
     DISPLAY_NAME_MAX,
     displayNameSchema,
     displayNameErrors,
-} from '@/validation/onboard';
+} from '@/validation/user';
 import { FAKE_REQUEST_TIME, THROTTLE_TIME } from '../onboard-form';
 import useDebouncedEffect from '@/lib/hooks/use-debounced-effect';
 import { sleep } from '@/lib/helpers';

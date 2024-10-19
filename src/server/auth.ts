@@ -1,6 +1,9 @@
 import { DrizzleAdapter } from '@auth/drizzle-adapter';
 import {
+    Awaitable,
     getServerSession,
+    RequestInternal,
+    User,
     type DefaultSession,
     type NextAuthOptions,
 } from 'next-auth';
@@ -8,8 +11,8 @@ import { type Adapter } from 'next-auth/adapters';
 import { db } from '@/server/db';
 import { accounts, users } from '@/server/db/schema';
 import GitHubProvider from 'next-auth/providers/github';
+import CredentialsProvider from 'next-auth/providers/credentials';
 import { and, eq, isNotNull } from 'drizzle-orm';
-
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
  * object and keep type safety.
@@ -31,12 +34,6 @@ declare module 'next-auth' {
     // }
 }
 
-/**
- * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
- *
- * @see https://next-auth.js.org/configuration/options
- */
-
 export const authOptions: NextAuthOptions = {
     pages: {
         signIn: '/sign-in',
@@ -46,6 +43,7 @@ export const authOptions: NextAuthOptions = {
     session: {
         strategy: 'jwt',
     },
+    secret: process.env.NEXTAUTH_SERCRET,
     callbacks: {
         jwt: async ({ token, trigger, session }) => {
             if (trigger === 'update' && session.onboarded === true) {
@@ -79,15 +77,13 @@ export const authOptions: NextAuthOptions = {
         accountsTable: accounts,
     }) as Adapter,
     providers: [
-        /**
-         * ...add more providers here.
-         *
-         * Most other providers require a bit more work than the Discord provider. For example, the
-         * GitHub provider requires you to add the `refresh_token_expires_in` field to the Account
-         * model. Refer to the NextAuth.js docs for the provider you want to use. Example:
-         *
-         * @see https://next-auth.js.org/providers/github
-         */
+        CredentialsProvider({
+            name: 'credentials',
+            credentials: {},
+            authorize: credentials => {
+                return null;
+            },
+        }),
         GitHubProvider({
             clientId: process.env.GITHUB_CLIENT_ID ?? '',
             clientSecret: process.env.GITHUB_CLIENT_SECRET ?? '',

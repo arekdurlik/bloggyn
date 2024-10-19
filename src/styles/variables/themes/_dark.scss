@@ -9,4 +9,6 @@
     --control-default-fgColor:  hsl(0, 0%, 93%);
     --border:                   color-mix(in hsl, #fff, var(--color-dark) 89%);
     --header-bgColor:           var(--color-dark);
+
+    --control-inverted-bgColor-rest: var(--fgColor-heading);
 }

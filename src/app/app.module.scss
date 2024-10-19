@@ -2,6 +2,7 @@
     display: flex;
     justify-content: center;
     min-height: 100%;
+
 }
 
 .container {
@@ -11,6 +12,7 @@
     width: 100%;
     display: flex;
     justify-content: center;
+    overflow: hidden;
 }
 
 .posts {
@@ -19,9 +21,15 @@
     gap: var(--spacing-xxxl);
 }
 
+.header-margin {
+    display: flex;
+    margin-top: 60px;
+    min-height: 100%;
+}
+
 .content {
     position: relative;
-    padding-top: 100px;
+    margin: auto;
     max-width: 800px;
     width: 100%;
 

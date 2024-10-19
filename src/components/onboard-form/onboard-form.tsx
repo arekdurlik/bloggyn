@@ -7,7 +7,7 @@ import { type FormEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import styles from './onboard-form.module.scss';
-import { onboardSchema } from '@/validation/onboard';
+import { onboardSchema } from '@/validation/user';
 import { ZodError } from 'zod';
 import Username from './inputs/username';
 import DisplayName from './inputs/display-name';

@@ -1,9 +1,9 @@
 import {
-    OnboardError,
+    UserError,
     usernameErrors,
     USERNAME_MAX,
     usernameSchema,
-} from '@/validation/onboard';
+} from '@/validation/user';
 import { Check } from 'lucide-react';
 import Loader from '../../common/icons/loader/loader';
 import { type ChangeEvent, useState } from 'react';
@@ -58,7 +58,7 @@ export default function Username() {
                     );
                 } else {
                     api.setUsernameError(
-                        getResponse(usernameErrors, OnboardError.USERNAME_TAKEN)
+                        getResponse(usernameErrors, UserError.USERNAME_TAKEN)
                     );
                 }
                 setValidating(false);
@@ -71,7 +71,7 @@ export default function Username() {
                 setAvailable(true);
             } catch (error) {
                 api.setUsernameError(
-                    getResponse(usernameErrors, OnboardError.USERNAME_TAKEN)
+                    getResponse(usernameErrors, UserError.USERNAME_TAKEN)
                 );
 
                 if (error instanceof TRPCClientError) {

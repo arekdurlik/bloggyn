@@ -2,10 +2,13 @@
     --bgColor-default: var(--color-sepia);
     --header-bgColor: var(--color-sepia);
 
-    --fgColor-heading: hsl(35, 20%, 25%);
+    --fgColor-heading: hsl(35, 20%, 20%);
     --fgColor-default: hsl(35, 20%, 32%);
     --fgColor-subtle: hsl(35, 20%, 40%);
     --fgColor-barely-visible: hsl(35, 25%, 60%);
     --control-default-fgColor: black;
     --border: color-mix(in hsl, #000, var(--color-sepia) 89%);
+
+    --control-inverted-fgColor-rest: var(--color-sepia);
+    --control-inverted-bgColor-rest: var(--fgColor-heading);
 }

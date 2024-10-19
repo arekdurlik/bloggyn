@@ -34,7 +34,11 @@ export default async function RootLayout({
                         >
                             <SessionProvider session={session}>
                                 <Header theme={theme} />
-                                <div className={styles.content}>{children}</div>
+                                <div className={styles.headerMargin}>
+                                    <div className={styles.content}>
+                                        {children}
+                                    </div>
+                                </div>
                             </SessionProvider>
                         </div>
                         <div id={OVERLAY_ID} />

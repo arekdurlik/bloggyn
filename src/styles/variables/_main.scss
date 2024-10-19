@@ -18,9 +18,22 @@
     --color-gray-95:                hsl(0, 0%, 95%);
     --color-white:                  hsl(0, 0%, 100%);
 
+    --color-brand-5:    hsl(225, 40%, 5%);
+    --color-brand-10:   hsl(225, 40%, 10%);
+    --color-brand-20:   hsl(225, 40%, 20%);
+    --color-brand-25:   hsl(225, 40%, 25%);
+    --color-brand-30:   hsl(225, 40%, 30%);
+    --color-brand-40:   hsl(225, 40%, 40%);
+    --color-brand-50:   hsl(225, 40%, 50%);
+    --color-brand-60:   hsl(225, 40%, 60%);
+    --color-brand-70:   hsl(225, 40%, 70%);
+    --color-brand-80:   hsl(225, 40%, 80%);
+    --color-brand-90:   hsl(225, 40%, 90%);
+    --color-brand-95:   hsl(225, 40%, 95%);
+
+    --color-brand: var(--color-brand-20);
     --color-light: var(--color-white);
     --color-dark:  var(--color-black);
-    --color-brand: hsl(241, 40%, 35%);
     --color-sepia: #dfcdad;
 
     --color-error:                  hsl(0, 70%, 50%);
@@ -29,7 +42,7 @@
     --bgColor-default:              var(--color-light);
     --fgColor-heading:                 var(--color-black);
     --fgColor-default:              var(--color-gray-20);
-    --fgColor-subtle:                  var(--color-gray-50);
+    --fgColor-subtle:                  var(--color-gray-60);
     --fgColor-barely-visible:          var(--color-gray-80);
 
     --header-bgColor: var(--bgColor-default);
@@ -90,10 +103,10 @@
     --control-default-borderColor: var(--border);
     --control-default-transition: color var(--transition-default), background-color var(--transition-default), border-color var(--transition-default);
 
-    --control-inverted-fgColor-rest: var(--color-gray-95);
+    --control-inverted-fgColor-rest: var(--bgColor-default);
     --control-inverted-fgColor-hover: var(--color-gray-95);
     --control-inverted-bgColor-disabled: var(--color-gray-40);
-    --control-inverted-bgColor-rest: var(--color-black);
+    --control-inverted-bgColor-rest: var(--fgColor-heading);
     --control-inverted-bgColor-hover: var(--color-gray-20);
     --control-inverted-bgColor-active: var(--color-gray-30);
     --control-inverted-borderColor-rest: var(--control-inverted-bgColor-rest);

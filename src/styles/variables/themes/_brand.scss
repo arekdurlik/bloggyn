@@ -1,0 +1,17 @@
+[data-theme="brand"] {
+    --github-color: var(--color-white);
+
+    --bgColor-default: var(--color-brand-20);
+    --header-bgColor: var(--color-brand-20);
+
+    --fgColor-heading: var(--color-brand-90);
+    --fgColor-default: color-mix(in hsl, #ffffff00, var(--color-brand-80) 85%);
+    --fgColor-subtle: color-mix(in hsl, #ffffff00, var(--color-brand-70) 50%);
+    --fgColor-barely-visible: color-mix(in hsl, #ffffff00, var(--color-brand-70) 15%)
+    ;
+    --border: var(--color-brand-25);
+
+    --control-inverted-fgColor-rest: var(--bgColor-default);
+    --control-inverted-bgColor-rest: var(--fgColor-heading);
+
+}

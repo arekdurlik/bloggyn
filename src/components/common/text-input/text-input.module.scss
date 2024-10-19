@@ -1,9 +1,10 @@
 
 .wrapper {
     min-height: 40px;
+
     label {
         display: inline-block;
-        margin-bottom: var(--spacing-large);
+        margin-bottom: var(--spacing-default);
         font-weight: 600;
     }
 }
@@ -47,11 +48,10 @@
         background-color: transparent;
         color: var(--fgColor-default);
         transition: color var(--transition-default);
-        padding-block: var(--spacing-large);
 
         &::placeholder {
             transition: color var(--transition-default);
-            color: var(--fgColor-barely-visible);
+            color: var(--fgColor-subtle);
         }
     }
 }
@@ -99,7 +99,6 @@
 .errorText {
     overflow: hidden;
     display: block;
-    margin-top: var(--spacing-small);
     color: var(--color-error);
     font-size: var(--text-small);
     padding-block: 2px;
