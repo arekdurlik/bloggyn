@@ -6,14 +6,12 @@ import {
     forwardRef,
     type InputHTMLAttributes,
     type MouseEvent,
-    useEffect,
     useRef,
     useState,
 } from 'react';
 import styles from './text-input.module.scss';
 import { cn } from '@/lib/helpers';
 import { X } from 'lucide-react';
-import AnimatedUnmount from '../animate-unmount/animate-unmount';
 
 type Props = {
     value: string;

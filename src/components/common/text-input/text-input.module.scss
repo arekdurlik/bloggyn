@@ -19,10 +19,12 @@
     border: 1px solid var(--control-default-borderColor-rest);
     padding-inline: var(--spacing-xl);
     outline-color: transparent;
-    transition: outline-color var(--transition-default), border-color var(--transition-default);
+    transition: outline-color var(--transition-default), border-color var(--transition-default), background-color var(--transition-sloth);
 
     &:focus-within {
         border-color: var(--control-default-borderColor-active);
+
+        background-color: var(--textInput-default-bgColor-active);
 
         /* svg {
             color: var(--fgColor-default)
