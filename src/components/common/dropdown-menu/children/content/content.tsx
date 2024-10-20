@@ -79,7 +79,7 @@ export default function DropdownMenuContent({
         <AnimatedUnmount mounted={open} onRender={calculatePosition}>
             <ul
                 ref={ref}
-                className={cn(styles.container, 'animation--slide-in')}
+                className={cn(styles.container, 'animation-slideIn')}
             >
                 {children}
             </ul>

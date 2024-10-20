@@ -11,6 +11,9 @@ import formStyles from '../forms.module.scss';
 import Google from '@/components/common/icons/google';
 import Email from './inputs/email';
 import Password from './inputs/password';
+import { Template } from '../template';
+
+import React from 'react';
 
 export default function SignUpForm() {
     const [formData, setFormData] = useState({
@@ -21,77 +24,57 @@ export default function SignUpForm() {
 
     async function handleSignUp() {
         try {
-            signUp.mutate(formData);
+            const res = await signUp.mutateAsync(formData);
+
+            if (res?.token) {
+                window.history.pushState(
+                    {},
+                    `verify-email?token=${res.token}`,
+                    `verify-email?token=${res.token}`
+                );
+            }
         } catch (error) {
             console.error(error);
         }
     }
 
+    const [v, setV] = useState('');
     return (
-        <div className={formStyles.form}>
-            <div className={formStyles.spinner}>
-                <svg viewBox="0 0 100 100" width="100" height="100">
-                    <defs>
-                        <path
-                            id="circle"
-                            d="
-        M 50, 50
-        m -37, 0
-        a 37,37 0 1,1 74,0
-        a 37,37 0 1,1 -74,0"
-                        />
-                    </defs>
-                    <text>
-                        <textPath xlinkHref="#circle">
-                            bloggyn bloggyn bloggyn
-                        </textPath>
-                    </text>
-                </svg>
+        <Template>
+            <h1 className={formStyles.header}>Sign up</h1>
+            <div className={formStyles.inputGroup}>
+                <Button onClick={() => signIn('github', { redirect: false })}>
+                    <Google />
+                    Continue with Google
+                </Button>
+                <Button onClick={() => signIn('github', { redirect: false })}>
+                    <Github />
+                    Continue with Github
+                </Button>
             </div>
-            <div className={formStyles.content}>
-                <h2 className={formStyles.header}>Sign up</h2>
-                <div className={formStyles.inputGroup}>
-                    <Button
-                        onClick={() => signIn('github', { redirect: false })}
-                    >
-                        <Google />
-                        Continue with Google
-                    </Button>
-                    <Button
-                        onClick={() => signIn('github', { redirect: false })}
-                    >
-                        <Github />
-                        Continue with Github
-                    </Button>
-                </div>
-                <div className={formStyles.divider}>
-                    or continue with e-mail
-                </div>
-                <div className={formStyles.inputGroup}>
-                    <Email
-                        value={formData.email}
-                        onChange={v => setFormData({ ...formData, email: v })}
-                    />
-                    <Password
-                        value={formData.password}
-                        onChange={v =>
-                            setFormData({ ...formData, password: v })
-                        }
-                    />
-                    <Button
-                        onClick={handleSignUp}
-                        inverted
-                        style={{ marginTop: 10 }}
-                    >
-                        Join bloggyn
-                        <ArrowRight />
-                    </Button>
-                </div>
-                <span className={formStyles.terms}>
-                    By signing up, you agree that your data may be deleted at
-                    any time, without prior notice or confirmation.
-                </span>
+            <div className={formStyles.divider}>or continue with e-mail</div>
+            <div className={formStyles.inputGroup}>
+                <Email
+                    value={formData.email}
+                    onChange={v => setFormData({ ...formData, email: v })}
+                />
+                <Password
+                    value={formData.password}
+                    onChange={v => setFormData({ ...formData, password: v })}
+                />
+                <Button
+                    onClick={handleSignUp}
+                    inverted
+                    style={{ marginTop: 10 }}
+                >
+                    Join bloggyn
+                    <ArrowRight />
+                </Button>
             </div>
-        </div>
+            <span className={formStyles.terms}>
+                By signing up, you agree that your data may be deleted at any
+                time, without prior notice or confirmation.
+            </span>
+        </Template>
     );
 }

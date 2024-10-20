@@ -5,6 +5,7 @@ export declare const errorText: string;
 export declare const focused: string;
 export declare const helpText: string;
 export declare const inputWrapper: string;
+export declare const prefixIcon: string;
 export declare const required: string;
 export declare const suffixIcon: string;
 export declare const wrapper: string;

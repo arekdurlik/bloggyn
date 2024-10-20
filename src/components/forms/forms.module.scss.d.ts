@@ -1,4 +1,6 @@
 export declare const content: string;
+export declare const contentWrapper: string;
+export declare const description: string;
 export declare const divider: string;
 export declare const form: string;
 export declare const header: string;

@@ -1,14 +1,48 @@
-    @keyframes slide-in {
-        0% {
-            transform: translateY(-10px);
-            opacity: 0;
-        }
-        100% {
-            transform: translateY(0px);
-            opacity: 1;
+@keyframes slide-in {
+    0% {
+        transform: translateY(-10px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0px);
+        opacity: 1;
+    }
+}
+
+@keyframes appear {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.animation {
+    &-slideIn {
+        animation-name: slide-in;
+        animation-fill-mode: forwards;
+        animation-duration: var(--transition-instant);
+
+        &--sloth {
+            @extend .animation-slideIn;
+            animation-duration: var(--transition-sloth);
         }
     }
 
-    .animation--slide-in {
-        animation: slide-in var(--transition-instant);
+    &-appear {
+        animation-name: appear;
+        animation-fill-mode: forwards;
+        animation-duration: var(--transition-default);
+
+        &--slow {
+            @extend .animation-appear;
+            animation-duration: var(--transition-slow);
+        }
+
+        &--sloth {
+            @extend .animation-appear;
+            animation-duration: var(--transition-sloth);
+        }
     }
+}

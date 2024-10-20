@@ -40,13 +40,6 @@
         }
     }
 
-    svg {
-        color: var(--fgColor-subtle);
-        min-width: 16px;
-        height: 16px;
-        transition: color var(--transition-fast);
-    }
-
     input {
         width: 100%;
         outline: none;
@@ -78,11 +71,13 @@
     }
 }
 
+.prefix-icon {
+    display: flex;
+    color: var(--fgColor-subtle);
+}
+
 .suffix-icon {
     display: flex;
-    svg {
-        color: var(--fgColor-default);
-    }
 }
 
 .help-text {
@@ -95,17 +90,23 @@
 .required {
     color: var(--color-error);
     padding-left: var(--spacing-small);
+    line-height: 1;
 }
 
 .error {
-    border-color: var(--color-error) !important;
-    outline-color: var(--color-error) !important;
+    .input-wrapper {
+        border-color: var(--color-error) !important;
+        outline-color: var(--color-error) !important;
+    }
+
+    .error-text {
+        color: var(--color-error)
+    }
 }
 
-.errorText {
+.error-text {
     overflow: hidden;
     display: block;
-    color: var(--color-error);
     font-size: var(--text-small);
     padding-block: 2px;
     height: 20px;

@@ -40,7 +40,7 @@ export default function SearchResults() {
         >
             <div
                 ref={ref}
-                className={cn(styles.searchResults, 'animation--slide-in')}
+                className={cn(styles.searchResults, 'animation-slideIn')}
             >
                 <div className={styles.wrapper}>
                     <AnimatedUnmount mounted={active}>

@@ -23,7 +23,8 @@
 
 .header-margin {
     display: flex;
-    margin-top: 60px;
+    margin-top: var(--headerHeight);
+    margin-bottom: var(--headerHeight);
     min-height: 100%;
 }
 

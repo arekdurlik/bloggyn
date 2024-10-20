@@ -50,7 +50,7 @@
 
     --color-github:         rgb(23, 21, 21);
     --color-error:          hsl(0, 70%, 50%);
-    --color-success:        hsl(138, 70%, 50%);
+    --color-success:        hsl(138, 70%, 40%);
 
     --navy-hue: 225;
     --navy-sat: 45%;
@@ -71,6 +71,7 @@
     --color-base-85:    hsl(0, 0%, 85%);
     --color-base-90:    hsl(0, 0%, 90%);
     --color-base-95:    hsl(0, 0%, 95%);
+    --color-base-97:    hsl(0, 0%, 97%);
     --color-base-100:   hsl(0, 0%, 100%);
 
     --bgColor-default:              var(--color-base-100);
@@ -88,6 +89,8 @@
     --color-light: white;
     --color-dark:  black;
     --color-sepia: hsl(var(--sepia-hue), var(--sepia-sat), 78%);
+
+    --textInput-default-bgColor-active:    var(--color-base-97);
 
     // BUTTONS
     --control-default-fgColor-rest:         var(--fgColor-default);

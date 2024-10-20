@@ -6,10 +6,16 @@
     user-select: none;
     cursor: text;
 
+    & > * {
+        flex : 1;
+    }
+
     input {
         width: fit-content;
-        max-width: 80px;
+        font-size: var(--text-logo);
+        font-weight: 700;
         background-color: transparent;
+        color: var(--fgColor-default);
     }
 
     &.selected-all {

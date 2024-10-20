@@ -87,7 +87,7 @@ const TextInput = forwardRef<HTMLInputElement, Props>(
             <div
                 ref={wrapperRef}
                 onMouseDown={handleClick}
-                className={styles.wrapper}
+                className={cn(styles.wrapper, error && styles.error)}
             >
                 {label && (
                     <label htmlFor={label}>
@@ -98,11 +98,12 @@ const TextInput = forwardRef<HTMLInputElement, Props>(
                 <div
                     className={cn(
                         styles.inputWrapper,
-                        focused && styles.focused,
-                        error && styles.error
+                        focused && styles.focused
                     )}
                 >
-                    {prefixIcon && prefixIcon}
+                    {prefixIcon && (
+                        <span className={styles.prefixIcon}>{prefixIcon}</span>
+                    )}
                     <input
                         ref={node => {
                             node && (inputRef.current = node);
@@ -143,7 +144,9 @@ const TextInput = forwardRef<HTMLInputElement, Props>(
                     <span className={styles.helpText}>{helpText}</span>
                 )}
                 {error !== undefined && (
-                    <div className={cn(styles.errorText)}>{error && <span>{error}</span>}</div>
+                    <div className={cn(styles.errorText)}>
+                        {error && <span>{error}</span>}
+                    </div>
                 )}
             </div>
         );

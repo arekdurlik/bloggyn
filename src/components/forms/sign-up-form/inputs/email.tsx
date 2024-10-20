@@ -1,13 +1,13 @@
 import Loader from '@/components/common/icons/loader/loader';
+import Validating from '@/components/common/icons/validating';
 import TextInput from '@/components/common/text-input/text-input';
 import { sleep } from '@/lib/helpers';
 import useDebouncedEffect from '@/lib/hooks/use-debounced-effect';
 import { trpc } from '@/trpc/client';
 import { EmailError } from '@/validation/errors';
-import { emailErrors, emailSchema } from '@/validation/user/email';
+import { emailErrors} from '@/validation/user/email';
 import { getResponse } from '@/validation/utils';
 import { TRPCClientError } from '@trpc/client';
-import { on } from 'events';
 import { Check, Mail } from 'lucide-react';
 import { type ChangeEvent, useState } from 'react';
 import { z, ZodError } from 'zod';
@@ -29,7 +29,11 @@ export default function Email({ value: email, onChange }: Props) {
         { email },
         { enabled: false, retry: false }
     );
-    const icon = available ? <Check /> : validating ? <Loader /> : null;
+    const icon = available ? (
+        <Check style={{ color: 'var(--color-success)' }} />
+    ) : validating ? (
+        <Loader fadeIn />
+    ) : null;
 
     useDebouncedEffect(
         async () => {
@@ -82,17 +86,16 @@ export default function Email({ value: email, onChange }: Props) {
         try {
             z.string().email().parse(value);
             setValidating(true);
-        } catch {
-
-        }
+        } catch {}
         setAvailable(false);
     }
 
     return (
         <TextInput
             label="E-mail"
+            required
             prefixIcon={<Mail />}
-            suffixIcon={icon}
+            suffixIcon={<Validating pending={validating} success={available} />}
             error={error}
             placeholder="you@example.com"
             value={email}

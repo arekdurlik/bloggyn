@@ -1,6 +1,6 @@
 import { procedure, protectedProcedure, router } from '@/trpc';
 import { type inferRouterOutputs } from '@trpc/server';
-import { accounts, type User, users } from '../db/schema';
+import { accounts, type User, users, verificationCodes } from '../db/schema';
 import { desc, eq, sql } from 'drizzle-orm';
 import { EmailError, UserError } from '@/validation/errors';
 import { z } from 'zod';
@@ -9,8 +9,12 @@ import bcrypt from 'bcrypt';
 import { usernameSchema } from '@/validation/user/username';
 import { displayNameSchema } from '@/validation/user/displayName';
 import { emailSchema } from '@/validation/user/email';
+import jwt from 'jsonwebtoken';
+import { Resend } from 'resend';
 
 export type AuthRouterOutput = inferRouterOutputs<typeof authRouter>;
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const authRouter = router({
     checkEmailAvailability: procedure
@@ -40,12 +44,15 @@ export const authRouter = router({
     signUp: procedure
         .input(
             z.object({
-                email: z.string().email(),
+                email: emailSchema,
                 password: z.string(),
             })
         )
         .mutation(async ({ input, ctx: { db } }) => {
             try {
+                const email = input.email.toLowerCase();
+                let token = '';
+
                 await db.transaction(async tx => {
                     let user: User[] = [];
 
@@ -53,7 +60,7 @@ export const authRouter = router({
                         user = await tx
                             .insert(users)
                             .values({
-                                email: input.email,
+                                email,
                             })
                             .returning();
                     } catch (error) {
@@ -61,7 +68,7 @@ export const authRouter = router({
                             if ('code' in error && error.code == 23505) {
                                 throw new XTRPCError({
                                     code: 'CONFLICT',
-                                    key: UserError.EMAIL_TAKEN,
+                                    key: EmailError.EMAIL_TAKEN,
                                     message: 'E-mail already registered',
                                 });
                             } else throw error;
@@ -72,7 +79,7 @@ export const authRouter = router({
                         .select()
                         .from(accounts)
                         .where(eq(accounts.provider, 'credentials'))
-                        .orderBy(desc(accounts.providerAccountId))
+                        .orderBy(desc(accounts.createdAt))
                         .limit(1);
 
                     const hashedPassword = bcrypt.hashSync(input.password, 12);
@@ -106,9 +113,59 @@ export const authRouter = router({
                             }
                         }
                     }
+
+                    // store verification code and send email
+
+                    try {
+                        const randomCode = Math.floor(
+                            Math.random() * 899999 + 100000
+                        );
+
+                        // store verification code
+                        await tx.insert(verificationCodes).values({
+                            email,
+                            code: randomCode.toString(),
+                        });
+
+                        // hash email for response
+                        const secret = process.env.VERIFICATION_SECRET;
+                        jwt;
+
+                        if (!secret) {
+                            throw new Error('Verification secret not set');
+                        } else {
+                            token = jwt.sign(
+                                {
+                                    email,
+                                },
+                                secret
+                            );
+                        }
+
+                        // send email
+                        /* const res = await resend.emails.send({
+                            from: 'onboarding@resend.dev',
+                            to: 'arekdurlikk@gmail.com',
+                            subject: 'bloggyn - Verify your email',
+                            html: `
+                                <p>
+                                Verification code: ${randomCode}
+                                </p>
+                                `,
+                        });
+                        if (res.error) {
+                            throw new Error('Error sending verification email');
+                        } */
+                    } catch (error) {
+                        throw error;
+                    }
                 });
 
-                return 'ok';
+                if (token.length) {
+                    return {
+                        token,
+                    };
+                }
             } catch (error) {
                 if (error instanceof XTRPCError) {
                     throw error;

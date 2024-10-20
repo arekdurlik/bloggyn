@@ -79,6 +79,12 @@ export const accounts = createTable(
         scope: varchar('scope', { length: 255 }),
         id_token: text('id_token'),
         session_state: varchar('session_state', { length: 255 }),
+        createdAt: timestamp('created_at', {
+            mode: 'string',
+            withTimezone: true,
+        })
+            .default(sql`CURRENT_TIMESTAMP`)
+            .notNull(),
     },
     account => ({
         compoundKey: primaryKey({
@@ -91,3 +97,22 @@ export const accounts = createTable(
 export const accountsRelations = relations(accounts, ({ one }) => ({
     user: one(users, { fields: [accounts.userId], references: [users.id] }),
 }));
+
+export const verificationCodes = createTable(
+    'verification_code',
+    {
+        email: varchar('email', { length: 255 }).notNull(),
+        code: varchar('code', { length: 6 }).notNull(),
+        createdAt: timestamp('created_at', {
+            mode: 'string',
+            withTimezone: true,
+        })
+            .default(sql`CURRENT_TIMESTAMP`)
+            .notNull(),
+    },
+    verificationCode => ({
+        compoundKey: primaryKey({
+            columns: [verificationCode.email, verificationCode.code],
+        }),
+    })
+);

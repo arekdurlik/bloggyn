@@ -20,6 +20,7 @@ type Props = {
     onDelete?: (index: number) => void;
     onComplete?: (value: string) => void;
     children: ReactNode;
+    className?: string;
 };
 
 const OTPInputContext = createContext<OTPInputContextType>(null!);
@@ -32,6 +33,7 @@ export default function OTPInput({
     onDelete,
     onComplete,
     children,
+    className,
 }: Props) {
     const [state, setState] = useState<OTPInputState>({
         focusedIndex: -1,
@@ -162,7 +164,8 @@ export default function OTPInput({
                 className={cn(
                     styles.container,
                     state.selectedAll && styles.selectedAll,
-                    focusedViaMouse.current && styles.focusedViaMouse
+                    focusedViaMouse.current && styles.focusedViaMouse,
+                    className
                 )}
                 onClick={handleClick}
                 onBlur={handleBlur}
