@@ -13,7 +13,7 @@ import styles from './text-input.module.scss';
 import { cn } from '@/lib/helpers';
 import { X } from 'lucide-react';
 
-type Props = {
+export type TextInputProps = {
     value: string;
     id?: string;
     required?: boolean;
@@ -28,7 +28,7 @@ type Props = {
     onBlur?: (event: FocusEvent<HTMLElement>) => void;
 } & InputHTMLAttributes<HTMLInputElement>;
 
-const TextInput = forwardRef<HTMLInputElement, Props>(
+const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
     (
         {
             value,

@@ -276,7 +276,7 @@ export const authRouter = router({
                 });
             }
         }),
-    checkUsernameAvailability: protectedProcedure
+    checkUsernameAvailability: procedure
         .input(
             z.object({
                 username: usernameSchema,

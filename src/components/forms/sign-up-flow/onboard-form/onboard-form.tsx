@@ -10,12 +10,9 @@ import { z, ZodError } from 'zod';
 import Username from './inputs/username';
 import DisplayName from './inputs/display-name';
 import { useOnboardFormStore } from './store';
-import Button from '@/components/common/button';
+import Button from '@/components/common/inputs/button';
 import { usernameSchema } from '@/validation/user/username';
 import { displayNameSchema } from '@/validation/user/displayName';
-
-export const THROTTLE_TIME = 500;
-export const FAKE_REQUEST_TIME = 150;
 
 export default function OnboardForm() {
     const { formData, errors, api } = useOnboardFormStore();
@@ -35,16 +32,18 @@ export default function OnboardForm() {
         event.preventDefault();
 
         try {
-            const result = z.object({
-                username: usernameSchema,
-                displayName: displayNameSchema
-            }).parse(formData);
+            const result = z
+                .object({
+                    username: usernameSchema,
+                    displayName: displayNameSchema,
+                })
+                .parse(formData);
 
             if (!dirty) return;
 
             await completeSignUp.mutateAsync(result);
             await update({ onboarded: true });
-            router.push('/')
+            router.push('/');
         } catch (error) {
             setDirty(false);
             if (error instanceof ZodError) {
@@ -62,10 +61,11 @@ export default function OnboardForm() {
             <div className={styles.container}>
                 <div className={styles.header}>
                     <h1>Almost there!</h1>
+                    <p>Let's finish setting up your account.</p>
                     <p>
-                        Let's finish setting up your account.
+                        Everything except the username can later be changed
+                        through profile settings.
                     </p>
-                    <p>Everything except the username can later be changed through profile settings.</p>
                 </div>
                 <form onSubmit={handleSubmit}>
                     <div className={styles.fields}>

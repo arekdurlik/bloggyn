@@ -1,6 +1,5 @@
 'use client';
 
-import VerifyCodeInput from '@/components/common/verify-code-input/verify-code-input';
 import { useSearchParams } from 'next/navigation';
 
 import formStyles from '../../forms.module.scss';
@@ -11,8 +10,9 @@ import { cn } from '@/lib/helpers';
 import { trpc } from '@/trpc/client';
 import { config } from '@/lib/config';
 import { useEffect, useState } from 'react';
-import Button, { ButtonLink } from '@/components/common/button';
+import Button, { ButtonLink } from '@/components/common/inputs/button';
 import { check } from 'drizzle-orm/pg-core';
+import VerifyCodeInput from './verify-code-input/verify-code-input';
 
 export default function VerifyEmailForm() {
     const [verified, setVerified] = useState(false);

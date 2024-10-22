@@ -28,9 +28,15 @@ export const useOnboardFormStore = create<OnboardFormStore>((set, get) => ({
     },
     api: {
         setUsername: (username: string) =>
-            set({ formData: { ...get().formData, username } }),
+            set({
+                formData: { ...get().formData, username },
+                errors: { ...get().errors, username: '' },
+            }),
         setDisplayName: (displayName: string) =>
-            set({ formData: { ...get().formData, displayName } }),
+            set({
+                formData: { ...get().formData, displayName },
+                errors: { ...get().errors, displayName: '' },
+            }),
         setUsernameError: (error: string) =>
             set({ errors: { ...get().errors, username: error } }),
         setDisplayNameError: (error: string) =>

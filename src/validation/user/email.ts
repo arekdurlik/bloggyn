@@ -10,6 +10,7 @@ export const emailErrors = {
 };
 
 export const emailSchema = z
-    .string({ required_error: 'Email is required' })
+    .string()
+    .min(1, 'Email is required')
     .email({ message: 'Invalid email' })
     .trim();

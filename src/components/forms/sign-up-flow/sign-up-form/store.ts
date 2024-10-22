@@ -28,9 +28,15 @@ export const useSignUpFormStore = create<SignUpFormStore>((set, get) => ({
     },
     api: {
         setEmail: (email: string) =>
-            set({ formData: { ...get().formData, email } }),
+            set({
+                formData: { ...get().formData, email },
+                errors: { ...get().errors, email: '' },
+            }),
         setPassword: (password: string) =>
-            set({ formData: { ...get().formData, password } }),
+            set({
+                formData: { ...get().formData, password },
+                errors: { ...get().errors, password: '' },
+            }),
         setEmailError: (error: string) =>
             set({ errors: { ...get().errors, email: error } }),
         setPasswordError: (error: string) =>

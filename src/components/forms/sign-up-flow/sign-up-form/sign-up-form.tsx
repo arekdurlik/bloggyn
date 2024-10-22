@@ -1,10 +1,10 @@
 'use client';
 
 import { signIn } from 'next-auth/react';
-import { type FormEvent, useState } from 'react';
+import { type FormEvent } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { trpc } from '@/trpc/client';
-import Button from '@/components/common/button';
+import Button from '@/components/common/inputs/button';
 import Github from '@/components/common/icons/github';
 
 import formStyles from '../../forms.module.scss';
@@ -25,7 +25,6 @@ export default function SignUpForm({
     onFormChange?: (form: SignUpStep) => void;
 }) {
     const { formData, errors, api } = useSignUpFormStore();
-    const [dirty, setDirty] = useState(false);
     const signUp = trpc.signUp.useMutation();
     const splitEmail = formData.email.split('@');
     const censoredEmail =
@@ -35,9 +34,12 @@ export default function SignUpForm({
         '@' +
         splitEmail[1];
     const encodedEmail = btoa(censoredEmail);
+    const hasErrors = Object.values(errors).some(Boolean);
 
     async function handleSubmit(event: FormEvent) {
         event.preventDefault();
+
+        if (hasErrors) return;
 
         try {
             const result = z
@@ -46,8 +48,6 @@ export default function SignUpForm({
                     password: passwordSchema,
                 })
                 .parse(formData);
-
-            if (!dirty) return;
 
             const res = await signUp.mutateAsync(result);
 
@@ -60,7 +60,6 @@ export default function SignUpForm({
                 onFormChange?.(SignUpStep.VERIFY_EMAIL);
             }
         } catch (error) {
-            setDirty(false);
             if (error instanceof ZodError) {
                 const errors = error.formErrors.fieldErrors;
                 api.setErrors({
@@ -89,7 +88,11 @@ export default function SignUpForm({
                 <div className={formStyles.inputGroup}>
                     <Email />
                     <Password />
-                    <Button inverted style={{ marginTop: 10 }}>
+                    <Button
+                        inverted
+                        style={{ marginTop: 10 }}
+                        disabled={hasErrors}
+                    >
                         Join bloggyn
                         <ArrowRight />
                     </Button>

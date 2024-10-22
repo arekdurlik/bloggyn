@@ -1,6 +1,6 @@
 'use client';
 
-import Button from '@/components/common/button';
+import Button from '@/components/common/inputs/button';
 import styles from './sign-in-form.module.scss';
 import { signIn } from 'next-auth/react';
 import Github from '@/components/common/icons/github';

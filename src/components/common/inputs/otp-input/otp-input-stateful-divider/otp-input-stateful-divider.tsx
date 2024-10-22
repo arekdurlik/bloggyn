@@ -1,8 +1,8 @@
 import { Check, X } from 'lucide-react';
 import styles from './otp-input-stateful-divider.module.scss';
-import Loader from '../../icons/loader/loader';
 import { cn } from '@/lib/helpers';
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { type ReactNode, useEffect, useState } from 'react';
+import Loader from '@/components/common/icons/loader/loader';
 
 export type State = 'success' | 'pending' | 'error' | '';
 

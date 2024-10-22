@@ -1,6 +1,6 @@
 import { SearchIcon } from 'lucide-react';
 import styles from './search.module.scss';
-import Button from '@/components/common/button';
+import Button from '@/components/common/inputs/button';
 import { useSearchState } from '@/stores/search';
 import SearchBar from './search-bar';
 import SearchResults from './search-results/search-results';

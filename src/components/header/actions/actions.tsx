@@ -2,7 +2,7 @@ import { useSession } from 'next-auth/react';
 import User from './user/user';
 import { usePathname } from 'next/navigation';
 import { Fragment } from 'react';
-import { ButtonLink } from '@/components/common/button';
+import { ButtonLink } from '@/components/common/inputs/button';
 import { Pencil } from 'lucide-react';
 import CenterAction from './center-action/center-action';
 import { cn } from '@/lib/helpers';

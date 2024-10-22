@@ -1,7 +1,7 @@
 import { usePathname } from 'next/navigation';
 import styles from './center-action.module.scss';
 import { BookCheck } from 'lucide-react';
-import Button from '@/components/common/button';
+import Button from '@/components/common/inputs/button';
 import { cn } from '@/lib/helpers';
 import { Fragment } from 'react';
 import Search from './search';

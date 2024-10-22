@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const passwordSchema = z
-    .string({ required_error: 'Password is required' })
+    .string()
     .min(6, { message: 'Password must be at least 6 characters' })
     .max(20, { message: 'Password cannot be more than 20 characters' })
     .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
