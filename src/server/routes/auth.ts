@@ -3,14 +3,16 @@ import { type inferRouterOutputs } from '@trpc/server';
 import { accounts, type User, users, verificationCodes } from '../db/schema';
 import { desc, eq, sql } from 'drizzle-orm';
 import { EmailError, UserError } from '@/validation/errors';
-import { z } from 'zod';
+import { string, z } from 'zod';
 import { XTRPCError } from '@/validation/xtrpc-error';
 import bcrypt from 'bcrypt';
 import { usernameSchema } from '@/validation/user/username';
 import { displayNameSchema } from '@/validation/user/displayName';
 import { emailSchema } from '@/validation/user/email';
-import jwt from 'jsonwebtoken';
+import jwt, { type JwtPayload } from 'jsonwebtoken';
 import { Resend } from 'resend';
+import { config } from '@/lib/config';
+import { check } from 'drizzle-orm/pg-core';
 
 export type AuthRouterOutput = inferRouterOutputs<typeof authRouter>;
 
@@ -129,7 +131,6 @@ export const authRouter = router({
 
                         // hash email for response
                         const secret = process.env.VERIFICATION_SECRET;
-                        jwt;
 
                         if (!secret) {
                             throw new Error('Verification secret not set');
@@ -145,7 +146,7 @@ export const authRouter = router({
                         // send email
                         /* const res = await resend.emails.send({
                             from: 'onboarding@resend.dev',
-                            to: 'arekdurlikk@gmail.com',
+                            to: process.env.RESEND_LOCAL_EMAIL ?? '',
                             subject: 'bloggyn - Verify your email',
                             html: `
                                 <p>
@@ -175,6 +176,104 @@ export const authRouter = router({
                         message: 'Error creating user',
                     });
                 }
+            }
+        }),
+    getVerificationCode: procedure
+        .input(
+            z.object({
+                token: string(),
+            })
+        )
+        .query(async ({ input, ctx: { db } }) => {
+            try {
+                if (config.EMAIL_ENABLED) {
+                    throw new Error();
+                }
+
+                const secret = process.env.VERIFICATION_SECRET ?? '';
+                const decoded = jwt.verify(input.token, secret) as JwtPayload;
+
+                if ('email' in decoded) {
+                    const result = await db.query.verificationCodes.findFirst({
+                        where: eq(
+                            sql`lower(${verificationCodes.email})`,
+                            decoded.email.toLowerCase()
+                        ),
+                    });
+
+                    if (!result) {
+                        throw new Error();
+                    }
+
+                    const expiresIn = config.VERIFICATION_CODE_EXPIRES_IN;
+                    const createdAt = new Date(result.createdAt).getTime();
+                    const codeLifetime = Date.now() - createdAt;
+
+                    if (codeLifetime > expiresIn) {
+                        throw new Error();
+                    }
+
+                    return {
+                        code: result.code,
+                    };
+                }
+            } catch {
+                throw new XTRPCError({
+                    code: 'BAD_REQUEST',
+                    message: 'Invalid verification code',
+                });
+            }
+        }),
+    checkVerificationCode: procedure
+        .input(
+            z.object({
+                token: z.string(),
+            })
+        )
+        .query(async ({ input, ctx: { db } }) => {
+            try {
+                const secret = process.env.VERIFICATION_SECRET ?? '';
+                const decoded = jwt.verify(input.token, secret) as JwtPayload;
+
+                if ('email' in decoded) {
+                    const result = await db.query.verificationCodes.findFirst({
+                        where: eq(
+                            sql`lower(${verificationCodes.email})`,
+                            decoded.email.toLowerCase()
+                        ),
+                    });
+
+                    if (!result) {
+                        throw new Error();
+                    }
+
+                    const expiresIn = config.VERIFICATION_CODE_EXPIRES_IN;
+                    const createdAt = new Date(result.createdAt).getTime();
+                    const codeLifetime = Date.now() - createdAt;
+
+                    if (codeLifetime > expiresIn) {
+                        throw new Error();
+                    }
+
+                    await db
+                        .update(users)
+                        .set({
+                            emailVerified: sql`NOW()`,
+                        })
+                        .where(
+                            eq(
+                                sql`lower(${users.email})`,
+                                decoded.email.toLowerCase()
+                            )
+                        );
+                }
+
+                return 'ok';
+            } catch {
+                throw new XTRPCError({
+                    code: 'BAD_REQUEST',
+                    message: 'Invalid verification code',
+                });
             }
         }),
     checkUsernameAvailability: protectedProcedure

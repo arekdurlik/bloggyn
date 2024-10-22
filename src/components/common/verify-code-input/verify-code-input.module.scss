@@ -1,5 +1,10 @@
 .input {
     input {
-        aspect-ratio: 1;
+        // aspect-ratio:1 makes borders uneven
+        height: 93px;
+        font-size: 3.5rem;
+        &:not(.joined):not(:last-child) {
+            margin-right: var(--spacing-xxl);
+        }
     }
 }

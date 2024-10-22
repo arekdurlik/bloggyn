@@ -3,7 +3,24 @@ import { useOTPInputContext } from '../otp-input';
 import styles from './otp-input-slot.module.scss';
 import { cn } from '@/lib/helpers';
 
-export default function OTPInputSlot({ index }: { index?: number }) {
+type Props = {
+    index?: number;
+}
+
+type InternalProps = Props & {
+    joined?: boolean;
+    firstInGroup?: boolean;
+}
+
+export default function OTPInputSlot(props: Props) {
+    return <OTPInputSlotImpl {...props} />;
+}
+
+export function OTPInputSlotImpl({
+    index,
+    joined,
+    firstInGroup,
+}: InternalProps) {
     const [internalIndex, setInternalIndex] = useState(index ?? -2);
     const [{ chars, focusedIndex, maxLength }, api] = useOTPInputContext();
     const ref = useRef<HTMLInputElement>(null!);
@@ -81,6 +98,8 @@ export default function OTPInputSlot({ index }: { index?: number }) {
             value={chars[internalIndex] || ''}
             className={cn(
                 styles.slot,
+                joined && styles.joined,
+                firstInGroup && styles.firstInGroup,
                 focusedIndex === internalIndex && styles.focused
             )}
             maxLength={1}

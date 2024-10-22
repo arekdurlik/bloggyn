@@ -1,17 +1,18 @@
 'use client';
 
-import Button from '../common/button';
 import { useSession } from 'next-auth/react';
 import { trpc } from '@/trpc/client';
 import { type FormEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import styles from './onboard-form.module.scss';
-import { onboardSchema } from '@/validation/user';
-import { ZodError } from 'zod';
+import { z, ZodError } from 'zod';
 import Username from './inputs/username';
 import DisplayName from './inputs/display-name';
 import { useOnboardFormStore } from './store';
+import Button from '@/components/common/button';
+import { usernameSchema } from '@/validation/user/username';
+import { displayNameSchema } from '@/validation/user/displayName';
 
 export const THROTTLE_TIME = 500;
 export const FAKE_REQUEST_TIME = 150;
@@ -34,7 +35,10 @@ export default function OnboardForm() {
         event.preventDefault();
 
         try {
-            const result = onboardSchema.parse(formData);
+            const result = z.object({
+                username: usernameSchema,
+                displayName: displayNameSchema
+            }).parse(formData);
 
             if (!dirty) return;
 

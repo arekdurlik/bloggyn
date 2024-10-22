@@ -1,4 +1,3 @@
-import Loader from '@/components/common/icons/loader/loader';
 import Validating from '@/components/common/icons/validating';
 import TextInput from '@/components/common/text-input/text-input';
 import { sleep } from '@/lib/helpers';
@@ -8,19 +7,16 @@ import { EmailError } from '@/validation/errors';
 import { emailErrors} from '@/validation/user/email';
 import { getResponse } from '@/validation/utils';
 import { TRPCClientError } from '@trpc/client';
-import { Check, Mail } from 'lucide-react';
+import { Mail } from 'lucide-react';
 import { type ChangeEvent, useState } from 'react';
 import { z, ZodError } from 'zod';
-
-type Props = {
-    value: string;
-    onChange: (value: string) => void;
-};
+import { useSignUpFormStore } from '../store';
 
 const THROTTLE_TIME = 500;
 const FAKE_REQUEST_TIME = 150;
 
-export default function Email({ value: email, onChange }: Props) {
+export default function Email() {
+    const { formData: { email }, api } = useSignUpFormStore();
     const [takenEmails, setTakenEmails] = useState<string[]>([]);
     const [error, setError] = useState('');
     const [validating, setValidating] = useState(false);
@@ -29,11 +25,6 @@ export default function Email({ value: email, onChange }: Props) {
         { email },
         { enabled: false, retry: false }
     );
-    const icon = available ? (
-        <Check style={{ color: 'var(--color-success)' }} />
-    ) : validating ? (
-        <Loader fadeIn />
-    ) : null;
 
     useDebouncedEffect(
         async () => {
@@ -81,7 +72,7 @@ export default function Email({ value: email, onChange }: Props) {
         const value = event.target.value;
         setError('');
 
-        onChange(value);
+        api.setEmail(value);
 
         try {
             z.string().email().parse(value);

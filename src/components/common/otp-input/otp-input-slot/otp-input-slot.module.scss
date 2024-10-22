@@ -7,6 +7,12 @@
     min-height: 40px;
     outline-offset: -1px;
     transition: background-color var(--transition-sloth);
+    border: 1px solid var(--border);
+    border-radius: var(--rounded-large);
+
+    &:has(+ input) {
+        margin-right: var(--spacing-large);
+    }
 
     &:focus {
         background-color: var(--textInput-default-bgColor-active);
@@ -23,15 +29,16 @@
         border: 1px solid var(--border);
     }
 
-    &:not(:has(+ input)) {
-        border: 1px solid var(--border);
-        border-left: none;
-        border-top-right-radius: var(--rounded-large);
-        border-bottom-right-radius: var(--rounded-large);
-    }
-
-    &:has(+ input) {
-    border: 1px solid var(--border);
-        border-left: none;
+    &.joined {
+        &:has(+ .joined:not(.first-in-group)) {
+            margin-right: 0;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+            & + .joined {
+                border-left: none;
+                border-top-left-radius: 0;
+                border-bottom-left-radius: 0;
+            }
+        }
     }
 }

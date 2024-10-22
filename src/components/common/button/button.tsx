@@ -27,13 +27,26 @@ type ButtonLinkProps = {
     inverted?: boolean;
     style?: CSSProperties;
     className?: string;
+    disabled?: boolean;
     children?: React.ReactNode;
 } & LinkProps;
 
-export function ButtonLink({ inverted, className, ...props }: ButtonLinkProps) {
+export function ButtonLink({
+    inverted,
+    disabled,
+    className,
+    ...props
+}: ButtonLinkProps) {
     return (
         <Link
-            className={cn(styles.button, inverted && styles.inverted, className)}
+            aria-disabled={disabled}
+            tabIndex={disabled ? -1 : 0}
+            className={cn(
+                styles.button,
+                inverted && styles.inverted,
+                disabled && styles.disabled,
+                className,
+            )}
             {...props}
         >
             <span className={styles.content}>{props.children}</span>

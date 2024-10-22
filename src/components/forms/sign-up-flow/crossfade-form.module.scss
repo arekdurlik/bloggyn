@@ -1,0 +1,43 @@
+.wrapper {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.crossfade-form {
+    top: 0;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    transition: opacity var(--transition-default);
+    padding: var(--spacing-xxl);
+    margin-top: var(--headerHeight);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+
+    &.hidden {
+        opacity: 0;
+        transition: none !important;
+    }
+
+    &.fade-in {
+        animation: fade-out reverse var(--transition-default) forwards linear;
+    }
+
+    &.fade-out {
+        animation: fade-out var(--transition-default) forwards linear;
+        pointer-events: none;
+    }
+
+    &.previous {
+        z-index: 2;
+    }
+}
+
+@keyframes fade-out {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+}

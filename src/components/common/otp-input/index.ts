@@ -5,3 +5,4 @@ export {
     type State,
 } from './otp-input-stateful-divider/otp-input-stateful-divider';
 export { default as OTPInputSlot } from './otp-input-slot/otp-input-slot';
+export { default as OTPInputGroup } from './otp-input-group/otp-input-group';

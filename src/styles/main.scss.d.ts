@@ -1,5 +1,10 @@
 export declare const active: string;
+export declare const animationAppear: string;
+export declare const animationAppearSloth: string;
+export declare const animationAppearSlow: string;
 export declare const animationSlideIn: string;
+export declare const animationSlideInSloth: string;
+export declare const appear: string;
 export declare const articleContent: string;
 export declare const isEditorEmpty: string;
 export declare const loaderContainer: string;

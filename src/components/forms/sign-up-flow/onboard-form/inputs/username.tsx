@@ -1,11 +1,4 @@
-import {
-    UserError,
-    usernameErrors,
-    USERNAME_MAX,
-    usernameSchema,
-} from '@/validation/user';
-import { Check } from 'lucide-react';
-import Loader from '../../common/icons/loader/loader';
+
 import { type ChangeEvent, useState } from 'react';
 import { useOnboardFormStore } from '../store';
 import TextInput from '@/components/common/text-input/text-input';
@@ -18,6 +11,9 @@ import { ZodError } from 'zod';
 import { TRPCClientError } from '@trpc/client';
 import { trpc } from '@/trpc/client';
 import { getResponse } from '@/validation/utils';
+import { USERNAME_MAX, usernameErrors, usernameSchema } from '@/validation/user/username';
+import { UserError } from '@/validation/errors';
+import Validating from '@/components/common/icons/validating';
 
 export default function Username() {
     const [available, setAvailable] = useState(false);
@@ -36,7 +32,6 @@ export default function Username() {
     );
 
     const placeholder = slug(session?.user.name ?? '').replace('-', '');
-    const icon = available ? <Check /> : validating ? <Loader /> : null;
 
     useDebouncedEffect(
         async () => {
@@ -99,7 +94,7 @@ export default function Username() {
         <TextInput
             name="username"
             label="Username"
-            suffixIcon={icon}
+            suffixIcon={<Validating success={available} pending={validating} />}
             onChange={handleChange}
             error={error}
             required

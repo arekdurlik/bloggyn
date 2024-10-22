@@ -10,3 +10,9 @@ export enum SOCKET_EV {
     NOTIFICATION = 'notification',
     NOTIFY = 'n',
 }
+
+export enum SignUpStep {
+    SIGN_UP = 'sign-up',
+    VERIFY_EMAIL = 'verify-email',
+    ONBOARD = 'onboard',
+}

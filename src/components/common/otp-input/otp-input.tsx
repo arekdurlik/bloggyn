@@ -122,6 +122,7 @@ export default function OTPInput({
 
     function handleClick() {
         const firstEmpty = state.chars.findIndex(char => char === '');
+        focusedViaMouse.current = true;
 
         if (firstEmpty !== -1) {
             state.fields[firstEmpty]?.current?.focus();
@@ -142,7 +143,7 @@ export default function OTPInput({
     }
 
     function handleBlur(event: FocusEvent) {
-        if (event.relatedTarget) {
+        if (!ref.current.contains(event.relatedTarget as Node)) {
             focusedViaMouse.current = false;
             setState(state => ({ ...state, focusedIndex: -1 }));
         }

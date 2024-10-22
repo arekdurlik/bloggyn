@@ -13,10 +13,22 @@
     width: fit-content;
     min-width: 100px;
     transition: border-color var(--transition-default), background-color var(--transition-default);
+
+    &.disabled {
+        cursor: default;
+        pointer-events: none;
+        background-color: var(--color-base-90);
+        color: var(--fgColor-subtle);
+    }
 }
 
 .inverted {
     @include control-inverted;
+
+    &.disabled {
+        background-color: var(--color-base-60);
+        color: var(--fgColor-barely-visible);
+    }
 }
 
 .content {
