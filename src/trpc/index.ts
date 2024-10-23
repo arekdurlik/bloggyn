@@ -14,7 +14,17 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
 
 export type Context = Awaited<ReturnType<typeof createTRPCContext>>;
 
-const trpc = initTRPC.context<Context>().create();
+const trpc = initTRPC.context<Context>().create({
+    errorFormatter({ error, shape }) {
+        return {
+            ...shape,
+            data: {
+                ...shape.data,
+                ...('key' in error && { key: error.key }),
+            },
+        };
+    },
+});
 
 export const router = trpc.router;
 export const createCallerFactory = trpc.createCallerFactory;

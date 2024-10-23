@@ -1,13 +1,14 @@
 'use client';
 
 import { signIn } from 'next-auth/react';
-import { type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { trpc } from '@/trpc/client';
 import Button from '@/components/common/inputs/button';
 import Github from '@/components/common/icons/github';
 
 import formStyles from '../../forms.module.scss';
+
 import Google from '@/components/common/icons/google';
 import Email from './inputs/email';
 import Password from './inputs/password';
@@ -18,14 +19,18 @@ import { emailSchema } from '@/validation/user/email';
 import { passwordSchema } from '@/validation/user/password';
 import { z, ZodError } from 'zod';
 import { useSignUpFormStore } from './store';
+import { TRPCClientError } from '@trpc/client';
+import { Link } from 'next-view-transitions';
+import Form from '@/components/form';
 
 export default function SignUpForm({
     onFormChange,
 }: {
     onFormChange?: (form: SignUpStep) => void;
 }) {
-    const { formData, errors, api } = useSignUpFormStore();
-    const signUp = trpc.signUp.useMutation();
+    const [dirty, setDirty] = useState(false);
+    const { validating, formData, errors, api } = useSignUpFormStore();
+
     const splitEmail = formData.email.split('@');
     const censoredEmail =
         splitEmail[0]?.slice(0, 2) +
@@ -34,13 +39,27 @@ export default function SignUpForm({
         '@' +
         splitEmail[1];
     const encodedEmail = btoa(censoredEmail);
-    const hasErrors = Object.values(errors).some(Boolean);
 
-    async function handleSubmit(event: FormEvent) {
-        event.preventDefault();
+    const signUp = trpc.signUp.useMutation();
 
-        if (hasErrors) return;
+    useEffect(() => {
+        const empty = Object.values(formData).filter(Boolean).length === 0;
+        if (!empty) {
+            setDirty(true);
+        }
+    }, [formData]);
 
+    function handleSubmitAttempt() {
+        if (!formData.email) {
+            api.setEmailError('Email is required');
+        }
+
+        if (!formData.password) {
+            api.setPasswordError('Password is required');
+        }
+    }
+
+    async function handleSubmit() {
         try {
             const result = z
                 .object({
@@ -66,6 +85,8 @@ export default function SignUpForm({
                     email: errors.email?.[0] ?? '',
                     password: errors.password?.[0] ?? '',
                 });
+            } else if (error instanceof TRPCClientError) {
+                console.log('err', error);
             }
         }
     }
@@ -84,24 +105,31 @@ export default function SignUpForm({
                 </Button>
             </div>
             <div className={formStyles.divider}>or continue with e-mail</div>
-            <form onSubmit={handleSubmit}>
+            <Form
+                errors={errors}
+                disabled={validating || !dirty}
+                onSubmitAttempt={handleSubmitAttempt}
+                onSubmitSuccess={handleSubmit}
+            >
                 <div className={formStyles.inputGroup}>
                     <Email />
                     <Password />
-                    <Button
-                        inverted
-                        style={{ marginTop: 10 }}
-                        disabled={hasErrors}
-                    >
-                        Join bloggyn
-                        <ArrowRight />
-                    </Button>
+                    <div className={formStyles.buttons}>
+                        <Button inverted>
+                            Join bloggyn
+                            <ArrowRight />
+                        </Button>
+                    </div>
                 </div>
-                <span className={formStyles.terms}>
-                    By signing up, you agree that your data may be deleted at
-                    any time, without prior notice or confirmation.
-                </span>
-            </form>
+            </Form>
+            <span className={formStyles.terms}>
+                By signing up, you agree that your data may be deleted at any
+                time, without prior notice or confirmation.
+            </span>
+            <div className={formStyles.divider}></div>
+            <span className={formStyles.redirect}>
+                Already have an account? <Link href="/sign-in">Sign in</Link>
+            </span>
         </>
     );
 }

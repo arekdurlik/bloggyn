@@ -11,7 +11,6 @@ import { trpc } from '@/trpc/client';
 import { config } from '@/lib/config';
 import { useEffect, useState } from 'react';
 import Button, { ButtonLink } from '@/components/common/inputs/button';
-import { check } from 'drizzle-orm/pg-core';
 import VerifyCodeInput from './verify-code-input/verify-code-input';
 
 export default function VerifyEmailForm() {
@@ -35,7 +34,7 @@ export default function VerifyEmailForm() {
     useEffect(() => {
         if (code.data?.code) {
             window.alert(
-                'Sending e-mails is disabled. Your code is: ' + code.data.code
+                'Verification e-mails are currently disabled. Your code is: ' + code.data.code
             );
         }
     }, [code.data]);

@@ -1,4 +1,10 @@
-import { type ChangeEvent, type InputHTMLAttributes, useState } from 'react';
+import {
+    type ChangeEvent,
+    type InputHTMLAttributes,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
 import useDebouncedEffect from '@/lib/hooks/use-debounced-effect';
 import { sleep } from '@/lib/helpers';
 import { ZodError, type ZodType } from 'zod';
@@ -7,7 +13,6 @@ import Validating from '@/components/common/icons/validating';
 import TextInput, {
     type TextInputProps,
 } from '@/components/common/inputs/text-input/text-input';
-import { suffixIcon } from '@/components/common/inputs/text-input/text-input.module.scss';
 
 type Props = {
     label: string;
@@ -24,7 +29,9 @@ type Props = {
     onSuccess?: (value: string) => void;
     onError?: (error: string) => void;
     onChange?: (value: string) => void;
+    onValidate?: (value?: string, success?: boolean) => void;
     validate?: ((value: string) => boolean | Promise<boolean>)[];
+    validateOnEmpty?: boolean;
 } & Omit<TextInputProps, 'onChange' | 'onError'>;
 
 enum State {
@@ -50,7 +57,9 @@ export default function ValidatedInput({
     onSuccess,
     onError,
     onChange,
+    onValidate,
     validate,
+    validateOnEmpty,
     ...props
 }: Props) {
     const [validating, setValidating] = useState(false);
@@ -64,12 +73,9 @@ export default function ValidatedInput({
         ? true
         : false;
 
-    const suffix =
-        suffixIcon && !validating ? (
-            suffixIcon
-        ) : (
-            <Validating success={finalSuccess} pending={validating} />
-        );
+    const validateIcon = (
+        <Validating success={finalSuccess} pending={validating} />
+    );
 
     useDebouncedEffect(
         async () => {
@@ -91,6 +97,7 @@ export default function ValidatedInput({
                 }
                 setState(State.SUCCESS);
                 onSuccess?.(value);
+                onValidate?.(value, true);
             } catch (error) {
                 if (error instanceof ZodError) {
                     await sleep(fakeRequestTime);
@@ -101,6 +108,7 @@ export default function ValidatedInput({
 
                     setInternalError(res);
                     onError?.(res);
+                    onValidate?.(value, false);
                     setState(State.ERROR);
                 }
             } finally {
@@ -114,11 +122,16 @@ export default function ValidatedInput({
 
     function handleChange(event: ChangeEvent<HTMLInputElement>) {
         const value = event.target.value;
-
         onChange?.(value);
         setInternalError('');
-        setState(State.PENDING);
-        setValidating(true);
+
+        if (validateOnEmpty || value.length > 0) {
+            setState(State.PENDING);
+            setValidating(true);
+        } else {
+            setValidating(false);
+            setState(State.NONE);
+        }
     }
 
     return (
@@ -126,7 +139,8 @@ export default function ValidatedInput({
             name={label.toLowerCase()}
             label={label}
             value={value}
-            suffixIcon={suffix}
+            validateIcon={validateIcon}
+            suffixIcon={suffixIcon}
             onChange={handleChange}
             error={finalError}
             helpText={helpText}

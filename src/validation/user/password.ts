@@ -1,9 +1,13 @@
 import { z } from 'zod';
 
+export const PASSWORD_MAX_LENGTH = 40;
+
 export const passwordSchema = z
     .string()
     .min(6, { message: 'Password must be at least 6 characters' })
-    .max(20, { message: 'Password cannot be more than 20 characters' })
+    .max(PASSWORD_MAX_LENGTH, {
+        message: 'Password cannot be more than 40 characters',
+    })
     .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
     .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
     .regex(

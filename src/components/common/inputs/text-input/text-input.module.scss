@@ -10,6 +10,8 @@
 }
 
 .input-wrapper {
+    position: relative;
+    overflow: hidden;
     display: flex;
     align-items: center;
     min-height: 40px;
@@ -19,11 +21,9 @@
     border: 1px solid var(--control-default-borderColor-rest);
     padding-inline: var(--spacing-xl);
     outline-color: transparent;
-    transition: outline-color var(--transition-default), border-color var(--transition-default), background-color var(--transition-sloth);
+    transition: outline-color var(--transition-default), border-color var(--transition-default), background-color var(--transition-default);
 
     &:focus-within {
-        border-color: var(--control-default-borderColor-active);
-
         background-color: var(--textInput-default-bgColor-active);
 
         /* svg {
@@ -93,10 +93,50 @@
     line-height: 1;
 }
 
+@keyframes flash {
+    0% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 0.1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+.flash {
+    div.input-wrapper:before {
+        opacity: 0.1;
+    }
+}
+
 .error {
+    @for $i from 0 through 10 {
+        &:nth-child(#{$i + 1}n) {
+            .input-wrapper:before {
+                transition-delay: #{$i * 0.033}s;
+            }
+        }
+    }
+
     .input-wrapper {
         border-color: var(--color-error) !important;
         outline-color: var(--color-error) !important;
+
+        &:before {
+            content: '';
+            pointer-events: none;
+            z-index: 2;
+            position: absolute;
+            inset: 0;
+            background-color: var(--color-error);
+            opacity: 0;
+            transition: opacity var(--transition-slow);
+            transition-timing-function: ease-in;
+
+
+        }
     }
 
     .error-text {

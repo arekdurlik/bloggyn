@@ -10,8 +10,8 @@ import {
     usernameErrors,
     usernameSchema,
 } from '@/validation/user/username';
-import { UserError } from '@/validation/errors';
-import ValidatedInput from './validated-input';
+import { EmailError, UserError } from '@/validation/errors';
+import ValidatedInput from '../../../../common/inputs/validated-input';
 
 export default function Username() {
     const [available, setAvailable] = useState(false);
@@ -41,15 +41,17 @@ export default function Username() {
                 setAvailable(true);
                 return true;
             } catch (error) {
-                api.setUsernameError(
-                    getResponse(usernameErrors, UserError.USERNAME_TAKEN)
-                );
-
                 if (error instanceof TRPCClientError) {
-                    setTakenUsernames(v => [
-                        ...v,
-                        formData.username.toLowerCase(),
-                    ]);
+                    if (error.data.key === UserError.USERNAME_TAKEN) {
+                        api.setUsernameError(
+                            getResponse(usernameErrors, UserError.USERNAME_TAKEN)
+                        );
+
+                        setTakenUsernames(v => [
+                            ...v,
+                            formData.username.toLowerCase(),
+                        ]);
+                    }
                 }
 
                 return false;

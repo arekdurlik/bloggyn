@@ -13,9 +13,9 @@
     width: 100%;
     transition: opacity var(--transition-default);
     padding: var(--spacing-xxl);
-    margin-top: var(--headerHeight);
     display: flex;
     flex-direction: column;
+    justify-content: center;
     gap: var(--spacing-xl);
 
     &.hidden {

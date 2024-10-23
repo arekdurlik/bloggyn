@@ -2,10 +2,12 @@
 
 import {
     type ChangeEvent,
+    type CSSProperties,
     type FocusEvent,
     forwardRef,
     type InputHTMLAttributes,
     type MouseEvent,
+    type ReactNode,
     useRef,
     useState,
 } from 'react';
@@ -17,8 +19,9 @@ export type TextInputProps = {
     value: string;
     id?: string;
     required?: boolean;
-    prefixIcon?: React.ReactNode;
-    suffixIcon?: React.ReactNode;
+    prefixIcon?: ReactNode;
+    validateIcon?: ReactNode;
+    suffixIcon?: ReactNode;
     label?: string;
     error?: string;
     helpText?: string;
@@ -35,11 +38,13 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
             id,
             required,
             prefixIcon,
+            validateIcon,
             suffixIcon,
             label,
             error,
             helpText,
             clearButton,
+            className,
             onChange,
             onFocus,
             onBlur,
@@ -87,7 +92,12 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
             <div
                 ref={wrapperRef}
                 onMouseDown={handleClick}
-                className={cn(styles.wrapper, error && styles.error)}
+                className={cn(
+                    styles.wrapper,
+                    error && styles.error,
+                    error && 'error',
+                    className
+                )}
             >
                 {label && (
                     <label htmlFor={label}>
@@ -113,7 +123,7 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
                                 ref.current = node;
                             }
                         }}
-                        id={label ?? id}
+                        id={label?.toLowerCase() ?? id}
                         value={value}
                         type="text"
                         onChange={onChange}
@@ -135,6 +145,9 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
                         >
                             <X />
                         </button>
+                    )}
+                    {validateIcon && (
+                        <div className={styles.suffixIcon}>{validateIcon}</div>
                     )}
                     {suffixIcon && (
                         <div className={styles.suffixIcon}>{suffixIcon}</div>

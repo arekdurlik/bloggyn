@@ -1,14 +1,22 @@
 [data-theme="dark"] {
     --github-color: #fff;
 
-    --fgColor-heading:          var(--color-white);
     --bgColor-default:          var(--color-dark);
-    --fgColor-default:          hsl(0, 0%, 93%);
-    --fgColor-subtle:           hsl(0, 0%, 50%);
-    --fgColor-barely-visible:   hsl(0, 0%, 25%);
-    --control-default-fgColor:  hsl(0, 0%, 93%);
+    --fgColor-default:          var(--color-base-85);
+    --fgColor-heading:          var(--color-base-90);
+    --fgColor-subtle:           var(--color-base-50);
+    --fgColor-barely-visible:   var(--color-base-20);
     --border:                   color-mix(in hsl, #fff, var(--color-dark) 89%);
     --header-bgColor:           var(--color-dark);
 
+
+    --control-default-bgColor-hover: hsl(0, 0%, 6%);
+    --control-default-bgColor-active: var(--color-base-10);
+    --control-default-borderColor-hover: var(--color-base-10);
+
     --control-inverted-bgColor-rest: var(--fgColor-heading);
+    --control-inverted-bgColor-hover: var(--color-base-80);
+    --control-inverted-bgColor-active: var(--color-base-75);
+
+    --textInput-default-bgColor-active: hsl(0, 0%, 6%);
 }

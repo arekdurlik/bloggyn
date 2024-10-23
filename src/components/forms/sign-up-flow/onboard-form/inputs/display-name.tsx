@@ -5,7 +5,7 @@ import {
     DISPLAY_NAME_MAX,
     displayNameSchema,
 } from '@/validation/user/displayName';
-import ValidatedInput from './validated-input';
+import ValidatedInput from '../../../../common/inputs/validated-input';
 
 export default function DisplayName() {
     const { data: session } = useSession();

@@ -6,7 +6,7 @@ import { Mail } from 'lucide-react';
 import { useState } from 'react';
 import { z } from 'zod';
 import { useSignUpFormStore } from '../store';
-import ValidatedInput from '../../onboard-form/inputs/validated-input';
+import ValidatedInput from '../../../../common/inputs/validated-input';
 import { trpc } from '@/trpc/client';
 
 export default function Email() {
@@ -32,7 +32,15 @@ export default function Email() {
                 return true;
             } catch (error) {
                 if (error instanceof TRPCClientError) {
-                    setTakenEmails(v => [...v, formData.email.toLowerCase()]);
+                    if (error.data.key === EmailError.EMAIL_TAKEN) {
+                        api.setEmailError(
+                            getResponse(emailErrors, EmailError.EMAIL_TAKEN)
+                        );
+                        setTakenEmails(v => [
+                            ...v,
+                            formData.email.toLowerCase(),
+                        ]);
+                    }
                 }
                 return false;
             }
@@ -50,7 +58,9 @@ export default function Email() {
             prefixIcon={<Mail />}
             showSuccess
             error={errors.email}
+            onError={api.setEmailError}
             onChange={api.setEmail}
+            onValidate={() => api.setValidating(false)}
         />
     );
 }

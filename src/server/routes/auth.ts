@@ -4,7 +4,6 @@ import { accounts, type User, users, verificationCodes } from '../db/schema';
 import { desc, eq, sql } from 'drizzle-orm';
 import { EmailError, UserError } from '@/validation/errors';
 import { string, z } from 'zod';
-import { XTRPCError } from '@/validation/xtrpc-error';
 import bcrypt from 'bcrypt';
 import { usernameSchema } from '@/validation/user/username';
 import { displayNameSchema } from '@/validation/user/displayName';
@@ -12,11 +11,11 @@ import { emailSchema } from '@/validation/user/email';
 import jwt, { type JwtPayload } from 'jsonwebtoken';
 import { Resend } from 'resend';
 import { config } from '@/lib/config';
-import { check } from 'drizzle-orm/pg-core';
+import { XTRPCError } from '@/validation/xtrpc-error';
 
 export type AuthRouterOutput = inferRouterOutputs<typeof authRouter>;
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+/* const resend = new Resend(process.env.RESEND_API_KEY); */
 
 export const authRouter = router({
     checkEmailAvailability: procedure
@@ -119,8 +118,9 @@ export const authRouter = router({
                     // store verification code and send email
 
                     try {
+                        // 4 digits
                         const randomCode = Math.floor(
-                            Math.random() * 899999 + 100000
+                            1000 + Math.random() * 9000
                         );
 
                         // store verification code

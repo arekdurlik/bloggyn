@@ -1,6 +1,6 @@
 .form {
     position: relative;
-    width: clamp(10vw, 475px, calc(100vw + 2px));
+    width: clamp(10vw, 450px, calc(100vw + 2px));
     box-shadow: -35px 0px 60px -90px #000000, 35px 0px 60px -90px #000000;
     height: 100%;
 
@@ -99,7 +99,8 @@
     background-color: var(--bgColor-default);
     transition: background-color var(--transition-theme);
     width: 100%;
-    overflow-y: hidden;
+    height: calc(100% - var(--headerHeight));
+    margin-top: var(--headerHeight);
 
     & > button {
         transition: border-color var(--transition-default), background-color var(--transition-default);
@@ -137,12 +138,14 @@
         transition: background-color var(--transition-theme);
     }
 
-    &::before {
-        margin-right: var(--spacing-large);
-    }
+    &:not(:empty) {
+        &::before {
+            margin-right: var(--spacing-large);
+        }
 
-    &::after {
-        margin-left: var(--spacing-large);
+        &::after {
+            margin-left: var(--spacing-large);
+        }
     }
 }
 
@@ -157,9 +160,21 @@
     }
 }
 
+.buttons {
+    margin-top: var(--spacing-xxl);
+}
+
 .terms {
     padding-inline: var(--spacing-xl);
     text-align: center;
     color: var(--fgColor-subtle);
     font-size: var(--text-small);
+    text-wrap: balance;
+}
+
+.redirect {
+    text-align: center;
+    a {
+        font-weight: bold;
+    }
 }
