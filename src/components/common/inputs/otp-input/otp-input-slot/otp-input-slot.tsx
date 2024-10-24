@@ -16,7 +16,7 @@ export default function OTPInputSlot(props: Props) {
     return <OTPInputSlotImpl {...props} />;
 }
 
-export function OTPInputSlotImpl({
+function OTPInputSlotImpl({
     index,
     joined,
     firstInGroup,

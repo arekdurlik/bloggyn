@@ -5,22 +5,28 @@ import { TRPCClientError } from '@trpc/client';
 import { Mail } from 'lucide-react';
 import { useState } from 'react';
 import { z } from 'zod';
-import { useSignUpFormStore } from '../store';
-import ValidatedInput from '../../../../common/inputs/validated-input';
 import { trpc } from '@/trpc/client';
+import { useFormContext } from '@/components/common/form/context';
+import FormInput from '@/components/common/form/form-input';
 
-export default function Email() {
-    const { formData, errors, api } = useSignUpFormStore();
+type Props = {
+    value: string;
+    onChange?: (value: string) => void;
+};
+
+export default function Email({ value: email, onChange }: Props) {
     const [takenEmails, setTakenEmails] = useState<string[]>([]);
     const checkAvailability = trpc.checkEmailAvailability.useQuery(
-        { email: formData.email },
+        { email },
         { enabled: false, retry: false }
     );
+    const { errors, api } = useFormContext();
 
     const validations = [
         (value: string) => {
             if (takenEmails.includes(value.toLowerCase())) {
-                api.setEmailError(
+                api.setError(
+                    'email',
                     getResponse(emailErrors, EmailError.EMAIL_TAKEN)
                 );
                 return false;
@@ -33,13 +39,11 @@ export default function Email() {
             } catch (error) {
                 if (error instanceof TRPCClientError) {
                     if (error.data.key === EmailError.EMAIL_TAKEN) {
-                        api.setEmailError(
+                        api.setError(
+                            'email',
                             getResponse(emailErrors, EmailError.EMAIL_TAKEN)
                         );
-                        setTakenEmails(v => [
-                            ...v,
-                            formData.email.toLowerCase(),
-                        ]);
+                        setTakenEmails(v => [...v, email.toLowerCase()]);
                     }
                 }
                 return false;
@@ -48,20 +52,20 @@ export default function Email() {
     ];
 
     return (
-        <ValidatedInput
+        <FormInput
+            name="email"
             required
             inputMode="email"
             schema={z.string().email()}
             validate={validations}
             label="E-mail"
             placeholder="you@example.com"
-            value={formData.email}
+            value={email}
             prefixIcon={<Mail />}
             showSuccess
             error={errors.email}
-            onError={api.setEmailError}
-            onChange={api.setEmail}
-            onValidate={() => api.setValidating(false)}
+            onError={error => api.setError('email', error)}
+            onChange={onChange}
         />
     );
 }

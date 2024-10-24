@@ -1,7 +1,7 @@
 'use client';
 
 import { signIn } from 'next-auth/react';
-import { useEffect, useState, type FormEvent } from 'react';
+import { useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { trpc } from '@/trpc/client';
 import Button from '@/components/common/inputs/button';
@@ -15,21 +15,25 @@ import Password from './inputs/password';
 
 import React from 'react';
 import { SignUpStep } from '@/lib/constants';
-import { emailSchema } from '@/validation/user/email';
+import { emailErrors, emailSchema } from '@/validation/user/email';
 import { passwordSchema } from '@/validation/user/password';
-import { z, ZodError } from 'zod';
-import { useSignUpFormStore } from './store';
+import { z } from 'zod';
 import { Link } from 'next-view-transitions';
-import Form from '@/components/form';
 import { openToast, ToastType } from '@/stores/toasts';
+import Form from '@/components/common/form/form';
+import { TRPCClientError } from '@trpc/client';
+import { EmailError } from '@/validation/errors';
+import { getResponse } from '@/validation/utils';
 
 export default function SignUpForm({
     onFormChange,
 }: {
     onFormChange?: (form: SignUpStep) => void;
 }) {
-    const [dirty, setDirty] = useState(false);
-    const { validating, formData, errors, api } = useSignUpFormStore();
+    const [formData, setFormData] = useState({
+        email: '',
+        password: '',
+    });
 
     const splitEmail = formData.email.split('@');
     const censoredEmail =
@@ -41,25 +45,6 @@ export default function SignUpForm({
     const encodedEmail = btoa(censoredEmail);
 
     const signUp = trpc.signUp.useMutation();
-
-    useEffect(() => {
-        const empty = Object.values(formData).filter(Boolean).length === 0;
-        if (!empty) {
-            setDirty(true);
-        }
-    }, [formData]);
-
-    function handleSubmitAttempt() {
-
-        if (!formData.email) {
-            api.setEmailError('Email is required');
-        }
-
-        if (!formData.password) {
-            api.setPasswordError('Password is required');
-
-        }
-    }
 
     async function handleSubmit() {
         try {
@@ -81,14 +66,19 @@ export default function SignUpForm({
                 onFormChange?.(SignUpStep.VERIFY_EMAIL);
             }
         } catch (error) {
-            if (error instanceof ZodError) {
-                const errors = error.formErrors.fieldErrors;
-                api.setErrors({
-                    email: errors.email?.[0] ?? '',
-                    password: errors.password?.[0] ?? '',
-                });
+            if (
+                error instanceof TRPCClientError &&
+                error.data.key === EmailError.EMAIL_TAKEN
+            ) {
+                openToast(
+                    ToastType.ERROR,
+                    getResponse(emailErrors, EmailError.EMAIL_TAKEN)
+                );
             } else {
-                openToast(ToastType.ERROR,'Something went wrong 🤧 Please try again.');
+                openToast(
+                    ToastType.ERROR,
+                    'Something went wrong 🤧 Please try again.'
+                );
             }
         }
     }
@@ -107,16 +97,20 @@ export default function SignUpForm({
                 </Button>
             </div>
             <div className={formStyles.divider}>or continue with e-mail</div>
-            <Form
-                fieldErrors={errors}
-                attemptDisabled={validating}
-                submitDisabled={!dirty}
-                onSubmitAttempt={handleSubmitAttempt}
-                onSubmitSuccess={handleSubmit}
-            >
+            <Form onSubmit={handleSubmit}>
                 <div className={formStyles.inputGroup}>
-                    <Email />
-                    <Password />
+                    <Email
+                        value={formData.email}
+                        onChange={value =>
+                            setFormData({ ...formData, email: value })
+                        }
+                    />
+                    <Password
+                        value={formData.password}
+                        onChange={value =>
+                            setFormData({ ...formData, password: value })
+                        }
+                    />
                     <div className={formStyles.buttons}>
                         <Button inverted>
                             Join bloggyn

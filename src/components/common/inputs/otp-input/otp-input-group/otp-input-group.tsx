@@ -1,5 +1,4 @@
-import { Children, cloneElement, ReactNode } from 'react';
-import { OTPInputSlotImpl } from '../otp-input-slot/otp-input-slot';
+import { Children, cloneElement, type ReactNode } from 'react';
 
 export default function OTPInputGroup({ children }: { children: ReactNode }) {
     const childrenWithJoinedProp = Children.map(children, (child, index) =>

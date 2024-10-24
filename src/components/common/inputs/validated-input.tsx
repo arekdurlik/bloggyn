@@ -14,7 +14,7 @@ import TextInput, {
     type TextInputProps,
 } from '@/components/common/inputs/text-input/text-input';
 
-type Props = {
+export type ValidatedInputProps = {
     label: string;
     placeholder?: string;
     value: string;
@@ -61,7 +61,7 @@ export default function ValidatedInput({
     validate,
     validateOnEmpty,
     ...props
-}: Props) {
+}: ValidatedInputProps) {
     const [validating, setValidating] = useState(false);
     const [internalError, setInternalError] = useState('');
     const [state, setState] = useState(State.NONE);
