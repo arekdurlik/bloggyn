@@ -50,6 +50,7 @@ export default function Email() {
     return (
         <ValidatedInput
             required
+            inputMode="email"
             schema={z.string().email()}
             validate={validations}
             label="E-mail"

@@ -16,6 +16,7 @@
     --shadow-small: 0px 1px 0px 0px #1f23280a;
     --shadow-default: 0px 3px 6px 0px #424a531f;
     --shadow-large: 0px 6px 18px 0px #25292e1f;
+    --shadow-barely-visible: 0px 6px 18px 0px #25292e06;
 
     --transition-instant: 75ms;
     --transition-fast: 100ms;
@@ -48,9 +49,12 @@
 
     // COLORS
 
-    --color-github:         rgb(23, 21, 21);
-    --color-error:          hsl(0, 70%, 50%);
-    --color-success:        hsl(138, 70%, 40%);
+    --color-github: rgb(23, 21, 21);
+
+    --color-info: hsl(198, 43%, 52%);
+    --color-success: hsl(138, 70%, 40%);
+    --color-warning: hsl(46, 70%, 55%);
+    --color-error: hsl(0, 80%, 50%);
 
     --navy-hue: 225;
     --navy-sat: 45%;
@@ -58,30 +62,30 @@
     --sepia-hue: 38;
     --sepia-sat: 44%;
 
-    --color-base-0:     hsl(0, 0%, 0%);
-    --color-base-5:     hsl(0, 0%, 5%);
-    --color-base-10:    hsl(0, 0%, 10%);
-    --color-base-15:    hsl(0, 0%, 15%);
-    --color-base-20:    hsl(0, 0%, 20%);
-    --color-base-25:    hsl(0, 0%, 25%);
-    --color-base-30:    hsl(0, 0%, 30%);
-    --color-base-40:    hsl(0, 0%, 40%);
-    --color-base-50:    hsl(0, 0%, 50%);
-    --color-base-60:    hsl(0, 0%, 60%);
-    --color-base-70:    hsl(0, 0%, 70%);
-    --color-base-75:    hsl(0, 0%, 75%);
-    --color-base-80:    hsl(0, 0%, 80%);
-    --color-base-85:    hsl(0, 0%, 85%);
-    --color-base-90:    hsl(0, 0%, 90%);
-    --color-base-95:    hsl(0, 0%, 95%);
-    --color-base-97:    hsl(0, 0%, 97%);
-    --color-base-100:   hsl(0, 0%, 100%);
+    --color-base-0: hsl(0, 0%, 0%);
+    --color-base-5: hsl(0, 0%, 5%);
+    --color-base-10: hsl(0, 0%, 10%);
+    --color-base-15: hsl(0, 0%, 15%);
+    --color-base-20: hsl(0, 0%, 20%);
+    --color-base-25: hsl(0, 0%, 25%);
+    --color-base-30: hsl(0, 0%, 30%);
+    --color-base-40: hsl(0, 0%, 40%);
+    --color-base-50: hsl(0, 0%, 50%);
+    --color-base-60: hsl(0, 0%, 60%);
+    --color-base-70: hsl(0, 0%, 70%);
+    --color-base-75: hsl(0, 0%, 75%);
+    --color-base-80: hsl(0, 0%, 80%);
+    --color-base-85: hsl(0, 0%, 85%);
+    --color-base-90: hsl(0, 0%, 90%);
+    --color-base-95: hsl(0, 0%, 95%);
+    --color-base-97: hsl(0, 0%, 97%);
+    --color-base-100: hsl(0, 0%, 100%);
 
-    --bgColor-default:              var(--color-base-100);
-    --fgColor-heading:              var(--color-base-10);
-    --fgColor-default:              var(--color-base-20);
-    --fgColor-subtle:               var(--color-base-60);
-    --fgColor-barely-visible:       var(--color-base-80);
+    --bgColor-default: var(--color-base-100);
+    --fgColor-heading: var(--color-base-10);
+    --fgColor-default: var(--color-base-20);
+    --fgColor-subtle: var(--color-base-60);
+    --fgColor-barely-visible: var(--color-base-80);
 
     --header-bgColor: var(--bgColor-default);
 
@@ -90,31 +94,35 @@
     // THEME SWITCHER
     --color-navy: hsl(var(--navy-hue), var(--navy-sat), 20%);
     --color-light: white;
-    --color-dark:  black;
+    --color-dark: black;
     --color-sepia: hsl(var(--sepia-hue), var(--sepia-sat), 78%);
 
-    --textInput-default-bgColor-active:    var(--color-base-97);
+    --textInput-default-bgColor-active: var(--color-base-97);
 
     // BUTTONS
-    --control-default-fgColor-rest:         var(--fgColor-default);
-    --control-default-bgColor-rest:         var(--bgColor-default);
-    --control-default-bgColor-hover:        var(--color-base-95);
-    --control-default-bgColor-active:       var(--color-base-90);
-    --control-default-borderColor-rest:     var(--border);
-    --control-default-borderColor-hover:    var(--color-base-80);
-    --control-default-borderColor-active:    var(--color-base-85);
-    --control-default-transition:
-        color var(--transition-default),
+    --control-default-fgColor-rest: var(--fgColor-default);
+    --control-default-bgColor-rest: var(--bgColor-default);
+    --control-default-bgColor-hover: var(--color-base-95);
+    --control-default-bgColor-active: var(--color-base-90);
+    --control-default-borderColor-rest: var(--border);
+    --control-default-borderColor-hover: var(--color-base-80);
+    --control-default-borderColor-active: var(--color-base-85);
+    --control-error-bgColor-flash: color-mix(
+        in hsl,
+        var(--color-error),
+        transparent 90%
+    );
+
+    --control-default-transition: color var(--transition-default),
         background-color var(--transition-default),
         border-color var(--transition-default);
 
-    --control-inverted-fgColor-rest:        var(--bgColor-default);
-    --control-inverted-fgColor-hover:       var(--color-base-95);
-    --control-inverted-bgColor-disabled:    var(--color-base-40);
-    --control-inverted-bgColor-rest:        var(--fgColor-heading);
-    --control-inverted-bgColor-hover:       var(--color-base-20);
-    --control-inverted-bgColor-active:      var(--color-base-30);
-    --control-inverted-borderColor-rest:    var(--control-inverted-bgColor-rest);
-    --control-inverted-borderColor-hover:   var(--control-inverted-bgColor-rest);
-
+    --control-inverted-fgColor-rest: var(--bgColor-default);
+    --control-inverted-fgColor-hover: var(--color-base-95);
+    --control-inverted-bgColor-disabled: var(--color-base-40);
+    --control-inverted-bgColor-rest: var(--fgColor-heading);
+    --control-inverted-bgColor-hover: var(--color-base-20);
+    --control-inverted-bgColor-active: var(--color-base-30);
+    --control-inverted-borderColor-rest: var(--control-inverted-bgColor-rest);
+    --control-inverted-borderColor-hover: var(--control-inverted-bgColor-rest);
 }

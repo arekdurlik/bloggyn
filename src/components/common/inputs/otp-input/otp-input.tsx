@@ -17,7 +17,7 @@ type Props = {
     value: string;
     onChange?: (value: string) => void;
     onInput?: (index: number, char: string) => void;
-    onDelete?: (index: number) => void;
+    onDelete?: () => void;
     onComplete?: (value: string) => void;
     children: ReactNode;
     className?: string;
@@ -111,13 +111,13 @@ export default function OTPInput({
         }
     }
 
-    function handleDelete(index: number) {
+    function handleDelete() {
         if (state.selectedAll) {
             onChange?.('');
         } else {
-            onChange?.(state.chars.join('').substring(0, index));
+            onChange?.(state.chars.join('').substring(0, state.chars.length - 1));
         }
-        onDelete?.(index);
+        onDelete?.();
     }
 
     function handleClick() {

@@ -43,7 +43,7 @@ export function OTPInputSlotImpl({
         switch (event.key) {
             case 'Backspace':
                 event.preventDefault();
-                api.handleDelete(internalIndex - 1);
+                api.handleDelete();
                 break;
             case 'a':
             case 'A':
@@ -95,6 +95,8 @@ export function OTPInputSlotImpl({
     return (
         <input
             ref={ref}
+            inputMode="numeric"
+            pattern="[0-9]"
             value={chars[internalIndex] || ''}
             className={cn(
                 styles.slot,

@@ -101,6 +101,7 @@
     width: 100%;
     height: calc(100% - var(--headerHeight));
     margin-top: var(--headerHeight);
+    padding: var(--spacing-xxxl);
 
     & > button {
         transition: border-color var(--transition-default), background-color var(--transition-default);

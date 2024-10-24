@@ -7,16 +7,16 @@
 }
 
 .crossfade-form {
-    top: 0;
     position: absolute;
+    inset: 0;
     height: 100%;
     width: 100%;
     transition: opacity var(--transition-default);
-    padding: var(--spacing-xxl);
     display: flex;
     flex-direction: column;
     justify-content: center;
     gap: var(--spacing-xl);
+    padding: var(--spacing-xxl);
 
     &.hidden {
         opacity: 0;

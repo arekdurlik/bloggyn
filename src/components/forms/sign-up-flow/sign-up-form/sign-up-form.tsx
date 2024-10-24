@@ -19,9 +19,9 @@ import { emailSchema } from '@/validation/user/email';
 import { passwordSchema } from '@/validation/user/password';
 import { z, ZodError } from 'zod';
 import { useSignUpFormStore } from './store';
-import { TRPCClientError } from '@trpc/client';
 import { Link } from 'next-view-transitions';
 import Form from '@/components/form';
+import { openToast, ToastType } from '@/stores/toasts';
 
 export default function SignUpForm({
     onFormChange,
@@ -50,12 +50,14 @@ export default function SignUpForm({
     }, [formData]);
 
     function handleSubmitAttempt() {
+
         if (!formData.email) {
             api.setEmailError('Email is required');
         }
 
         if (!formData.password) {
             api.setPasswordError('Password is required');
+
         }
     }
 
@@ -85,8 +87,8 @@ export default function SignUpForm({
                     email: errors.email?.[0] ?? '',
                     password: errors.password?.[0] ?? '',
                 });
-            } else if (error instanceof TRPCClientError) {
-                console.log('err', error);
+            } else {
+                openToast(ToastType.ERROR,'Something went wrong 🤧 Please try again.');
             }
         }
     }
@@ -106,8 +108,9 @@ export default function SignUpForm({
             </div>
             <div className={formStyles.divider}>or continue with e-mail</div>
             <Form
-                errors={errors}
-                disabled={validating || !dirty}
+                fieldErrors={errors}
+                attemptDisabled={validating}
+                submitDisabled={!dirty}
                 onSubmitAttempt={handleSubmitAttempt}
                 onSubmitSuccess={handleSubmit}
             >

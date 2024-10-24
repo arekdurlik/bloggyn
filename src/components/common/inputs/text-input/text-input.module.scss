@@ -22,6 +22,7 @@
     padding-inline: var(--spacing-xl);
     outline-color: transparent;
     transition: outline-color var(--transition-default), border-color var(--transition-default), background-color var(--transition-default);
+    box-shadow: inset var(--shadow-barely-visible);
 
     &:focus-within {
         background-color: var(--textInput-default-bgColor-active);
@@ -93,21 +94,9 @@
     line-height: 1;
 }
 
-@keyframes flash {
-    0% {
-        opacity: 0;
-    }
-    50% {
-        opacity: 0.1;
-    }
-    100% {
-        opacity: 0;
-    }
-}
-
 .flash {
     div.input-wrapper:before {
-        opacity: 0.1;
+        opacity: 1;
     }
 }
 
@@ -130,9 +119,9 @@
             z-index: 2;
             position: absolute;
             inset: 0;
-            background-color: var(--color-error);
+            background-color: var(--control-error-bgColor-flash);
             opacity: 0;
-            transition: opacity var(--transition-slow);
+            transition: opacity var(--transition-default);
             transition-timing-function: ease-in;
 
 

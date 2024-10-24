@@ -110,7 +110,7 @@ export default function ValidatedInput({
                     onError?.(res);
                     onValidate?.(value, false);
                     setState(State.ERROR);
-                }
+                } else throw error;
             } finally {
                 setValidating(false);
             }

@@ -1,6 +1,7 @@
 import {
     type FormEvent,
     type FormEventHandler,
+    type KeyboardEvent,
     type ReactNode,
     useEffect,
     useRef,
@@ -10,22 +11,25 @@ import textInputStyles from '@/components/common/inputs/text-input/text-input.mo
 
 type Props = {
     children: ReactNode;
-    errors?: Record<string, string>;
-    disabled?: boolean;
+    fieldErrors?: Record<string, string>;
+    attemptDisabled?: boolean;
+    submitDisabled?: boolean;
     onSubmitAttempt?: () => void;
     onSubmitSuccess?: FormEventHandler<HTMLFormElement>;
 };
 
 export default function Form({
     children,
-    errors,
-    disabled,
+    fieldErrors,
+    attemptDisabled,
+    submitDisabled,
     onSubmitAttempt,
     onSubmitSuccess,
 }: Props) {
     const [attemptedSubmit, setAttemptedSubmit] = useState(false);
     const formRef = useRef<HTMLFormElement>(null!);
     const timeoutRef = useRef<NodeJS.Timeout>();
+    const hasErrors = Object.values(fieldErrors ?? {}).some(Boolean);
 
     function flashErrors() {
         clearTimeout(timeoutRef.current!);
@@ -43,7 +47,7 @@ export default function Form({
             inputs.forEach(input => {
                 input.classList.remove(textInputStyles.flash);
             });
-        }, 300);
+        }, 350);
     }
 
     useEffect(() => {
@@ -51,15 +55,18 @@ export default function Form({
             flashErrors();
             setAttemptedSubmit(false);
         }
-    }, [errors]);
+    }, [fieldErrors]);
 
     function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
+        event.stopPropagation();
+
+        if (attemptDisabled) return;
 
         onSubmitAttempt?.();
         setAttemptedSubmit(true);
 
-        if (disabled || errors) return;
+        if (submitDisabled || hasErrors) return;
 
         onSubmitSuccess?.(event);
     }

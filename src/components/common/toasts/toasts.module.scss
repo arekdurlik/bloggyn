@@ -1,0 +1,155 @@
+.wrapper {
+    --toastTotalHeight: 70px;
+    position: fixed;
+    overflow: hidden;
+    inset: 0;
+    padding: 20px;
+    pointer-events: none;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-end;
+    z-index: 200;
+}
+
+.toast {
+    position: relative;
+    pointer-events: all;
+    height: var(--toastTotalHeight);
+    border-radius: var(--rounded-xl);
+    border: 1px solid var(--border);
+    margin-bottom: 10px;
+    background-color: var(--bgColor-default);
+    transition: background-color var(--transition-theme);
+    box-shadow: var(--shadow-barely-visible);
+    overflow: hidden;
+
+    &.info {
+        color: '#4f99b8';
+    }
+
+    &.success {
+        color: var(--color-success);
+    }
+
+    &.error {
+        color: var(--color-error);
+        border-color: color-mix(in srgb, var(--color-error), transparent);
+        background-color: color-mix(
+            in srgb,
+            var(--color-error),
+            var(--bgColor-default) 92%
+        );
+
+        .life {
+            background-color: var(--color-error);
+        }
+
+        svg {
+            color: var(--color-error);
+        }
+    }
+
+    &.warning {
+        color: var(--color-warning);
+    }
+
+    @keyframes fade-in {
+        0% {
+            margin-bottom: 0px;
+            opacity: 0;
+            height: 0px;
+            transform: translateY(-25%);
+        }
+        50% {
+        }
+        75% {
+            height: var(--toastTotalHeight);
+        }
+        100% {
+            opacity: 1;
+        }
+    }
+
+    @keyframes fade-out {
+        0% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0;
+            transform: translateY(25%);
+        }
+        100% {
+            opacity: 0;
+            height: 0px;
+            margin-bottom: 0px;
+        }
+    }
+    &.fade-out {
+        animation: fade-out var(--transition-slow) ease-out forwards;
+    }
+
+    animation: fade-in var(--transition-sloth) forwards;
+}
+.icon {
+    display: flex;
+    font-size: 16px;
+    padding-right: 10px;
+}
+
+.content {
+    position: relative;
+    overflow: hidden;
+    height: 100%;
+    white-space: pre-wrap;
+    height: calc(var(--toastTotalHeight));
+    gap: var(--spacing-xxl);
+    padding: 0 var(--spacing-xl);
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.close {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    transition: var(--transition-default);
+
+    svg {
+        color: var(--fgColor-subtle);
+    }
+
+    &:hover {
+        opacity: 1;
+        cursor: pointer;
+    }
+}
+
+@keyframes lifetime {
+    0% {
+        opacity: 0;
+        width: 0px;
+    }
+    25% {
+        opacity: 0.05;
+    }
+    100% {
+        opacity: 0.05;
+        width: 100%;
+    }
+}
+
+.life {
+    position: absolute;
+    top: 0;
+    left: 0px;
+    height: 100%;
+    background-color: var(--border);
+    animation-name: lifetime;
+    animation-delay: 250ms;
+    animation-fill-mode: forwards;
+    animation-timing-function: linear;
+}

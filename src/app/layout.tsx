@@ -11,6 +11,7 @@ import { OVERLAY_ID } from '@/lib/constants';
 import { ViewTransitions } from 'next-view-transitions';
 import { cn } from '@/lib/helpers';
 import shared from '@/styles/shared.module.scss';
+import { Toasts } from '@/components/common/toasts/toasts';
 
 export const metadata: Metadata = {
     title: 'bloggyn',
@@ -27,15 +28,14 @@ export default async function RootLayout({
         <html lang="en" data-theme={theme} suppressHydrationWarning>
             <ViewTransitions>
                 <body className={GeistSans.className}>
+                    <Toasts />
                     <Providers>
                         <div
                             className={cn(styles.container, shared.buttonGroup)}
                         >
                             <SessionProvider session={session}>
                                 <Header theme={theme} />
-                                    <div className={styles.content}>
-                                        {children}
-                                    </div>
+                                <div className={styles.content}>{children}</div>
                             </SessionProvider>
                         </div>
                         <div id={OVERLAY_ID} />

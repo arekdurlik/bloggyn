@@ -13,6 +13,7 @@
     width: fit-content;
     min-width: 100px;
     transition: border-color var(--transition-default), background-color var(--transition-default);
+    box-shadow: var(--shadow-barely-visible);
 
     &.disabled {
         cursor: default;

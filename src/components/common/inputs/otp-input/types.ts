@@ -15,7 +15,7 @@ export type OTPInputContextType = [
         onChange?: (value: string) => void;
         focusIndex: (index: number) => void;
         handleInput: (index: number, char: string) => void;
-        handleDelete: (index: number) => void;
+        handleDelete: () => void;
         registerField: (elem: RefObject<HTMLInputElement>) => number;
     }
 ];

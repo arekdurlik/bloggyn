@@ -1,0 +1,13 @@
+export declare const close: string;
+export declare const content: string;
+export declare const error: string;
+export declare const fadeIn: string;
+export declare const fadeOut: string;
+export declare const icon: string;
+export declare const info: string;
+export declare const life: string;
+export declare const lifetime: string;
+export declare const success: string;
+export declare const toast: string;
+export declare const warning: string;
+export declare const wrapper: string;
