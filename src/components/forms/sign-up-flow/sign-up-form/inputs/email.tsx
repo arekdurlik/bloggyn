@@ -6,8 +6,8 @@ import { Mail } from 'lucide-react';
 import { useState } from 'react';
 import { z } from 'zod';
 import { trpc } from '@/trpc/client';
-import { useFormContext } from '@/components/common/form/context';
-import FormInput from '@/components/common/form/form-input';
+import { useFormContext } from '@/components/forms/context';
+import FormInput from '@/components/forms/form-input';
 
 type Props = {
     value: string;

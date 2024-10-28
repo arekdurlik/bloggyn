@@ -14,8 +14,12 @@
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
 .spinner-big {
     position: absolute;
@@ -67,13 +71,20 @@
         flex: 1;
     }
 
-    &:before, &:after {
+    &:before,
+    &:after {
         content: '';
         height: 100%;
         width: 1px;
         background-color: var(--border);
         transition: background-color var(--transition-theme);
-        -webkit-mask-image: linear-gradient(to bottom, transparent 5%, #000 25%, #000 75%, transparent 95%);
+        -webkit-mask-image: linear-gradient(
+            to bottom,
+            transparent 5%,
+            #000 25%,
+            #000 75%,
+            transparent 95%
+        );
         position: absolute;
         top: 0;
         bottom: 0;
@@ -101,16 +112,15 @@
     width: 100%;
     height: calc(100% - var(--headerHeight));
     margin-top: var(--headerHeight);
-    padding: var(--spacing-xxxl);
+    padding: var(--spacing-xxl);
 
     & > button {
-        transition: border-color var(--transition-default), background-color var(--transition-default);
+        transition: border-color var(--transition-default),
+            background-color var(--transition-default);
         svg {
             transition: fill var(--transition-default);
         }
     }
-
-
 }
 
 .header {
@@ -131,7 +141,8 @@
     align-items: center;
     transition: color var(--transition-theme);
 
-    &::before, &::after {
+    &::before,
+    &::after {
         flex: 1;
         content: '';
         height: 1px;

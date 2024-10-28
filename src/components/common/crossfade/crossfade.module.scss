@@ -1,0 +1,25 @@
+.container {
+    display: grid;
+    grid-template-rows: 100%;
+    grid-template-columns: 100%;
+    isolation: isolate;
+
+    & > div {
+        grid-area: 1/1;
+        place-self: center;
+        width: 100%;
+    }
+}
+
+.current {
+    position: relative;
+}
+
+.from {
+    opacity: 1;
+    z-index: 1;
+}
+
+.to {
+    opacity: 0;
+}

@@ -26,7 +26,7 @@ export function Template({ children }: { children: React.ReactNode }) {
                 </div>
             </div>
             <div className={formStyles.contentWrapper}>
-                <div className={formStyles.content}>{children}</div>
+                {children}
             </div>
         </div>
     );

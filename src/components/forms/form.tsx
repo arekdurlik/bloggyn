@@ -1,6 +1,5 @@
-import { type FormEvent, type ReactNode, useEffect, useRef } from 'react';
+import { type FormEvent, type ReactNode, useRef } from 'react';
 import FormProvider, { useFormContext } from './context';
-import textInputStyles from '@/components/common/inputs/text-input/text-input.module.scss';
 
 type Props = {
     children: ReactNode;

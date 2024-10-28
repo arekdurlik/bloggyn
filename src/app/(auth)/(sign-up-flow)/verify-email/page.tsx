@@ -1,6 +1,6 @@
-import CrossfadeForm from '@/components/forms/sign-up-flow/crossfade-form';
+import SignUpFlow from '@/components/forms/sign-up-flow/sign-up-flow';
 import { SignUpStep } from '@/lib/constants';
 
 export default function VerifyEmail() {
-    return <CrossfadeForm step={SignUpStep.VERIFY_EMAIL} />;
+    return <SignUpFlow step={SignUpStep.VERIFY_EMAIL}/>;
 }

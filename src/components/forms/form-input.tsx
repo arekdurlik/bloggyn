@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useFormContext } from './context';
 import ValidatedInput, {
     type ValidatedInputProps,
-} from '../inputs/validated-input';
+} from '../common/inputs/validated-input';
 import textInputStyles from '@/components/common/inputs/text-input/text-input.module.scss';
 import { cn } from '@/lib/helpers';
 
@@ -17,7 +17,7 @@ export default function FormInput({
     ...props
 }: FormInputProps) {
     const { attemptedSubmit, errors, api } = useFormContext();
-    const [newError, setNewError] = useState(false);
+    const [flashingError, setFlashingError] = useState(false);
     const timeoutRef = useRef<NodeJS.Timeout>();
 
     useEffect(() => {
@@ -42,10 +42,10 @@ export default function FormInput({
 
     function flashError() {
         clearTimeout(timeoutRef.current!);
-        setNewError(true);
+        setFlashingError(true);
 
         timeoutRef.current = setTimeout(() => {
-            setNewError(false);
+            setFlashingError(false);
         }, 350);
     }
 
@@ -65,7 +65,7 @@ export default function FormInput({
 
     return (
         <ValidatedInput
-            className={cn(newError && textInputStyles.flash)}
+            className={cn(flashingError && textInputStyles.flash)}
             onChange={handleChange}
             onError={handleError}
             onValidate={handleValidate}

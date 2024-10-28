@@ -6,13 +6,10 @@ import { ArrowRight } from 'lucide-react';
 import { trpc } from '@/trpc/client';
 import Button from '@/components/common/inputs/button';
 import Github from '@/components/common/icons/github';
-
 import formStyles from '../../forms.module.scss';
-
 import Google from '@/components/common/icons/google';
 import Email from './inputs/email';
 import Password from './inputs/password';
-
 import React from 'react';
 import { SignUpStep } from '@/lib/constants';
 import { emailErrors, emailSchema } from '@/validation/user/email';
@@ -20,15 +17,16 @@ import { passwordSchema } from '@/validation/user/password';
 import { z } from 'zod';
 import { Link } from 'next-view-transitions';
 import { openToast, ToastType } from '@/stores/toasts';
-import Form from '@/components/common/form/form';
+import Form from '@/components/forms/form';
 import { TRPCClientError } from '@trpc/client';
 import { EmailError } from '@/validation/errors';
 import { getResponse } from '@/validation/utils';
+import { type OnNextStep } from '../../../common/crossfade-form';
 
 export default function SignUpForm({
-    onFormChange,
+    onNextStep,
 }: {
-    onFormChange?: (form: SignUpStep) => void;
+    onNextStep?: OnNextStep;
 }) {
     const [formData, setFormData] = useState({
         email: '',
@@ -58,13 +56,11 @@ export default function SignUpForm({
             const res = await signUp.mutateAsync(result);
 
             if (res?.token) {
-                window.history.pushState(
-                    {},
-                    `verify-email?token=${res.token}&email=${encodedEmail}`,
-                    `verify-email?token=${res.token}&email=${encodedEmail}`
-                );
-                onFormChange?.(SignUpStep.VERIFY_EMAIL);
-            }
+                onNextStep?.(SignUpStep.VERIFY_EMAIL, {
+                    token: res.token,
+                    email: encodedEmail,
+                });
+            } else throw new Error();
         } catch (error) {
             if (
                 error instanceof TRPCClientError &&
@@ -84,7 +80,7 @@ export default function SignUpForm({
     }
 
     return (
-        <>
+        <div className={formStyles.content}>
             <h1 className={formStyles.header}>Sign up</h1>
             <div className={formStyles.inputGroup}>
                 <Button onClick={() => signIn('github', { redirect: false })}>
@@ -127,6 +123,6 @@ export default function SignUpForm({
             <span className={formStyles.redirect}>
                 Already have an account? <Link href="/sign-in">Sign in</Link>
             </span>
-        </>
+        </div>
     );
 }

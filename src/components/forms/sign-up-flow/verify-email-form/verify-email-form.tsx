@@ -32,11 +32,14 @@ export default function VerifyEmailForm() {
     );
 
     useEffect(() => {
-        if (code.data?.code) {
-            window.alert(
-                'Verification e-mails are currently disabled. Your code is: ' + code.data.code
-            );
-        }
+        setTimeout(() => {
+            if (code.data?.code) {
+                window.alert(
+                    'Verification e-mails are currently disabled. Your code is: ' +
+                        code.data.code
+                );
+            }
+        }, 150);
     }, [code.data]);
 
     let email = params.get('email');
@@ -64,7 +67,7 @@ export default function VerifyEmailForm() {
     }
 
     return (
-        <>
+        <div className={formStyles.content}>
             <div className={styles.wrapper}>
                 <div>
                     <h1 className={formStyles.header}>Verify E-mail</h1>
@@ -117,6 +120,6 @@ export default function VerifyEmailForm() {
                     </Button>
                 </div>
             </div>
-        </>
+        </div>
     );
 }
