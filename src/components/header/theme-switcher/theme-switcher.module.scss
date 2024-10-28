@@ -17,8 +17,7 @@ $maxVisibleHalf: calc($maxVisible / 2);
     border-bottom-right-radius: var(--rounded-default);
     border: 1px solid var(--border);
     height: $collapsed;
-
-    transition: height var(--transition-theme), border-color var(--transition-theme);
+    transition: height var(--transition-default);
 
     &::before {
         /* content: ''; */
@@ -26,12 +25,17 @@ $maxVisibleHalf: calc($maxVisible / 2);
         width: 100%;
         min-height: $collapsed;
         max-height: $collapsed;
-        background: linear-gradient(to top, transparent, transparent, #00000015);
+        background: linear-gradient(
+            to top,
+            transparent,
+            transparent,
+            #00000015
+        );
         pointer-events: none;
     }
 
     &:hover {
-            height: $expanded;
+        height: $expanded;
     }
 }
 
@@ -47,18 +51,18 @@ $maxVisibleHalf: calc($maxVisible / 2);
     }
 }
 
-.items {
+div.items {
     width: round(up, 100%, 1px);
     display: flex;
     position: relative;
     translate: round(down, calc(-100% / $maxVisible), 1px);
 
-
     &.slide-right {
         &-1 {
             @media (prefers-reduced-motion: no-preference) {
                 animation: blur-slow var(--transition-theme) forwards;
-                transition: transform var(--transition-theme);
+                transition: transform var(--transition-theme) !important;
+                left: 1px;
             }
             transform: translateX(round(down, calc(100% / $maxVisible), 1px));
         }
@@ -68,7 +72,7 @@ $maxVisibleHalf: calc($maxVisible / 2);
         &-1 {
             @media (prefers-reduced-motion: no-preference) {
                 animation: blur-slow var(--transition-theme) forwards;
-                transition: transform var(--transition-theme);
+                transition: transform var(--transition-theme) !important;
             }
             transform: translateX(round(down, calc(-100% / $maxVisible), 1px));
         }
@@ -76,9 +80,12 @@ $maxVisibleHalf: calc($maxVisible / 2);
         &-2 {
             @media (prefers-reduced-motion: no-preference) {
                 animation: blur-fast var(--transition-theme) forwards;
-                transition: transform var(--transition-theme);
+                transition: transform var(--transition-theme) !important;
+                left: -1px;
             }
-            transform: translateX(round(down, calc(-100% / $maxVisibleHalf), 1px));
+            transform: translateX(
+                round(down, calc(-100% / $maxVisibleHalf), 1px)
+            );
         }
     }
 }
@@ -103,20 +110,23 @@ $maxVisibleHalf: calc($maxVisible / 2);
         pointer-events: none;
     }
 
-    &-light, &-light::before {
+    &-light,
+    &-light::before {
         background-color: var(--color-light);
     }
 
-    &-dark, &-dark::before {
+    &-dark,
+    &-dark::before {
         background-color: var(--color-dark);
     }
 
-    &-sepia, &-sepia::before {
+    &-sepia,
+    &-sepia::before {
         background-color: var(--color-sepia);
     }
 
-    &-navy, &-navy::before {
+    &-navy,
+    &-navy::before {
         background-color: var(--color-navy);
     }
-
 }

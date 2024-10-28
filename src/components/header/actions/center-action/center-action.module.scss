@@ -18,11 +18,11 @@
     display: flex;
     justify-content: center;
     position: relative;
-    transition: width var(--transition-theme);
     pointer-events: initial;
     height: 40px;
     border-radius: var(--rounded-full);
-    transition: border-color var(--transition-default), width var(--transition-default);
+    transition: border-color var(--transition-default),
+        width var(--transition-default);
     width: 350px;
 
     @include responsive('lg') {
@@ -45,8 +45,6 @@
         }
     }
 }
-
-
 
 .search {
     position: relative;

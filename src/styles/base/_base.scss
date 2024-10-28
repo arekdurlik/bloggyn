@@ -44,12 +44,15 @@ a {
     border-radius: var(--rounded-large);
 }
 
-a, button {
+a,
+button {
     &:focus-visible {
-        outline-color: var(--outline-color)
+        outline-color: var(--outline-color);
     }
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
     color: var(--fgColor-heading);
 }

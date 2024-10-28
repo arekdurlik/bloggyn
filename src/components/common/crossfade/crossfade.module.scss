@@ -3,6 +3,7 @@
     grid-template-rows: 100%;
     grid-template-columns: 100%;
     isolation: isolate;
+    width: 100%;
 
     & > div {
         grid-area: 1/1;

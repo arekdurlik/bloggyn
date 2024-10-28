@@ -17,7 +17,7 @@ export function Template({ children }: { children: React.ReactNode }) {
                             a 37,37 0 1,1 -74,0"
                             />
                         </defs>
-                        <text>
+                        <text fill="currentColor">
                             <textPath xlinkHref="#circle">
                                 bloggyn bloggyn bloggyn
                             </textPath>

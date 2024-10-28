@@ -1,5 +1,3 @@
-
-
 .transitioning {
     @media (prefers-reduced-motion: reduce) {
         --transition-theme: none;
@@ -11,16 +9,59 @@
     --transition-sloth: var(--transition-theme);
     --control-default-transition: var(--transition-theme);
 
-    h1, h2, h3, h4, p, span, button, label {
-        transition: color var(--transition-theme);
+    * {
+        transition: none !important;
     }
-
 
     .theme-switcher {
-        transition:
-            background-color var(--transition-theme),
-            border-color var(--transition-theme),
-            height var(--transition-theme);
+        transition: height var(--transition-theme),
+            border-color var(--transition-theme) !important;
     }
 
+    div,
+    nav,
+    button {
+        $transition: background-color var(--transition-theme),
+            border-color var(--transition-theme) !important;
+
+        transition: $transition;
+
+        &::before,
+        &::after {
+            transition: $transition;
+        }
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    p,
+    a,
+    span,
+    label {
+        transition: background-color var(--transition-theme),
+            color var(--transition-theme), border-color var(--transition-theme) !important;
+
+        & > * {
+            transition: none !important;
+        }
+    }
+
+    svg {
+        transition: color var(--transition-theme) !important;
+        & > * {
+            transition: none !important;
+        }
+    }
+
+    input {
+        transition: background-color var(--transition-theme),
+            border-color var(--transition-theme), color var(--transition-theme) !important;
+    }
+
+    .theme-switcher {
+        transition: background-color var(--transition-theme),
+            border-color var(--transition-theme), height var(--transition-theme);
+    }
 }

@@ -83,7 +83,7 @@ export default function ThemeSwitcher({ theme = 'light' }: { theme?: string }) {
 
     return (
         <div
-            className={styles.container}
+            className={cn('theme-switcher', styles.container)}
             draggable="false"
         >
             <div ref={items} className={styles.items} draggable="false">
