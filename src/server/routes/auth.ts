@@ -1,7 +1,7 @@
 import { procedure, protectedProcedure, router } from '@/trpc';
 import { type inferRouterOutputs } from '@trpc/server';
 import { accounts, type User, users, verificationCodes } from '../db/schema';
-import { desc, eq, sql } from 'drizzle-orm';
+import { and, desc, eq, sql } from 'drizzle-orm';
 import { EmailError, UserError } from '@/validation/errors';
 import { string, z } from 'zod';
 import bcrypt from 'bcrypt';
@@ -14,8 +14,6 @@ import { config } from '@/lib/config';
 import { XTRPCError } from '@/validation/xtrpc-error';
 
 export type AuthRouterOutput = inferRouterOutputs<typeof authRouter>;
-
-/* const resend = new Resend(process.env.RESEND_API_KEY); */
 
 export const authRouter = router({
     checkEmailAvailability: procedure
@@ -143,20 +141,27 @@ export const authRouter = router({
                             );
                         }
 
-                        // send email
-                        /* const res = await resend.emails.send({
-                            from: 'onboarding@resend.dev',
-                            to: process.env.RESEND_LOCAL_EMAIL ?? '',
-                            subject: 'bloggyn - Verify your email',
-                            html: `
-                                <p>
-                                Verification code: ${randomCode}
-                                </p>
-                                `,
-                        });
-                        if (res.error) {
-                            throw new Error('Error sending verification email');
-                        } */
+                        if (config.EMAIL_ENABLED) {
+                            const resend = new Resend(
+                                process.env.RESEND_API_KEY
+                            );
+
+                            const res = await resend.emails.send({
+                                from: 'onboarding@resend.dev',
+                                to: process.env.RESEND_LOCAL_EMAIL ?? '',
+                                subject: 'bloggyn - Verify your email',
+                                html: `
+                                    <p>
+                                    Verification code: ${randomCode}
+                                    </p>
+                                    `,
+                            });
+                            if (res.error) {
+                                throw new Error(
+                                    'Error sending verification email'
+                                );
+                            }
+                        }
                     } catch (error) {
                         throw error;
                     }
@@ -255,17 +260,31 @@ export const authRouter = router({
                         throw new Error();
                     }
 
-                    await db
-                        .update(users)
-                        .set({
-                            emailVerified: sql`NOW()`,
-                        })
-                        .where(
-                            eq(
-                                sql`lower(${users.email})`,
-                                decoded.email.toLowerCase()
-                            )
-                        );
+                    await db.transaction(async tx => {
+                        await tx
+                            .update(users)
+                            .set({
+                                emailVerified: sql`NOW()`,
+                            })
+                            .where(
+                                eq(
+                                    sql`lower(${users.email})`,
+                                    decoded.email.toLowerCase()
+                                )
+                            );
+
+                        await tx
+                            .delete(verificationCodes)
+                            .where(
+                                and(
+                                    eq(
+                                        sql`lower(${verificationCodes.email})`,
+                                        decoded.email.toLowerCase()
+                                    ),
+                                    eq(verificationCodes.code, result.code)
+                                )
+                            );
+                    });
                 }
 
                 return 'ok';

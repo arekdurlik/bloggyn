@@ -45,6 +45,7 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
             helpText,
             clearButton,
             className,
+            disabled,
             onChange,
             onFocus,
             onBlur,
@@ -96,6 +97,7 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
                     styles.wrapper,
                     error && styles.error,
                     error && 'error',
+                    disabled && styles.disabled,
                     className
                 )}
             >
@@ -132,6 +134,7 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
                             onFocus?.(e);
                         }}
                         onBlur={handleBlur}
+                        disabled={disabled}
                         {...props}
                     />
                     {clearButton && notEmpty && (

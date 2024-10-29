@@ -11,3 +11,4 @@ export declare const spin: string;
 export declare const spinner: string;
 export declare const spinnerBig: string;
 export declare const terms: string;
+export declare const wrapper: string;

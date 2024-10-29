@@ -17,7 +17,7 @@ type AnimationState = {
 
 export function Crossfade({
     contentKey,
-    timeout = 150,
+    timeout = 250,
     children,
     onTransition,
 }: Props) {

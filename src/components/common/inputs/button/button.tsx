@@ -4,7 +4,7 @@ import { type LinkProps } from 'next/link';
 import { Link } from 'next-view-transitions';
 import { cn } from '@/lib/helpers';
 
-type ButtonProps = {
+export type ButtonProps = {
     inverted?: boolean;
 } & ButtonHTMLAttributes<HTMLButtonElement>;
 

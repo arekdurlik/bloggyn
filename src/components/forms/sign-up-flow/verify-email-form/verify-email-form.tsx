@@ -39,7 +39,7 @@ export default function VerifyEmailForm() {
                         code.data.code
                 );
             }
-        }, 150);
+        }, 300);
     }, [code.data]);
 
     let email = params.get('email');
@@ -59,7 +59,7 @@ export default function VerifyEmailForm() {
 
     async function handleSubmit() {
         try {
-            const res = await checkCode.refetch();
+            await checkCode.refetch();
             setVerified(true);
         } catch (error) {
             console.log(error);

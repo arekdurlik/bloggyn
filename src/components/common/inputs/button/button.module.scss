@@ -15,13 +15,6 @@
     transition: border-color var(--transition-default),
         background-color var(--transition-default);
     box-shadow: var(--shadow-barely-visible);
-
-    &.disabled {
-        cursor: default;
-        pointer-events: none;
-        background-color: var(--color-base-90);
-        color: var(--fgColor-subtle);
-    }
 }
 
 .inverted {
@@ -34,8 +27,4 @@
     align-items: center;
     gap: var(--spacing-large);
     user-select: none;
-
-    svg {
-        transition: none !important;
-    }
 }

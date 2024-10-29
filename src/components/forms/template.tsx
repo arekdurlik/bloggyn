@@ -3,7 +3,7 @@ import formStyles from './forms.module.scss';
 
 export function Template({ children }: { children: React.ReactNode }) {
     return (
-        <div className={formStyles.form}>
+        <div className={formStyles.wrapper}>
             <div className="animation-appear--sloth">
                 <div className={cn(formStyles.spinner)}>
                     <svg viewBox="0 0 100 100" width="100" height="100">

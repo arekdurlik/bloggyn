@@ -1,6 +1,5 @@
 import { Check, X } from 'lucide-react';
 import Loader from '../loader/loader';
-import styles from './validating.module.scss';
 
 export default function Validating({
     state,
@@ -15,11 +14,11 @@ export default function Validating({
 }) {
     const icon =
         state === 'success' || success ? (
-            <Check className={styles.success} />
+            <Check style={{ color: 'var(--color-success)'}} />
         ) : state === 'pending' || pending ? (
-            <Loader fadeIn />
+            <Loader fadeIn style={{ stroke: 'var(--fgColor-default)'}} />
         ) : state === 'error' || error ? (
-            <X className={styles.error} />
+            <X style={{ color: 'var(--color-error)'}} />
         ) : null;
 
     return icon;

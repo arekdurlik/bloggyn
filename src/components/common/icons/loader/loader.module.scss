@@ -1,7 +1,5 @@
 .loader {
     position: relative;
-    height: 100%;
-    height: 16px;
 
     svg {
         inset: 0;
@@ -18,17 +16,12 @@
     }
 }
 
-.background {
-    transform: rotate(180deg);
-    z-index: 0;
-    animation: spin 1s -0.5s infinite linear;
-    stroke: var(--fgColor-barely-visible);
-    stroke-width: 1px;
-}
-
 .spinner {
     position: absolute;
-    stroke: var(--fgColor-default);
+    height: inherit;
+    width: inherit;
+    inset: 0;
+    stroke: inherit;
     z-index: 1;
-    animation: spin 1s infinite linear;
+    animation: spin 500ms infinite linear;
 }

@@ -19,7 +19,8 @@
 
     &:disabled {
         cursor: default;
-        background-color: var(--control-inverted-bgColor-hover);
+        background-color: var(--control-default-bgColor-hover);
+        color: var(--fgColor-subtle);
     }
 }
 

@@ -5,6 +5,7 @@
         display: inline-block;
         margin-bottom: var(--spacing-default);
         font-weight: 500;
+        transition: color var(--transition-default);
     }
 }
 
@@ -94,6 +95,7 @@
     color: var(--color-error);
     padding-left: var(--spacing-small);
     line-height: 1;
+    transition: opacity var(--transition-default);
 }
 
 .flash {
@@ -156,5 +158,26 @@
     }
     100% {
         opacity: 1;
+    }
+}
+
+.disabled {
+    pointer-events: none;
+    user-select: none;
+
+    label {
+        color: var(--fgColor-subtle);
+    }
+
+    .required {
+        opacity: 0.5;
+    }
+
+    svg {
+        color: var(--fgColor-subtle);
+    }
+
+    input::placeholder {
+        color: var(--fgColor-barely-visible);
     }
 }

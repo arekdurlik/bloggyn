@@ -4,7 +4,6 @@ import { signIn } from 'next-auth/react';
 import { useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { trpc } from '@/trpc/client';
-import Button from '@/components/common/inputs/button';
 import Github from '@/components/common/icons/github';
 import formStyles from '../../forms.module.scss';
 import Google from '@/components/common/icons/google';
@@ -22,6 +21,8 @@ import { TRPCClientError } from '@trpc/client';
 import { EmailError } from '@/validation/errors';
 import { getResponse } from '@/validation/utils';
 import { type OnNextStep } from '../../../common/crossfade-form';
+import FormButton from '../../form-button';
+import { sleep } from '@/lib/helpers';
 
 export default function SignUpForm({
     onNextStep,
@@ -53,7 +54,10 @@ export default function SignUpForm({
                 })
                 .parse(formData);
 
-            const res = await signUp.mutateAsync(result);
+            const [res] = await Promise.all([
+                signUp.mutateAsync(result),
+                sleep(350),
+            ]);
 
             if (res?.token) {
                 onNextStep?.(SignUpStep.VERIFY_EMAIL, {
@@ -61,6 +65,8 @@ export default function SignUpForm({
                     email: encodedEmail,
                 });
             } else throw new Error();
+
+            await sleep(150); // keep "submitting" state during next step transition
         } catch (error) {
             if (
                 error instanceof TRPCClientError &&
@@ -81,19 +87,25 @@ export default function SignUpForm({
 
     return (
         <div className={formStyles.content}>
-            <h1 className={formStyles.header}>Sign up</h1>
-            <div className={formStyles.inputGroup}>
-                <Button onClick={() => signIn('github', { redirect: false })}>
-                    <Google />
-                    Continue with Google
-                </Button>
-                <Button onClick={() => signIn('github', { redirect: false })}>
-                    <Github />
-                    Continue with Github
-                </Button>
-            </div>
-            <div className={formStyles.divider}>or continue with e-mail</div>
             <Form onSubmit={handleSubmit}>
+                <h1 className={formStyles.header}>Sign up</h1>
+                <div className={formStyles.inputGroup}>
+                    <FormButton
+                        onClick={() => signIn('github', { redirect: false })}
+                    >
+                        <Google />
+                        Continue with Google
+                    </FormButton>
+                    <FormButton
+                        onClick={() => signIn('github', { redirect: false })}
+                    >
+                        <Github />
+                        Continue with Github
+                    </FormButton>
+                </div>
+                <div className={formStyles.divider}>
+                    or continue with e-mail
+                </div>
                 <div className={formStyles.inputGroup}>
                     <Email
                         value={formData.email}
@@ -108,17 +120,16 @@ export default function SignUpForm({
                         }
                     />
                     <div className={formStyles.buttons}>
-                        <Button inverted>
+                        <FormButton submit inverted icon={<ArrowRight />}>
                             Join bloggyn
-                            <ArrowRight />
-                        </Button>
+                        </FormButton>
                     </div>
+                    <span className={formStyles.terms}>
+                        By signing up, you agree that your data may be deleted
+                        at any time, without prior notice or confirmation.
+                    </span>
                 </div>
             </Form>
-            <span className={formStyles.terms}>
-                By signing up, you agree that your data may be deleted at any
-                time, without prior notice or confirmation.
-            </span>
             <div className={formStyles.divider}></div>
             <span className={formStyles.redirect}>
                 Already have an account? <Link href="/sign-in">Sign in</Link>

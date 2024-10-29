@@ -1,9 +1,10 @@
 import { type FormEvent, type ReactNode, useRef } from 'react';
 import FormProvider, { useFormContext } from './context';
+import formStyles from './forms.module.scss';
 
 type Props = {
     children: ReactNode;
-    onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+    onSubmit: (event: FormEvent<HTMLFormElement>) => void | Promise<void>;
 };
 
 export default function Form(props: Props) {
@@ -39,7 +40,7 @@ function FormImpl({ children, onSubmit }: Props) {
         return hasEmptyRequiredFiels;
     }
 
-    function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
         api.setAttemptedSubmit(true);
 
@@ -51,12 +52,15 @@ function FormImpl({ children, onSubmit }: Props) {
         if (checkForEmptyRequiredFields()) {
             return;
         }
+        api.setSubmitting(true);
 
-        onSubmit(event);
+        await onSubmit(event);
+
+        api.setSubmitting(false);
     }
 
     return (
-        <form ref={formRef} onSubmit={handleSubmit}>
+        <form ref={formRef} className={formStyles.form} onSubmit={handleSubmit}>
             {children}
         </form>
     );

@@ -1,0 +1,45 @@
+.content {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-default);
+
+    span {
+        max-width: 200px;
+        transition: max-width var(--transition-slow),
+            opacity var(--transition-slow);
+        white-space: nowrap;
+    }
+
+    div {
+        display: flex;
+        align-items: center;
+        position: relative;
+        transition: width var(--transition-slow), height var(--transition-slow);
+        width: 16px;
+        height: 16px;
+    }
+}
+
+.submitting {
+    span {
+        max-width: 0px;
+        opacity: 0;
+        overflow: hidden;
+    }
+    div {
+        width: 24px;
+        height: 24px;
+    }
+}
+
+.has-brand-icon {
+    svg {
+        transition: opacity var(--transition-default);
+    }
+
+    &:disabled {
+        svg {
+            opacity: 0.5;
+        }
+    }
+}

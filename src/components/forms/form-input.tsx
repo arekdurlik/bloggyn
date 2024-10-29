@@ -16,7 +16,7 @@ export default function FormInput({
     onValidate,
     ...props
 }: FormInputProps) {
-    const { attemptedSubmit, errors, api } = useFormContext();
+    const { errors, submitting, attemptedSubmit, api } = useFormContext();
     const [flashingError, setFlashingError] = useState(false);
     const timeoutRef = useRef<NodeJS.Timeout>();
 
@@ -65,6 +65,7 @@ export default function FormInput({
 
     return (
         <ValidatedInput
+            disabled={submitting}
             className={cn(flashingError && textInputStyles.flash)}
             onChange={handleChange}
             onError={handleError}
