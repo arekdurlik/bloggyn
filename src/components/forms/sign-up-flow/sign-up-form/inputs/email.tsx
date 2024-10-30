@@ -8,13 +8,9 @@ import { z } from 'zod';
 import { trpc } from '@/trpc/client';
 import { useFormContext } from '@/components/forms/context';
 import FormInput from '@/components/forms/form-input';
+import { FormInputProps } from '@/components/forms/types';
 
-type Props = {
-    value: string;
-    onChange?: (value: string) => void;
-};
-
-export default function Email({ value: email, onChange }: Props) {
+export default function Email({ value: email, onChange }: FormInputProps) {
     const [takenEmails, setTakenEmails] = useState<string[]>([]);
     const checkAvailability = trpc.checkEmailAvailability.useQuery(
         { email },

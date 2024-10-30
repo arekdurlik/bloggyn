@@ -1,6 +1,7 @@
 import { type RefObject } from 'react';
 
 export type OTPInputState = {
+    disabled: boolean;
     focusedIndex: number;
     selectedAll: boolean;
     fields: RefObject<HTMLInputElement>[];

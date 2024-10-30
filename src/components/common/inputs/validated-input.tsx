@@ -1,8 +1,6 @@
 import {
     type ChangeEvent,
-    type InputHTMLAttributes,
     useEffect,
-    useRef,
     useState,
 } from 'react';
 import useDebouncedEffect from '@/lib/hooks/use-debounced-effect';
@@ -62,7 +60,6 @@ export default function ValidatedInput({
     validateOnEmpty,
     ...props
 }: ValidatedInputProps) {
-    const [validating, setValidating] = useState(false);
     const [internalError, setInternalError] = useState('');
     const [state, setState] = useState(State.NONE);
 
@@ -74,7 +71,7 @@ export default function ValidatedInput({
         : false;
 
     const validateIcon = (
-        <Validating success={finalSuccess} pending={validating} />
+        <Validating success={finalSuccess} pending={state === State.PENDING} />
     );
 
     useDebouncedEffect(
@@ -97,6 +94,7 @@ export default function ValidatedInput({
                 }
                 setState(State.SUCCESS);
                 onSuccess?.(value);
+                setInternalError('');
                 onValidate?.(value, true);
             } catch (error) {
                 if (error instanceof ZodError) {
@@ -111,25 +109,21 @@ export default function ValidatedInput({
                     onValidate?.(value, false);
                     setState(State.ERROR);
                 } else throw error;
-            } finally {
-                setValidating(false);
             }
         },
         throttleTime,
         [value],
-        validating
+        state === State.PENDING
     );
+
 
     function handleChange(event: ChangeEvent<HTMLInputElement>) {
         const value = event.target.value;
         onChange?.(value);
-        setInternalError('');
 
         if (validateOnEmpty || value.length > 0) {
             setState(State.PENDING);
-            setValidating(true);
         } else {
-            setValidating(false);
             setState(State.NONE);
         }
     }

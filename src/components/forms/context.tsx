@@ -1,4 +1,11 @@
-import { createContext, type ReactNode, useContext, useEffect, useState } from 'react';
+import {
+    createContext,
+    Dispatch,
+    type ReactNode,
+    SetStateAction,
+    useContext,
+    useState,
+} from 'react';
 
 type RegisterOpts = {
     name: string;
@@ -6,17 +13,24 @@ type RegisterOpts = {
     label?: string;
 };
 
+export enum State {
+    NONE = 'none',
+    DISABLED = 'disabled',
+    PENDING = 'pending',
+    SUCCESS = 'success',
+}
+
 type FormContextValue = {
     formData: FormData;
     errors: Errors;
-    submitting: boolean;
+    state: State;
     attemptedSubmit: boolean;
     api: {
         register: (opts: RegisterOpts) => void;
         setValue: (name: string, value: string) => void;
         setError: (name: string, error: string) => void;
         triggerErrors: () => void;
-        setSubmitting: (value: boolean) => void;
+        setState: Dispatch<SetStateAction<State>>;
         setAttemptedSubmit: (value: boolean) => void;
     };
 };
@@ -40,8 +54,8 @@ type Props = {
 export default function FormProvider({ children }: Props) {
     const [formData, setFormData] = useState<FormData>({});
     const [errors, setErrors] = useState<Errors>({});
-    const [submitting, setSubmitting] = useState(false);
     const [attemptedSubmit, setAttemptedSubmit] = useState(false);
+    const [state, setState] = useState<State>(State.NONE);
 
     const api = {
         register(opts: RegisterOpts) {
@@ -74,17 +88,13 @@ export default function FormProvider({ children }: Props) {
         triggerErrors() {
             setErrors(prev => ({ ...prev }));
         },
-        setSubmitting(value: boolean) {
-            setSubmitting(value);
-        },
-        setAttemptedSubmit(value: boolean) {
-            setAttemptedSubmit(value);
-        },
+        setState,
+        setAttemptedSubmit,
     };
 
     return (
         <FormContext.Provider
-            value={{ formData, errors, submitting, attemptedSubmit, api }}
+            value={{ formData, errors, state, attemptedSubmit, api }}
         >
             {children}
         </FormContext.Provider>

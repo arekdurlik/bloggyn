@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useOnboardFormStore } from '../store';
 import slug from 'slug';
 import { useSession } from 'next-auth/react';
 import { TRPCClientError } from '@trpc/client';
@@ -10,26 +9,32 @@ import {
     usernameErrors,
     usernameSchema,
 } from '@/validation/user/username';
-import { EmailError, UserError } from '@/validation/errors';
-import ValidatedInput from '../../../../common/inputs/validated-input';
+import { UserError } from '@/validation/errors';
+import FormInput from '@/components/forms/form-input';
+import { useFormContext } from '@/components/forms/context';
 
-export default function Username() {
-    const [available, setAvailable] = useState(false);
+type Props = {
+    value: string;
+    onChange: (value: string) => void;
+};
+
+export default function Username({ value: username, onChange }: Props) {
     const [takenUsernames, setTakenUsernames] = useState<string[]>([]);
+    const { errors, api } = useFormContext();
 
     const { data: session } = useSession();
-    const { formData, errors, api } = useOnboardFormStore();
     const checkAvailability = trpc.checkUsernameAvailability.useQuery(
-        { username: formData.username.toLowerCase() },
+        { username: username.toLowerCase() },
         { enabled: false, retry: false }
     );
-
+    const inputName = 'username';
     const placeholder = slug(session?.user.name ?? '').replace('-', '_');
 
     const validations = [
         (value: string) => {
             if (takenUsernames.includes(value.toLowerCase())) {
-                api.setUsernameError(
+                api.setError(
+                    inputName,
                     getResponse(usernameErrors, UserError.USERNAME_TAKEN)
                 );
                 return false;
@@ -38,18 +43,21 @@ export default function Username() {
         async () => {
             try {
                 await checkAvailability.refetch({ throwOnError: true });
-                setAvailable(true);
                 return true;
             } catch (error) {
                 if (error instanceof TRPCClientError) {
                     if (error.data.key === UserError.USERNAME_TAKEN) {
-                        api.setUsernameError(
-                            getResponse(usernameErrors, UserError.USERNAME_TAKEN)
+                        api.setError(
+                            inputName,
+                            getResponse(
+                                usernameErrors,
+                                UserError.USERNAME_TAKEN
+                            )
                         );
 
                         setTakenUsernames(v => [
                             ...v,
-                            formData.username.toLowerCase(),
+                            username.toLowerCase(),
                         ]);
                     }
                 }
@@ -60,26 +68,22 @@ export default function Username() {
     ];
 
     return (
-        <ValidatedInput
+        <FormInput
+            required
+            name={inputName}
+            label="Username"
             schema={usernameSchema}
             validate={validations}
-            required
-            label="Username"
             placeholder={placeholder}
-            helpText={`bloggyn.com/@${formData.username}`}
-            value={formData.username}
+            helpText={`bloggyn.com/@${username}`}
+            value={username}
             maxLength={USERNAME_MAX}
-            success={available}
             showSuccess
-            error={errors.username}
+            error={errors[inputName]}
             autoComplete="off"
             spellCheck={false}
-            onChange={value => {
-                setAvailable(false);
-                api.setUsername(value);
-            }}
-            onSuccess={() => api.setUsernameError('')}
-            onError={api.setUsernameError}
+            onChange={onChange}
+            onError={error => api.setError(inputName, error)}
         />
     );
 }

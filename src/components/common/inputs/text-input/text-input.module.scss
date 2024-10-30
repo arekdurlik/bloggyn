@@ -129,13 +129,10 @@
             transition-timing-function: ease-in;
         }
     }
-
-    .error-text {
-        color: var(--color-error);
-    }
 }
 
 .error-text {
+    color: var(--color-error);
     overflow: hidden;
     display: block;
     font-size: var(--text-small);
@@ -165,7 +162,8 @@
     pointer-events: none;
     user-select: none;
 
-    label {
+    label,
+    input {
         color: var(--fgColor-subtle);
     }
 

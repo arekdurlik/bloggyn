@@ -8,12 +8,9 @@ import {
 import { useState } from 'react';
 import { useFormContext } from '@/components/forms/context';
 import FormInput from '@/components/forms/form-input';
+import { FormInputProps } from '@/components/forms/types';
 
-type Props = {
-    value: string;
-    onChange: (value: string) => void;
-}
-export default function Password({ value: password, onChange }: Props) {
+export default function Password({ value: password, onChange }: FormInputProps) {
     const [showPassword, setShowPassword] = useState(false);
     const { errors, api } = useFormContext();
 

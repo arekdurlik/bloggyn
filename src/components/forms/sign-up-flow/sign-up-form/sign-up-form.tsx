@@ -1,7 +1,7 @@
 'use client';
 
 import { signIn } from 'next-auth/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { trpc } from '@/trpc/client';
 import Github from '@/components/common/icons/github';
@@ -11,28 +11,24 @@ import Email from './inputs/email';
 import Password from './inputs/password';
 import React from 'react';
 import { SignUpStep } from '@/lib/constants';
-import { emailErrors, emailSchema } from '@/validation/user/email';
-import { passwordSchema } from '@/validation/user/password';
-import { z } from 'zod';
+import { emailErrors } from '@/validation/user/email';
 import { Link } from 'next-view-transitions';
-import { openToast, ToastType } from '@/stores/toasts';
-import Form from '@/components/forms/form';
+import { openToast, ToastType } from '@/components/common/toasts/toasts';
+import { Form, FormSubmitHandler } from '@/components/forms/form';
 import { TRPCClientError } from '@trpc/client';
 import { EmailError } from '@/validation/errors';
 import { getResponse } from '@/validation/utils';
-import { type OnNextStep } from '../../../common/crossfade-form';
+import { useCrossfadeFormContext, type OnNextStep } from '../../../common/crossfade-form';
 import FormButton from '../../form-button';
-import { sleep } from '@/lib/helpers';
+import { isObjectAndHasProperty, sleep, withMinDuration } from '@/lib/helpers';
+import { signUpSchema } from '@/validation/user';
 
-export default function SignUpForm({
-    onNextStep,
-}: {
-    onNextStep?: OnNextStep;
-}) {
+export default function SignUpForm() {
     const [formData, setFormData] = useState({
         email: '',
         password: '',
     });
+    const { state, api } = useCrossfadeFormContext();
 
     const splitEmail = formData.email.split('@');
     const censoredEmail =
@@ -45,58 +41,68 @@ export default function SignUpForm({
 
     const signUp = trpc.signUp.useMutation();
 
-    async function handleSubmit() {
-        try {
-            const result = z
-                .object({
-                    email: emailSchema,
-                    password: passwordSchema,
-                })
-                .parse(formData);
+    const handleSubmit: FormSubmitHandler = async () => {
+        const parsed = signUpSchema.parse(formData);
+        const res = await withMinDuration(signUp.mutateAsync(parsed), 350);
 
-            const [res] = await Promise.all([
-                signUp.mutateAsync(result),
-                sleep(350),
-            ]);
+        if (!res?.token) {
+            throw new Error();
+        }
 
-            if (res?.token) {
-                onNextStep?.(SignUpStep.VERIFY_EMAIL, {
-                    token: res.token,
-                    email: encodedEmail,
-                });
-            } else throw new Error();
+        return res;
+    };
 
-            await sleep(150); // keep "submitting" state during next step transition
-        } catch (error) {
-            if (
-                error instanceof TRPCClientError &&
-                error.data.key === EmailError.EMAIL_TAKEN
-            ) {
-                openToast(
-                    ToastType.ERROR,
-                    getResponse(emailErrors, EmailError.EMAIL_TAKEN)
-                );
-            } else {
-                openToast(
-                    ToastType.ERROR,
-                    'Something went wrong 🤧 Please try again.'
-                );
-            }
+    const handleSubmitSuccess = async (data: unknown) => {
+        // sleep on success state b4 redirect so user sees it
+        await sleep(500);
+
+        if (
+            isObjectAndHasProperty(data, 'token') &&
+            typeof data.token === 'string'
+        ) {
+            api.setState(v => ({ ...v, ...formData }));
+            api.onNextStep?.(SignUpStep.VERIFY_EMAIL, {
+                token: data.token,
+                email: encodedEmail,
+            });
+        }
+    };
+
+    function handleSubmitError(error: unknown) {
+        if (
+            error instanceof TRPCClientError &&
+            error.data.key === EmailError.EMAIL_TAKEN
+        ) {
+            openToast(
+                ToastType.ERROR,
+                getResponse(emailErrors, EmailError.EMAIL_TAKEN)
+            );
+        } else {
+            openToast(
+                ToastType.ERROR,
+                'Something went wrong 🤧 Please try again.'
+            );
         }
     }
 
     return (
         <div className={formStyles.content}>
-            <Form onSubmit={handleSubmit}>
+            <Form
+                onSubmit={handleSubmit}
+                onSubmitSuccess={handleSubmitSuccess}
+                onSubmitError={handleSubmitError}
+            >
                 <h1 className={formStyles.header}>Sign up</h1>
                 <div className={formStyles.inputGroup}>
                     <FormButton
+                        hasBrandIcon
                         onClick={() => signIn('github', { redirect: false })}
                     >
                         <Google />
                         Continue with Google
                     </FormButton>
                     <FormButton
+                        hasBrandIcon
                         onClick={() => signIn('github', { redirect: false })}
                     >
                         <Github />
@@ -131,7 +137,7 @@ export default function SignUpForm({
                 </div>
             </Form>
             <div className={formStyles.divider}></div>
-            <span className={formStyles.redirect}>
+            <span className={formStyles.alternateAction}>
                 Already have an account? <Link href="/sign-in">Sign in</Link>
             </span>
         </div>

@@ -15,6 +15,7 @@ import { useOutsideClick } from '@/lib/hooks/use-outside-click';
 
 type Props = {
     value: string;
+    disabled?: boolean;
     onChange?: (value: string) => void;
     onInput?: (index: number, char: string) => void;
     onDelete?: () => void;
@@ -28,6 +29,7 @@ export const useOTPInputContext = () => useContext(OTPInputContext);
 
 export default function OTPInput({
     value,
+    disabled = false,
     onChange,
     onInput,
     onDelete,
@@ -36,6 +38,7 @@ export default function OTPInput({
     className,
 }: Props) {
     const [state, setState] = useState<OTPInputState>({
+        disabled,
         focusedIndex: -1,
         selectedAll: false,
         fields: [],
@@ -52,6 +55,10 @@ export default function OTPInput({
         focusedViaMouse.current = false;
         setState(state => ({ ...state, focusedIndex: -1, selectedAll: false }));
     });
+
+    useEffect(() => {
+        setState(state => ({ ...state, disabled }));
+    }, [disabled]);
 
     useEffect(() => {
         return () => {

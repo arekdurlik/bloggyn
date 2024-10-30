@@ -20,18 +20,6 @@
     }
 }
 
-.submitting {
-    span {
-        max-width: 0px;
-        opacity: 0;
-        overflow: hidden;
-    }
-    div {
-        width: 24px;
-        height: 24px;
-    }
-}
-
 .has-brand-icon {
     svg {
         transition: opacity var(--transition-default);
@@ -41,5 +29,42 @@
         svg {
             opacity: 0.5;
         }
+    }
+}
+
+button.pending,
+button.success {
+    .content {
+        div {
+            width: 24px;
+            height: 24px;
+
+            svg {
+                width: 100%;
+                height: 100%;
+            }
+        }
+
+        span {
+            max-width: 0px;
+            opacity: 0;
+            overflow: hidden;
+        }
+    }
+
+    svg {
+        color: var(--control-inverted-fgColor-rest);
+    }
+}
+
+@keyframes flash {
+    25% {
+        background-color: var(--color-success-flash);
+    }
+}
+.submit {
+    &.success {
+        background-color: var(--color-success);
+        animation: flash 750ms var(--transition-default) forwards;
     }
 }

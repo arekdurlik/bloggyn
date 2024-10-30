@@ -128,7 +128,8 @@
 .header {
     text-align: center;
     font-size: var(--text-logo);
-    margin: var(--spacing-xxl);
+    margin: 0var (--spacing-xxl) 0;
+    text-wrap-style: balance;
 }
 
 .description {
@@ -184,7 +185,7 @@
     text-wrap: balance;
 }
 
-.redirect {
+.alternate-action {
     text-align: center;
     a {
         font-weight: bold;

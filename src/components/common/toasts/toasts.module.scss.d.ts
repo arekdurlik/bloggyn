@@ -7,6 +7,7 @@ export declare const icon: string;
 export declare const info: string;
 export declare const life: string;
 export declare const lifetime: string;
+export declare const pending: string;
 export declare const success: string;
 export declare const toast: string;
 export declare const warning: string;

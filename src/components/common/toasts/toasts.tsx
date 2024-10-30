@@ -8,9 +8,10 @@ import {
     type AnimationEvent,
 } from 'react';
 import { CheckCircle, Info, TriangleAlert, X } from 'lucide-react';
-import { type Toast, ToastType, useToasts } from '@/stores/toasts';
 import styles from './toasts.module.scss';
 import { cn } from '@/lib/helpers';
+import Loader from '../icons/loader/loader';
+import { Toast, ToastType, useToasts } from './store';
 
 export function Toasts() {
     const refMap = useMemo(() => new WeakMap<Toast, HTMLDivElement>(), []);
@@ -19,7 +20,7 @@ export function Toasts() {
 
     // fade out animation
     useEffect(() => {
-        if (toastsState.toasts.length > visibleToasts.length) {
+        if (toastsState.toasts.length >= visibleToasts.length) {
             setVisibleToasts(toastsState.toasts);
         }
 
@@ -53,6 +54,9 @@ export function Toasts() {
         switch (type) {
             case ToastType.INFO:
                 return <Info />;
+            case ToastType.PENDING:
+                return <Loader/>;
+            case ToastType.PENDING_SUCCESS:
             case ToastType.SUCCESS:
                 return <CheckCircle />;
             case ToastType.WARNING:
@@ -79,7 +83,10 @@ export function Toasts() {
                     className={cn(
                         styles.toast,
                         item.type === ToastType.INFO && styles.info,
+                        item.type === ToastType.PENDING && styles.pending,
                         item.type === ToastType.SUCCESS && styles.success,
+                        item.type === ToastType.PENDING_SUCCESS &&
+                            styles.success,
                         item.type === ToastType.WARNING && styles.warning,
                         item.type === ToastType.ERROR && styles.error,
                         !toastsState.toasts.includes(item) && styles.fadeOut
@@ -92,20 +99,27 @@ export function Toasts() {
                 >
                     <div className={styles.content}>
                         <div>{getIcon(item.type)}</div>
-                        {item.message}
-                        <button
-                            className={styles.close}
-                            onClick={e => {
-                                e.stopPropagation();
-                                toastsState.api.closeToast(item.id);
-                            }}
-                        >
-                            <X />
-                        </button>
-                        <div
-                            className={cn(styles.life)}
-                            onAnimationEnd={handleEndOfLife(item.id)}
-                        />
+                        <span>{item.message}</span>
+                        {item.type !== ToastType.PENDING &&
+                            item.type !== ToastType.PENDING_SUCCESS && (
+                                <>
+                                    <button
+                                        className={styles.close}
+                                        onClick={e => {
+                                            e.stopPropagation();
+                                            toastsState.api.closeToast(item.id);
+                                        }}
+                                    >
+                                        <X />
+                                    </button>
+                                    <div
+                                        className={cn(styles.life)}
+                                        onAnimationEnd={handleEndOfLife(
+                                            item.id
+                                        )}
+                                    />
+                                </>
+                            )}
                     </div>
                 </div>
             ))}

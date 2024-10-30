@@ -27,3 +27,34 @@ export function getComponentDisplayName(element: React.ReactElement) {
 export function cn(...classnames: unknown[]) {
     return classnames.filter(c => typeof c === 'string' && c.length).join(' ');
 }
+
+/**
+ * Ensures a minimum duration for the execution of a promise.
+ *
+ * @param {Promise<T>} promise - The promise to execute.
+ * @param {number} duration - The minimum time (in milliseconds) to wait before resolving.
+ */
+export async function withMinDuration<T>(
+    promise: Promise<T>,
+    duration: number
+): Promise<T> {
+    const [promiseResult] = await Promise.allSettled([
+        promise,
+        sleep(duration),
+    ]);
+
+    // If the original promise settled with a fulfilled state, return its value.
+    if (promiseResult.status === 'fulfilled') {
+        return promiseResult.value;
+    } else {
+        // If the original promise rejected, throw the reason.
+        throw promiseResult.reason;
+    }
+}
+
+export function isObjectAndHasProperty<K extends string>(
+    object: unknown,
+    key: K
+): object is object & Record<K, unknown> {
+    return typeof object === 'object' && object !== null && key in object;
+}

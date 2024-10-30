@@ -12,7 +12,7 @@ export default function SignUpFlow({ step }: { step: SignUpStep }) {
                 steps={{
                     [SignUpStep.SIGN_UP]: SignUpForm,
                     [SignUpStep.VERIFY_EMAIL]: VerifyEmailForm,
-                    [SignUpStep.ONBOARD]: OnboardForm,
+                    [SignUpStep.ONBOARDING]: OnboardForm,
                 }}
                 initialStep={step}
             />

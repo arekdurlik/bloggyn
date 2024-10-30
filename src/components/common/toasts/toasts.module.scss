@@ -23,13 +23,30 @@
     background-color: var(--bgColor-default);
     box-shadow: var(--shadow-barely-visible);
     overflow: hidden;
+    transition: background-color var(--transition-slow),
+        border-color var(--transition-slow), color var(--transition-slow);
 
     &.info {
         color: '#4f99b8';
     }
 
+    &.pending {
+        svg {
+            stroke: var(--fgColor-default);
+        }
+    }
+
     &.success {
         color: var(--color-success);
+        border-color: color-mix(in srgb, var(--color-success), transparent);
+        background-color: color-mix(
+            in srgb,
+            var(--color-success),
+            var(--bgColor-default) 92%
+        );
+        svg {
+            stroke: var(--color-success);
+        }
     }
 
     &.error {
@@ -42,6 +59,7 @@
         );
 
         .life {
+            opacity: 0.1;
             background-color: var(--color-error);
         }
 
@@ -59,9 +77,10 @@
             margin-bottom: 0px;
             opacity: 0;
             height: 0px;
-            transform: translateY(-25%);
+            transform: translateY(-45%);
         }
-        50% {
+        25% {
+            opacity: 0;
         }
         75% {
             height: var(--toastTotalHeight);
@@ -104,7 +123,7 @@
     white-space: pre-wrap;
     height: calc(var(--toastTotalHeight));
     gap: var(--spacing-xxl);
-    padding: 0 var(--spacing-xl);
+    padding: 0 var(--spacing-xxl);
 
     display: flex;
     align-items: center;
@@ -132,11 +151,7 @@
         opacity: 0;
         width: 0px;
     }
-    25% {
-        opacity: 0.05;
-    }
     100% {
-        opacity: 0.05;
         width: 100%;
     }
 }
@@ -146,6 +161,7 @@
     top: 0;
     left: 0px;
     height: 100%;
+    opacity: 0.2;
     background-color: var(--border);
     animation-name: lifetime;
     animation-delay: 250ms;

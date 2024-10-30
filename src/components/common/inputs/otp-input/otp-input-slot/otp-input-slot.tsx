@@ -1,28 +1,31 @@
-import { type KeyboardEvent, useEffect, useRef, useState } from 'react';
+import {
+    type ClipboardEvent,
+    type KeyboardEvent,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
 import { useOTPInputContext } from '../otp-input';
 import styles from './otp-input-slot.module.scss';
 import { cn } from '@/lib/helpers';
 
 type Props = {
     index?: number;
-}
+};
 
 type InternalProps = Props & {
     joined?: boolean;
     firstInGroup?: boolean;
-}
+};
 
 export default function OTPInputSlot(props: Props) {
     return <OTPInputSlotImpl {...props} />;
 }
 
-function OTPInputSlotImpl({
-    index,
-    joined,
-    firstInGroup,
-}: InternalProps) {
+function OTPInputSlotImpl({ index, joined, firstInGroup }: InternalProps) {
     const [internalIndex, setInternalIndex] = useState(index ?? -2);
-    const [{ chars, focusedIndex, maxLength }, api] = useOTPInputContext();
+    const [{ chars, disabled, focusedIndex, maxLength }, api] =
+        useOTPInputContext();
     const ref = useRef<HTMLInputElement>(null!);
 
     const currentFocus =
@@ -40,6 +43,8 @@ function OTPInputSlotImpl({
     }, [focusedIndex, internalIndex]);
 
     async function handleKey(event: KeyboardEvent<HTMLInputElement>) {
+        if (disabled) return;
+
         switch (event.key) {
             case 'Backspace':
                 event.preventDefault();
@@ -84,11 +89,20 @@ function OTPInputSlotImpl({
         }
     }
 
-    function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-        const newValue = e.target.value;
+    function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
+        const newValue = event.target.value;
 
         if (newValue.length) {
             api.handleInput(internalIndex, newValue);
+        }
+    }
+
+    function handlePaste(event: ClipboardEvent<HTMLInputElement>) {
+        event.preventDefault();
+        const data = event.clipboardData?.getData('text/plain');
+
+        if (data) {
+            api.onChange?.(data);
         }
     }
 
@@ -96,7 +110,6 @@ function OTPInputSlotImpl({
         <input
             ref={ref}
             inputMode="numeric"
-            pattern="[0-9]"
             value={chars[internalIndex] || ''}
             className={cn(
                 styles.slot,
@@ -107,13 +120,16 @@ function OTPInputSlotImpl({
             maxLength={1}
             style={{ pointerEvents: currentFocus ? 'auto' : 'none' }}
             disabled={
-                currentFocus || chars.join('').length === maxLength
+                disabled
+                    ? true
+                    : currentFocus || chars.join('').length === maxLength
                     ? false
                     : true
             }
             onKeyDown={handleKey}
             onFocus={() => api.focusIndex(internalIndex)}
             onChange={handleChange}
+            onPaste={handlePaste}
         ></input>
     );
 }

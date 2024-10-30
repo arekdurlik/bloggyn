@@ -6,7 +6,7 @@ import { EmailError, UserError } from '@/validation/errors';
 import { string, z } from 'zod';
 import bcrypt from 'bcrypt';
 import { usernameSchema } from '@/validation/user/username';
-import { displayNameSchema } from '@/validation/user/displayName';
+import { displayNameSchema } from '@/validation/user/display-name';
 import { emailSchema } from '@/validation/user/email';
 import jwt, { type JwtPayload } from 'jsonwebtoken';
 import { Resend } from 'resend';
@@ -127,7 +127,7 @@ export const authRouter = router({
                             code: randomCode.toString(),
                         });
 
-                        // hash email for response
+                        // hash email address for response
                         const secret = process.env.VERIFICATION_SECRET;
 
                         if (!secret) {
@@ -232,19 +232,24 @@ export const authRouter = router({
     checkVerificationCode: procedure
         .input(
             z.object({
+                code: z.string(),
                 token: z.string(),
             })
         )
         .query(async ({ input, ctx: { db } }) => {
             try {
+                console.log('input', input);
                 const secret = process.env.VERIFICATION_SECRET ?? '';
                 const decoded = jwt.verify(input.token, secret) as JwtPayload;
 
                 if ('email' in decoded) {
                     const result = await db.query.verificationCodes.findFirst({
-                        where: eq(
-                            sql`lower(${verificationCodes.email})`,
-                            decoded.email.toLowerCase()
+                        where: and(
+                            eq(
+                                sql`lower(${verificationCodes.email})`,
+                                decoded.email.toLowerCase()
+                            ),
+                            eq(verificationCodes.code, input.code)
                         ),
                     });
 
@@ -327,6 +332,7 @@ export const authRouter = router({
             })
         )
         .mutation(async ({ input, ctx: { session, db } }) => {
+            console.log('DATA:', input);
             try {
                 const user = await db.query.users.findFirst({
                     where: eq(users.id, session.user.id),

@@ -13,6 +13,8 @@ import { accounts, users } from '@/server/db/schema';
 import GitHubProvider from 'next-auth/providers/github';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { and, eq, isNotNull } from 'drizzle-orm';
+import jwt, { JwtPayload } from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
  * object and keep type safety.
@@ -32,6 +34,18 @@ declare module 'next-auth' {
     //   // ...other properties
     //   // role: UserRole;
     // }
+}
+
+function compareAsync(password: string, hashedPassword: string) {
+    return new Promise(function (resolve, reject) {
+        bcrypt.compare(password, hashedPassword, function (err, res) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(res);
+            }
+        });
+    });
 }
 
 export const authOptions: NextAuthOptions = {
@@ -80,7 +94,52 @@ export const authOptions: NextAuthOptions = {
         CredentialsProvider({
             name: 'credentials',
             credentials: {},
-            authorize: credentials => {
+            authorize: async credentials => {
+                if (!credentials) return null;
+
+                try {
+                    if (
+                        'email' in credentials &&
+                        'password' in credentials &&
+                        typeof credentials.email === 'string' &&
+                        typeof credentials.password === 'string'
+                    ) {
+                        const user = await db.query.users.findFirst({
+                            where: eq(
+                                users.email,
+                                credentials.email.toLowerCase()
+                            ),
+                            with: {
+                                accounts: true,
+                            },
+                        });
+
+                        if (!user) return null;
+
+                        const account = user.accounts[0];
+
+                        if (!account) return null;
+
+                        if (
+                            'password' in account &&
+                            typeof account.password === 'string'
+                        ) {
+                            await compareAsync(
+                                credentials.password,
+                                account.password
+                            );
+
+                            return {
+                                id: user.id,
+                                name: user.name,
+                                username: user.username,
+                                email: user.email,
+                                image: user.image,
+                            };
+                        }
+                    }
+                } catch {}
+
                 return null;
             },
         }),
