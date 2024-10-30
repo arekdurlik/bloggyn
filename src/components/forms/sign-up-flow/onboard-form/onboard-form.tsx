@@ -9,15 +9,12 @@ import styles from './onboard-form.module.scss';
 import formStyles from '../../forms.module.scss';
 import Username from './inputs/username';
 import DisplayName from './inputs/display-name';
-import { usernameErrors } from '@/validation/user/username';
 import { Form } from '../../form';
 import FormButton from '../../form-button';
 import { onboardSchema } from '@/validation/user';
-import { TRPCClientError } from '@trpc/client';
-import { UserError } from '@/validation/errors';
-import { openToast, ToastType } from '@/components/common/toasts/toasts';
-import { getResponse } from '@/validation/utils';
 import { sleep, withMinDuration } from '@/lib/helpers';
+import { handleErrorWithToast } from '@/components/common/toasts/utils';
+import { openToast, ToastType } from '@/components/common/toasts/store';
 
 export default function OnboardForm() {
     const [formData, setFormData] = useState({
@@ -39,26 +36,9 @@ export default function OnboardForm() {
 
     async function handleSubmitSuccess() {
         // sleep on success state b4 redirect so user sees it
+        openToast(ToastType.SUCCESS, "You're all set!" );
         await sleep(500);
         router.push('/');
-    }
-
-    function handleSubmitError(error: unknown) {
-        if (error instanceof TRPCClientError) {
-            if (error.data.key) {
-                openToast(
-                    ToastType.ERROR,
-                    getResponse(usernameErrors, error.data.key)
-                );
-            } else {
-                openToast(ToastType.ERROR, error.message);
-            }
-        } else {
-            openToast(
-                ToastType.ERROR,
-                'Something went wrong 🤧 Please try again.'
-            );
-        }
     }
 
     return (
@@ -66,7 +46,7 @@ export default function OnboardForm() {
             <div className={styles.container}>
                 <div className={styles.header}>
                     <h1 className={formStyles.header}>
-                        Nearly there! Just a final touch
+                        Almost there! Just a final touch
                     </h1>
                     <p className={formStyles.description}>
                         Let's finish setting up your account.
@@ -79,7 +59,7 @@ export default function OnboardForm() {
                 <Form
                     onSubmit={handleSubmit}
                     onSubmitSuccess={handleSubmitSuccess}
-                    onSubmitError={handleSubmitError}
+                    onSubmitError={handleErrorWithToast}
                 >
                     <div className={styles.fields}>
                         <div className={formStyles.inputGroup}>

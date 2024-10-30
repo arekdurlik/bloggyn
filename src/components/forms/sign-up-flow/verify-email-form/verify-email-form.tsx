@@ -20,9 +20,9 @@ import FormButton from '../../form-button';
 import { verificationCodeSchema } from '@/validation/user/verification-code';
 import { ZodError } from 'zod';
 import { TRPCClientError } from '@trpc/client';
-import { closeToast, openToast, ToastType } from '@/components/common/toasts/toasts';
 import { signIn } from 'next-auth/react';
 import { Form } from '../../form';
+import { closeToast, openToast, ToastType } from '@/components/common/toasts/store';
 
 export enum VerifyEmailState {
     SUCCESS = 'success',

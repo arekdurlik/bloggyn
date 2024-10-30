@@ -89,6 +89,7 @@ export default function ValidatedInput({
                     }
 
                     if (!valid) {
+                        setState(State.ERROR);
                         return;
                     }
                 }

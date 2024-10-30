@@ -238,7 +238,6 @@ export const authRouter = router({
         )
         .query(async ({ input, ctx: { db } }) => {
             try {
-                console.log('input', input);
                 const secret = process.env.VERIFICATION_SECRET ?? '';
                 const decoded = jwt.verify(input.token, secret) as JwtPayload;
 
@@ -332,7 +331,6 @@ export const authRouter = router({
             })
         )
         .mutation(async ({ input, ctx: { session, db } }) => {
-            console.log('DATA:', input);
             try {
                 const user = await db.query.users.findFirst({
                     where: eq(users.id, session.user.id),

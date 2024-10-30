@@ -4,7 +4,6 @@ import {
     DISPLAY_NAME_MAX,
     displayNameSchema,
 } from '@/validation/user/display-name';
-import ValidatedInput from '../../../../common/inputs/validated-input';
 import FormInput from '@/components/forms/form-input';
 import { FormInputProps } from '@/components/forms/types';
 import { useFormContext } from '@/components/forms/context';
@@ -14,7 +13,7 @@ export default function DisplayName({ value: displayName, onChange }: FormInputP
     const { errors, api } = useFormContext();
     const inputName = 'displayName';
 
-    const placeholder = session?.user.name ?? 'John Doe';
+    const placeholder = session?.user.name ?? '';
 
     return (
         <FormInput

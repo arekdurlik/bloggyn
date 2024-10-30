@@ -1,7 +1,7 @@
 'use client';
 
 import { signIn } from 'next-auth/react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { trpc } from '@/trpc/client';
 import Github from '@/components/common/icons/github';
@@ -11,24 +11,20 @@ import Email from './inputs/email';
 import Password from './inputs/password';
 import React from 'react';
 import { SignUpStep } from '@/lib/constants';
-import { emailErrors } from '@/validation/user/email';
 import { Link } from 'next-view-transitions';
-import { openToast, ToastType } from '@/components/common/toasts/toasts';
 import { Form, FormSubmitHandler } from '@/components/forms/form';
-import { TRPCClientError } from '@trpc/client';
-import { EmailError } from '@/validation/errors';
-import { getResponse } from '@/validation/utils';
 import { useCrossfadeFormContext, type OnNextStep } from '../../../common/crossfade-form';
 import FormButton from '../../form-button';
 import { isObjectAndHasProperty, sleep, withMinDuration } from '@/lib/helpers';
 import { signUpSchema } from '@/validation/user';
+import { handleErrorWithToast } from '@/components/common/toasts/utils';
 
 export default function SignUpForm() {
     const [formData, setFormData] = useState({
         email: '',
         password: '',
     });
-    const { state, api } = useCrossfadeFormContext();
+    const { api } = useCrossfadeFormContext();
 
     const splitEmail = formData.email.split('@');
     const censoredEmail =
@@ -68,29 +64,12 @@ export default function SignUpForm() {
         }
     };
 
-    function handleSubmitError(error: unknown) {
-        if (
-            error instanceof TRPCClientError &&
-            error.data.key === EmailError.EMAIL_TAKEN
-        ) {
-            openToast(
-                ToastType.ERROR,
-                getResponse(emailErrors, EmailError.EMAIL_TAKEN)
-            );
-        } else {
-            openToast(
-                ToastType.ERROR,
-                'Something went wrong 🤧 Please try again.'
-            );
-        }
-    }
-
     return (
         <div className={formStyles.content}>
             <Form
                 onSubmit={handleSubmit}
                 onSubmitSuccess={handleSubmitSuccess}
-                onSubmitError={handleSubmitError}
+                onSubmitError={handleErrorWithToast}
             >
                 <h1 className={formStyles.header}>Sign up</h1>
                 <div className={formStyles.inputGroup}>
