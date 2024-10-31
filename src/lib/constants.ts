@@ -15,4 +15,5 @@ export enum SignUpStep {
     SIGN_UP = 'sign-up',
     VERIFY_EMAIL = 'verify-email',
     ONBOARDING = 'onboarding',
+    SUCCESS = 'success',
 }

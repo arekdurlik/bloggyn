@@ -13,7 +13,6 @@ import { useEffect, useRef, useState } from 'react';
 import VerifyCodeInput from './verify-code-input/verify-code-input';
 import {
     useCrossfadeFormContext,
-    type OnNextStep,
 } from '@/components/common/crossfade-form';
 import { SignUpStep } from '@/lib/constants';
 import FormButton from '../../form-button';
@@ -124,7 +123,7 @@ export default function VerifyEmailForm() {
         });
 
         await closeToast(toast);
-        api.onNextStep?.(SignUpStep.ONBOARDING, undefined, true);
+        api.onNextStep?.(SignUpStep.ONBOARDING, { replace: true });
     }
 
     function handleSubmitError(error: unknown) {

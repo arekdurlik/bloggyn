@@ -15,11 +15,6 @@ body {
     transition: background-color var(--transition-theme);
 }
 
-svg {
-    width: 16px;
-    height: 16px;
-}
-
 #overlay {
     background-image: url('/bg.jpg');
     background-size: cover;

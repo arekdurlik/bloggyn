@@ -3,8 +3,8 @@
 import {
     type ComponentType,
     createContext,
-    Dispatch,
-    SetStateAction,
+    type Dispatch,
+    type SetStateAction,
     useContext,
     useEffect,
     useState,
@@ -12,10 +12,14 @@ import {
 import { Crossfade } from '@/components/common/crossfade/crossfade';
 import { usePathname } from 'next/navigation';
 
+type OptsBase = {
+    params?: Record<string, string>;
+};
 export type OnNextStep = (
-    path: string,
-    params?: Record<string, string>,
-    replace?: boolean
+    step: string,
+    opts:
+        | (OptsBase & { replace?: string | true; push?: never })
+        | (OptsBase & { push?: string | true; replace?: never })
 ) => void;
 
 type Props = {
@@ -49,23 +53,26 @@ export default function CrossfadeForm({ steps, initialStep }: Props) {
         setCurrentStep(pathname.slice(1));
     }, [pathname]);
 
-    function onNextStep(...[path, params, replace]: Parameters<OnNextStep>) {
-        const encoded = new URLSearchParams(params).toString();
+    function onNextStep(...[step, opts]: Parameters<OnNextStep>) {
+        const encoded = new URLSearchParams(opts.params).toString();
+        setCurrentStep(step);
 
-        if (replace) {
-            window.history.replaceState(
-                {},
-                `/${path}?${encoded}`,
-                `/${path}?${encoded}`
-            );
-        } else {
-            window.history.pushState(
+        if (opts.push || opts.replace) {
+            const { push, replace } = opts;
+            let path = step;
+
+            if (typeof push === 'string') {
+                path = push;
+            } else if (typeof replace === 'string') {
+                path = replace;
+            }
+
+            window.history[push ? 'pushState' : 'replaceState'](
                 {},
                 `/${path}?${encoded}`,
                 `/${path}?${encoded}`
             );
         }
-        setCurrentStep(path);
     }
 
     const FormComponent = steps[currentStep] || steps[initialStep];

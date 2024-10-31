@@ -12,8 +12,11 @@ import Password from './inputs/password';
 import React from 'react';
 import { SignUpStep } from '@/lib/constants';
 import { Link } from 'next-view-transitions';
-import { Form, FormSubmitHandler } from '@/components/forms/form';
-import { useCrossfadeFormContext, type OnNextStep } from '../../../common/crossfade-form';
+import { Form, type FormSubmitHandler } from '@/components/forms/form';
+import {
+    useCrossfadeFormContext,
+    type OnNextStep,
+} from '../../../common/crossfade-form';
 import FormButton from '../../form-button';
 import { isObjectAndHasProperty, sleep, withMinDuration } from '@/lib/helpers';
 import { signUpSchema } from '@/validation/user';
@@ -58,8 +61,11 @@ export default function SignUpForm() {
         ) {
             api.setState(v => ({ ...v, ...formData }));
             api.onNextStep?.(SignUpStep.VERIFY_EMAIL, {
-                token: data.token,
-                email: encodedEmail,
+                push: true,
+                params: {
+                    token: data.token,
+                    email: encodedEmail,
+                },
             });
         }
     };
@@ -75,14 +81,14 @@ export default function SignUpForm() {
                 <div className={formStyles.inputGroup}>
                     <FormButton
                         hasBrandIcon
-                        onClick={() => signIn('github', { redirect: false })}
+                        onClick={() => signIn('github', { callbackUrl: '/onboarding' })}
                     >
                         <Google />
                         Continue with Google
                     </FormButton>
                     <FormButton
                         hasBrandIcon
-                        onClick={() => signIn('github', { redirect: false })}
+                        onClick={() => signIn('github', { callbackUrl: '/onboarding' })}
                     >
                         <Github />
                         Continue with Github

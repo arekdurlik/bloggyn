@@ -59,11 +59,7 @@ export const authOptions: NextAuthOptions = {
     },
     secret: process.env.NEXTAUTH_SERCRET,
     callbacks: {
-        jwt: async ({ token, trigger, session }) => {
-            if (trigger === 'update' && session.onboarded === true) {
-                token.onboarded = true;
-            }
-
+        jwt: async ({ token }) => {
             if (token.username === undefined) {
                 const res = await db.query.users.findFirst({
                     where: and(
@@ -71,7 +67,10 @@ export const authOptions: NextAuthOptions = {
                         eq(users.id, token.sub ?? '')
                     ),
                 });
-                token.username = res?.username;
+
+                if (res) {
+                    token.username = res?.username;
+                }
             }
             return token;
         },
