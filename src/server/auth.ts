@@ -1,9 +1,6 @@
 import { DrizzleAdapter } from '@auth/drizzle-adapter';
 import {
-    Awaitable,
     getServerSession,
-    RequestInternal,
-    User,
     type DefaultSession,
     type NextAuthOptions,
 } from 'next-auth';
@@ -13,8 +10,9 @@ import { accounts, users } from '@/server/db/schema';
 import GitHubProvider from 'next-auth/providers/github';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { and, eq, isNotNull } from 'drizzle-orm';
-import jwt, { JwtPayload } from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
+import { cookies } from 'next/headers';
+import { never } from '@/lib/helpers';
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
  * object and keep type safety.
@@ -57,8 +55,30 @@ export const authOptions: NextAuthOptions = {
     session: {
         strategy: 'jwt',
     },
-    secret: process.env.NEXTAUTH_SERCRET,
+    secret: process.env.NEXTAUTH_SECRET,
     callbacks: {
+        signIn: async ({ user }) => {
+            const cookieStore = cookies();
+
+            const intent = cookieStore.get('auth-intent')?.value;
+
+            switch (intent) {
+                case 'sign-in':
+                    if (!('username' in user)) {
+                        return '/sign-in?error=no-account';
+                    }
+                    break;
+                case 'sign-up':
+                    if ('username' in user) {
+                        return '/sign-up?error=account-exists';
+                    }
+                    break;
+                default:
+                    never(intent);
+            }
+
+            return true;
+        },
         jwt: async ({ token }) => {
             if (token.username === undefined) {
                 const res = await db.query.users.findFirst({

@@ -21,7 +21,6 @@
 .animation {
     &-slideIn {
         animation-name: slide-in;
-        animation-fill-mode: forwards;
         animation-duration: var(--transition-instant);
 
         &--sloth {

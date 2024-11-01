@@ -27,6 +27,7 @@ export default function Username({ value: username, onChange }: Props) {
         { username: username.toLowerCase() },
         { enabled: false, retry: false }
     );
+
     const inputName = 'username';
     const placeholder = slug(session?.user.name ?? '').replace('-', '_');
 

@@ -10,7 +10,7 @@ type Props = {
 export default function AnimatedUnmount({
     mounted,
     children,
-    time = 500,
+    time = 200,
     onRender,
 }: Props) {
     const [shouldRender, setShouldRender] = useState(mounted);

@@ -58,3 +58,7 @@ export function isObjectAndHasProperty<K extends string>(
 ): object is object & Record<K, unknown> {
     return typeof object === 'object' && object !== null && key in object;
 }
+
+export function never(_: unknown) {
+    throw new Error('unimplemented');
+}

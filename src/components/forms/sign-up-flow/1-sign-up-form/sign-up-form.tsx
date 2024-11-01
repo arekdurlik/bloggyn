@@ -12,15 +12,13 @@ import Password from './inputs/password';
 import React from 'react';
 import { SignUpStep } from '@/lib/constants';
 import { Link } from 'next-view-transitions';
-import { Form, type FormSubmitHandler } from '@/components/forms/form';
-import {
-    useCrossfadeFormContext,
-    type OnNextStep,
-} from '../../../common/crossfade-form';
+import { Form } from '@/components/forms/form';
+import { useCrossfadeFormContext } from '../../../common/crossfade-form';
 import FormButton from '../../form-button';
 import { isObjectAndHasProperty, sleep, withMinDuration } from '@/lib/helpers';
 import { signUpSchema } from '@/validation/user';
 import { handleErrorWithToast } from '@/components/common/toasts/utils';
+import { useAuthIntent } from '../../use-auth-intent';
 
 export default function SignUpForm() {
     const [formData, setFormData] = useState({
@@ -28,6 +26,13 @@ export default function SignUpForm() {
         password: '',
     });
     const { api } = useCrossfadeFormContext();
+
+    useAuthIntent({
+        intent: 'sign-up',
+        errorParam: 'account-exists',
+        errorMessage:
+            'An account using this provider already exists. Please sign in instead.',
+    });
 
     const splitEmail = formData.email.split('@');
     const censoredEmail =
@@ -37,10 +42,15 @@ export default function SignUpForm() {
         '@' +
         splitEmail[1];
     const encodedEmail = btoa(censoredEmail);
-
     const signUp = trpc.signUp.useMutation();
 
-    const handleSubmit: FormSubmitHandler = async () => {
+    function handleOAuth(provider: string) {
+        return async () => {
+            await signIn(provider, { redirect: false });
+        };
+    }
+
+    async function handleSubmit() {
         const parsed = signUpSchema.parse(formData);
         const res = await withMinDuration(signUp.mutateAsync(parsed), 350);
 
@@ -49,9 +59,9 @@ export default function SignUpForm() {
         }
 
         return res;
-    };
+    }
 
-    const handleSubmitSuccess = async (data: unknown) => {
+    async function handleSubmitSuccess(data: unknown) {
         // sleep on success state b4 redirect so user sees it
         await sleep(500);
 
@@ -68,7 +78,7 @@ export default function SignUpForm() {
                 },
             });
         }
-    };
+    }
 
     return (
         <div className={formStyles.content}>
@@ -79,17 +89,11 @@ export default function SignUpForm() {
             >
                 <h1 className={formStyles.header}>Sign up</h1>
                 <div className={formStyles.inputGroup}>
-                    <FormButton
-                        hasBrandIcon
-                        onClick={() => signIn('github', { callbackUrl: '/onboarding' })}
-                    >
+                    <FormButton hasBrandIcon onClick={handleOAuth('github')}>
                         <Google />
                         Continue with Google
                     </FormButton>
-                    <FormButton
-                        hasBrandIcon
-                        onClick={() => signIn('github', { callbackUrl: '/onboarding' })}
-                    >
+                    <FormButton hasBrandIcon onClick={handleOAuth('github')}>
                         <Github />
                         Continue with Github
                     </FormButton>

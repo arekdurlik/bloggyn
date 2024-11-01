@@ -18,15 +18,13 @@ export default function Account({ session }: { session: Session }) {
         <DropdownMenu>
             <DropdownMenuTrigger className={styles.trigger}>
                 <div className={cn(actionStyles.actionIcon)}>
-                    {session.user.image && (
                         <Image
                             className={styles.image}
-                            src={session.user.image}
+                            src={session.user.image ?? "/default-avatar.jpg"}
                             width={40}
                             height={40}
                             alt="Profile picture"
                         />
-                    )}
                 </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="right" offsetTop={7}>

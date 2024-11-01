@@ -11,9 +11,7 @@ import { trpc } from '@/trpc/client';
 import { config } from '@/lib/config';
 import { useEffect, useRef, useState } from 'react';
 import VerifyCodeInput from './verify-code-input/verify-code-input';
-import {
-    useCrossfadeFormContext,
-} from '@/components/common/crossfade-form';
+import { useCrossfadeFormContext } from '@/components/common/crossfade-form';
 import { SignUpStep } from '@/lib/constants';
 import FormButton from '../../form-button';
 import { verificationCodeSchema } from '@/validation/user/verification-code';
@@ -21,7 +19,11 @@ import { ZodError } from 'zod';
 import { TRPCClientError } from '@trpc/client';
 import { signIn } from 'next-auth/react';
 import { Form } from '../../form';
-import { closeToast, openToast, ToastType } from '@/components/common/toasts/store';
+import {
+    closeToast,
+    openToast,
+    ToastType,
+} from '@/components/common/toasts/store';
 
 export enum VerifyEmailState {
     SUCCESS = 'success',
@@ -199,7 +201,7 @@ export default function VerifyEmailForm() {
             </Form>
             <div className={formStyles.divider}></div>
             <span className={formStyles.alternateAction}>
-                Didn't receive the code? <b>Click to resend</b>
+                Didn&apos;t receive the code? <b>Click to resend</b>
             </span>
         </div>
     );

@@ -20,6 +20,7 @@
 
     div,
     nav,
+    a:has(span),
     button {
         $transition: background-color var(--transition-theme),
             border-color var(--transition-theme) !important;
@@ -37,8 +38,8 @@
     h3,
     h4,
     p,
-    a,
-    span,
+    a:not(:has(span)),
+    span:not(:has(svg)),
     label {
         transition: background-color var(--transition-theme),
             color var(--transition-theme), border-color var(--transition-theme) !important;
