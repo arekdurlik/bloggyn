@@ -5,6 +5,7 @@ import { ButtonLink } from '@/components/common/inputs/button';
 import formStyles from '../../forms.module.scss';
 import sharedStyles from '@/styles/shared.module.scss';
 import { redirect } from 'next/navigation';
+import { cn } from '@/lib/helpers';
 
 export default function SignUpSuccess() {
     const { data: session } = useSession();
@@ -21,8 +22,8 @@ export default function SignUpSuccess() {
             <p className={formStyles.description}>
                 Welcome aboard, {user.name}!
             </p>
-            <p className={formStyles.description}>
-                Start exploring articles, following other users, and sharing
+            <p className={cn(formStyles.description, formStyles.descriptionBalanced)}>
+                Start exploring, following other users, and sharing
                 your own posts with the community.
             </p>
             <div className={sharedStyles.buttonGroup}>

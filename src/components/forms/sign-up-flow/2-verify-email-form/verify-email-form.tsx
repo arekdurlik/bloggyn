@@ -1,6 +1,6 @@
 'use client';
 
-import { usePathname, useSearchParams } from 'next/navigation';
+import { redirect, usePathname, useSearchParams } from 'next/navigation';
 
 import formStyles from '../../forms.module.scss';
 import shared from '@/styles/shared.module.scss';
@@ -24,6 +24,7 @@ import {
     openToast,
     ToastType,
 } from '@/components/common/toasts/store';
+import { useAuthIntent } from '../../use-auth-intent';
 
 export enum VerifyEmailState {
     SUCCESS = 'success',
@@ -53,6 +54,12 @@ export default function VerifyEmailForm() {
             retry: false,
         }
     );
+
+    useAuthIntent({
+        intent: 'sign-in',
+        errorParam: 'error',
+        errorMessage: 'Error occurred. Please try again.',
+    });
 
     useEffect(() => {
         if (getCode.error) {
@@ -113,7 +120,11 @@ export default function VerifyEmailForm() {
         // sleep on success state b4 redirect so user sees it
         await sleep(500);
 
-        // will redirect to sign in page if these are not present
+        if (!crossfadeFormState.email) {
+            redirect('/sign-in');
+        }
+
+        // auto sign in if email and password are present
         const toast = openToast(
             ToastType.PENDING,
             'Signing in, please wait...'
@@ -201,7 +212,7 @@ export default function VerifyEmailForm() {
             </Form>
             <div className={formStyles.divider}></div>
             <span className={formStyles.alternateAction}>
-                Didn&apos;t receive the code? <b>Click to resend</b>
+                Didn't receive the code? <b>Click to resend</b>
             </span>
         </div>
     );

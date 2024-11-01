@@ -19,6 +19,7 @@ export default function FormInput({
     const { errors, state, attemptedSubmit, api } = useFormContext();
     const [flashingError, setFlashingError] = useState(false);
     const timeoutRef = useRef<NodeJS.Timeout>();
+    const currentError = useRef(errors[props.name]);
 
     useEffect(() => {
         api.register({
@@ -52,7 +53,11 @@ export default function FormInput({
     function handleError(error: string) {
         api.setError(props.name, error);
         onError?.(error);
-        flashError();
+
+        if (error !== currentError.current) {
+            currentError.current = error;
+            flashError();
+        }
     }
 
     function handleValidate(value?: string, success?: boolean) {

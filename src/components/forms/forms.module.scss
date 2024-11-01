@@ -134,6 +134,10 @@
 
 .description {
     text-align: center;
+
+    &--balanced {
+        text-wrap-style: balance;
+    }
 }
 
 .divider {

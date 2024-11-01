@@ -11,6 +11,7 @@ const config = {
         'plugin:@typescript-eslint/stylistic-type-checked',
     ],
     rules: {
+        'react/no-unescaped-entities': 'off',
         '@typescript-eslint/no-wrapper-object-types': 'off',
         '@typescript-eslint/no-empty-object-type': 'off',
         '@typescript-eslint/prefer-for-of': 'off',

@@ -13,26 +13,6 @@ import { and, eq, isNotNull } from 'drizzle-orm';
 import bcrypt from 'bcrypt';
 import { cookies } from 'next/headers';
 import { never } from '@/lib/helpers';
-/**
- * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
- * object and keep type safety.
- *
- * @see https://next-auth.js.org/getting-started/typescript#module-augmentation
- */
-declare module 'next-auth' {
-    interface Session extends DefaultSession {
-        user: {
-            id: string;
-            // ...other properties
-            // role: UserRole;
-        } & DefaultSession['user'];
-    }
-
-    // interface User {
-    //   // ...other properties
-    //   // role: UserRole;
-    // }
-}
 
 function compareAsync(password: string, hashedPassword: string) {
     return new Promise(function (resolve, reject) {
@@ -90,6 +70,7 @@ export const authOptions: NextAuthOptions = {
 
                 if (res) {
                     token.username = res?.username;
+                    token.name = res?.name;
                 }
             }
             return token;

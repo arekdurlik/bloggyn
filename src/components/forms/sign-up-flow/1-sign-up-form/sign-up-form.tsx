@@ -91,11 +91,11 @@ export default function SignUpForm() {
                 <div className={formStyles.inputGroup}>
                     <FormButton hasBrandIcon onClick={handleOAuth('github')}>
                         <Google />
-                        Continue with Google
+                        <span>Continue with Google</span>
                     </FormButton>
                     <FormButton hasBrandIcon onClick={handleOAuth('github')}>
                         <Github />
-                        Continue with Github
+                        <span>Continue with Github</span>
                     </FormButton>
                 </div>
                 <div className={formStyles.divider}>

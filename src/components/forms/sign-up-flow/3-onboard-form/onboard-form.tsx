@@ -2,7 +2,7 @@
 
 import { useSession } from 'next-auth/react';
 import { trpc } from '@/trpc/client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { redirect, useRouter } from 'next/navigation';
 
 import styles from './onboard-form.module.scss';
@@ -30,9 +30,11 @@ export default function OnboardForm() {
 
     const { data: session } = useSession();
 
-    if (!session || (session?.user && 'username' in session?.user)) {
-        redirect('/');
-    }
+    useEffect(() => {
+        if (!session || (session?.user && 'username' in session?.user)) {
+            redirect('/');
+        }
+    }, []);
 
     router.prefetch('/');
 
@@ -45,7 +47,6 @@ export default function OnboardForm() {
 
     async function handleSubmitSuccess() {
         // sleep on success state b4 redirect so user sees it
-        openToast(ToastType.SUCCESS, "You're all set!");
         await sleep(500);
         api.onNextStep?.(SignUpStep.SUCCESS, { replace: true });
     }

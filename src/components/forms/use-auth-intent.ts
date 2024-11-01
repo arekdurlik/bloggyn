@@ -23,7 +23,9 @@ export function useAuthIntent(opts: Opts) {
 
         return () => {
             closeToast(toast);
-            Cookies.remove('auth-intent');
+            if (Cookies.get('auth-intent') === opts.intent) {
+                Cookies.remove('auth-intent');
+            }
         };
     }, []);
 }

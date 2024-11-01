@@ -31,6 +31,17 @@
         &::after {
             transition: $transition;
         }
+
+        & > span > svg:not([fill='none']) {
+            transition: fill var(--transition-theme) !important;
+        }
+    }
+
+    textarea {
+        transition: color var(--transition-theme) !important;
+        &::placeholder {
+            transition: color var(--transition-theme);
+        }
     }
 
     h1,

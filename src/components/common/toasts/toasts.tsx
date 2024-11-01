@@ -11,7 +11,7 @@ import { CheckCircle, Info, TriangleAlert, X } from 'lucide-react';
 import styles from './toasts.module.scss';
 import { cn } from '@/lib/helpers';
 import Loader from '../icons/loader/loader';
-import { Toast, ToastType, useToasts } from './store';
+import { type Toast, ToastType, useToasts } from './store';
 
 export function Toasts() {
     const refMap = useMemo(() => new WeakMap<Toast, HTMLDivElement>(), []);

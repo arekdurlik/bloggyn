@@ -33,7 +33,7 @@ export default function CenterAction() {
                     <div className={styles.container}>
                         <Button onClick={handlePublish}>
                             <BookCheck />
-                            Publish
+                            <span>Publish</span>
                         </Button>
                     </div>
                 ) : (
