@@ -1,8 +1,8 @@
 import {
     createContext,
-    Dispatch,
+    type Dispatch,
     type ReactNode,
-    SetStateAction,
+    type SetStateAction,
     useContext,
     useState,
 } from 'react';
@@ -44,7 +44,7 @@ export const useFormContext = () => {
     return ctx;
 };
 
-type FormData = Record<string, RegisterOpts & { value: string }>;
+export type FormData = Record<string, RegisterOpts & { value: string }>;
 type Errors = Record<string, string>;
 
 type Props = {

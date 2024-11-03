@@ -1,7 +1,6 @@
 'use client';
 
 import { redirect, usePathname, useSearchParams } from 'next/navigation';
-
 import formStyles from '../../forms.module.scss';
 import shared from '@/styles/shared.module.scss';
 import styles from './verify-email-form.module.scss';
@@ -85,7 +84,7 @@ export default function VerifyEmailForm() {
                 );
             }
         }, 300);
-    }, [getCode.status, pathname]);
+    }, [getCode.data, pathname]);
 
     let email = params.get('email');
 
@@ -99,7 +98,7 @@ export default function VerifyEmailForm() {
 
             emailRef.current = email;
         } catch {
-            router.push('/404');
+            router.push('/sign-up');
             return null;
         }
     }

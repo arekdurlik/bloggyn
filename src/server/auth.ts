@@ -14,7 +14,7 @@ import bcrypt from 'bcrypt';
 import { cookies } from 'next/headers';
 import { never } from '@/lib/helpers';
 
-function compareAsync(password: string, hashedPassword: string) {
+export function compareAsync(password: string, hashedPassword: string) {
     return new Promise(function (resolve, reject) {
         bcrypt.compare(password, hashedPassword, function (err, res) {
             if (err) {
@@ -124,10 +124,12 @@ export const authOptions: NextAuthOptions = {
                             'password' in account &&
                             typeof account.password === 'string'
                         ) {
-                            await compareAsync(
+                            const match = await compareAsync(
                                 credentials.password,
                                 account.password
                             );
+
+                            if (!match) return null;
 
                             return {
                                 id: user.id,

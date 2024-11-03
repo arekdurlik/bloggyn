@@ -1,21 +1,26 @@
 import { procedure, protectedProcedure, router } from '@/trpc';
 import { type inferRouterOutputs } from '@trpc/server';
-import { accounts, type User, users, verificationCodes } from '../db/schema';
-import { and, desc, eq, sql } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 import { EmailError, UserError } from '@/validation/errors';
-import { string, z } from 'zod';
+import { z } from 'zod';
 import bcrypt from 'bcrypt';
 import { usernameSchema } from '@/validation/user/username';
 import { displayNameSchema } from '@/validation/user/display-name';
 import { emailSchema } from '@/validation/user/email';
-import jwt, { type JwtPayload } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { Resend } from 'resend';
 import { config } from '@/lib/config';
 import { XTRPCError } from '@/validation/xtrpc-error';
+import {
+    accounts,
+    type User,
+    users,
+    verificationCodes,
+} from '@/server/db/schema';
 
-export type AuthRouterOutput = inferRouterOutputs<typeof authRouter>;
+export type SignUpRouterOutput = inferRouterOutputs<typeof signUpRouter>;
 
-export const authRouter = router({
+export const signUpRouter = router({
     checkEmailAvailability: procedure
         .input(
             z.object({
@@ -35,6 +40,30 @@ export const authRouter = router({
                     code: 'CONFLICT',
                     key: EmailError.EMAIL_TAKEN,
                     message: 'E-mail already taken',
+                });
+            }
+
+            return 'ok';
+        }),
+    checkUsernameAvailability: procedure
+        .input(
+            z.object({
+                username: usernameSchema,
+            })
+        )
+        .query(async ({ input, ctx: { db } }) => {
+            const alreadyTaken = await db.query.users.findFirst({
+                where: eq(
+                    sql`lower(${users.username})`,
+                    input.username.toLowerCase()
+                ),
+            });
+
+            if (alreadyTaken) {
+                throw new XTRPCError({
+                    code: 'CONFLICT',
+                    key: UserError.USERNAME_TAKEN,
+                    message: 'Username already taken',
                 });
             }
 
@@ -182,146 +211,6 @@ export const authRouter = router({
                     });
                 }
             }
-        }),
-    getVerificationCode: procedure
-        .input(
-            z.object({
-                token: string(),
-            })
-        )
-        .query(async ({ input, ctx: { db } }) => {
-            try {
-                if (config.EMAIL_ENABLED) {
-                    throw new Error();
-                }
-
-                const secret = process.env.VERIFICATION_SECRET ?? '';
-                const decoded = jwt.verify(input.token, secret) as JwtPayload;
-
-                if ('email' in decoded) {
-                    const result = await db.query.verificationCodes.findFirst({
-                        where: eq(
-                            sql`lower(${verificationCodes.email})`,
-                            decoded.email.toLowerCase()
-                        ),
-                    });
-
-                    if (!result) {
-                        throw new Error();
-                    }
-
-                    const expiresIn = config.VERIFICATION_CODE_EXPIRES_IN;
-                    const createdAt = new Date(result.createdAt).getTime();
-                    const codeLifetime = Date.now() - createdAt;
-
-                    if (codeLifetime > expiresIn) {
-                        throw new Error();
-                    }
-
-                    return {
-                        code: result.code,
-                    };
-                }
-            } catch {
-                throw new XTRPCError({
-                    code: 'BAD_REQUEST',
-                    message: 'Invalid verification code',
-                });
-            }
-        }),
-    checkVerificationCode: procedure
-        .input(
-            z.object({
-                code: z.string(),
-                token: z.string(),
-            })
-        )
-        .query(async ({ input, ctx: { db } }) => {
-            try {
-                const secret = process.env.VERIFICATION_SECRET ?? '';
-                const decoded = jwt.verify(input.token, secret) as JwtPayload;
-
-                if ('email' in decoded) {
-                    const result = await db.query.verificationCodes.findFirst({
-                        where: and(
-                            eq(
-                                sql`lower(${verificationCodes.email})`,
-                                decoded.email.toLowerCase()
-                            ),
-                            eq(verificationCodes.code, input.code)
-                        ),
-                    });
-
-                    if (!result) {
-                        throw new Error();
-                    }
-
-                    const expiresIn = config.VERIFICATION_CODE_EXPIRES_IN;
-                    const createdAt = new Date(result.createdAt).getTime();
-                    const codeLifetime = Date.now() - createdAt;
-
-                    if (codeLifetime > expiresIn) {
-                        throw new Error();
-                    }
-
-                    await db.transaction(async tx => {
-                        await tx
-                            .update(users)
-                            .set({
-                                emailVerified: sql`NOW()`,
-                            })
-                            .where(
-                                eq(
-                                    sql`lower(${users.email})`,
-                                    decoded.email.toLowerCase()
-                                )
-                            );
-
-                        await tx
-                            .delete(verificationCodes)
-                            .where(
-                                and(
-                                    eq(
-                                        sql`lower(${verificationCodes.email})`,
-                                        decoded.email.toLowerCase()
-                                    ),
-                                    eq(verificationCodes.code, result.code)
-                                )
-                            );
-                    });
-                }
-
-                return 'ok';
-            } catch {
-                throw new XTRPCError({
-                    code: 'BAD_REQUEST',
-                    message: 'Invalid verification code',
-                });
-            }
-        }),
-    checkUsernameAvailability: procedure
-        .input(
-            z.object({
-                username: usernameSchema,
-            })
-        )
-        .query(async ({ input, ctx: { db } }) => {
-            const alreadyTaken = await db.query.users.findFirst({
-                where: eq(
-                    sql`lower(${users.username})`,
-                    input.username.toLowerCase()
-                ),
-            });
-
-            if (alreadyTaken) {
-                throw new XTRPCError({
-                    code: 'CONFLICT',
-                    key: UserError.USERNAME_TAKEN,
-                    message: 'Username already taken',
-                });
-            }
-
-            return 'ok';
         }),
     completeSignUp: protectedProcedure
         .input(

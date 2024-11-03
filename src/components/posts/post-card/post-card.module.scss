@@ -5,6 +5,11 @@
     gap: var(--spacing-large);
     padding: var(--spacing-default);
     height: 200px;
+
+    svg {
+        width: 16px;
+        height: 16px;
+    }
 }
 
 .content {

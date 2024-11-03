@@ -55,7 +55,7 @@ export function Toasts() {
             case ToastType.INFO:
                 return <Info />;
             case ToastType.PENDING:
-                return <Loader/>;
+                return <Loader />;
             case ToastType.PENDING_SUCCESS:
             case ToastType.SUCCESS:
                 return <CheckCircle />;

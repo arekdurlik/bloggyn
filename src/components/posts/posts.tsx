@@ -27,7 +27,7 @@ export default function Posts() {
             {posts.map(post => (
                 <PostCard key={post.slug} post={post} />
             ))}
-            <hr ref={trigger} />
+            <div ref={trigger} />
         </div>
     );
 }

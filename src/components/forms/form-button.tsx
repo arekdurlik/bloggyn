@@ -24,34 +24,32 @@ export default function FormButton({
     const { state } = useFormContext();
 
     const content = (() => {
-        if (!submit || state === State.DISABLED) {
-            return children;
-        } else {
-            if (!icon) {
-                switch (state) {
-                    case State.SUCCESS:
-                        return <Check size={24} />;
-                    case State.PENDING:
-                        return <Loader size={24} />;
-                    default:
-                        return children;
-                }
-            } else {
-                return (
-                    <div className={cn(styles.content)}>
-                        <span>{children}</span>
-                        <div>
-                            {state === State.PENDING ? (
-                                <Loader size="100%" />
-                            ) : state === State.SUCCESS ? (
-                                <Check size="100%" />
-                            ) : (
-                                icon
-                            )}
-                        </div>
-                    </div>
-                );
+        if (!submit) return children;
+
+        if (!icon) {
+            switch (state) {
+                case State.SUCCESS:
+                    return <Check size={24} />;
+                case State.PENDING:
+                    return <Loader size={24} />;
+                default:
+                    return children;
             }
+        } else {
+            return (
+                <div className={cn(styles.content)}>
+                    <span>{children}</span>
+                    <div>
+                        {state === State.PENDING ? (
+                            <Loader size="100%" />
+                        ) : state === State.SUCCESS ? (
+                            <Check size="100%" />
+                        ) : (
+                            icon
+                        )}
+                    </div>
+                </div>
+            );
         }
     })();
 

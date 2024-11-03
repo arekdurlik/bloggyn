@@ -6,7 +6,7 @@ import { type CSSProperties } from 'react';
 export default function Loader({
     style,
     fadeIn,
-    size = 16,
+    size,
 }: {
     style?: CSSProperties;
     fadeIn?: boolean;
@@ -15,9 +15,8 @@ export default function Loader({
     return (
         <div
             className={cn(styles.loader, fadeIn && 'animation-appear--slow')}
-            style={{ width: size, height: size }}
         >
-            <LoaderCircle className={styles.spinner} style={style} />
+            <LoaderCircle className={styles.spinner} style={style} size={size} />
         </div>
     );
 }

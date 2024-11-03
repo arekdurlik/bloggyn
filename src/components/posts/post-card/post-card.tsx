@@ -7,7 +7,7 @@ import { Link } from 'next-view-transitions';
 export default function PostCard({
     post,
 }: {
-    post: PostRouterOutput['getPosts'][number];
+    post: PostRouterOutput['getPosts']['items'][number];
 }) {
     return (
         <Link href={post.slug} className={styles.container}>
@@ -15,13 +15,7 @@ export default function PostCard({
                 <div className={styles.contentInfo}>
                     <div className={styles.author}>
                         <div className={styles.authorImage}>
-                            {post.avatar && (
-                                <Image
-                                    src={post.avatar}
-                                    fill
-                                    alt="Author image"
-                                />
-                            )}
+                            <Image src={post.avatar ?? '/default-avatar.jpg'} fill alt="Author image" />
                         </div>
                         <span className={styles.authorName}>{post.name}</span>
                     </div>
@@ -43,13 +37,14 @@ export default function PostCard({
                 <div className={styles.footerLeft}>
                     <span>{post.createdAtFormatted}</span>
                     <span>{post.readTime} min read</span>
-                    <span className={styles.withIcon}>
-                        <Heart />3
-                    </span>
-                    <span className={styles.withIcon}>
+                    <div className={styles.withIcon}>
+                        <Heart />
+                        <span>3</span>
+                    </div>
+                    <div className={styles.withIcon}>
                         <MessageSquareMore />
-                        20
-                    </span>
+                        <span>20</span>
+                    </div>
                 </div>
                 <div>
                     <span className={styles.withIcon}>

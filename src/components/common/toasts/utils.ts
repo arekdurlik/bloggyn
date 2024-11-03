@@ -19,7 +19,14 @@ export function handleErrorWithToast(error: unknown) {
         } else {
             openToast(ToastType.ERROR, error.message);
         }
-    } else {
-        openToast(ToastType.ERROR, 'Something went wrong 🤧 Please try again.');
+    } else if (error instanceof Error) {
+        if (error.message) {
+            openToast(ToastType.ERROR, error.message);
+        } else {
+            openToast(
+                ToastType.ERROR,
+                'Something went wrong 🤧 Please try again.'
+            );
+        }
     }
 }

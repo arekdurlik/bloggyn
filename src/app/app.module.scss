@@ -2,7 +2,6 @@
     display: flex;
     justify-content: center;
     min-height: 100%;
-
 }
 
 .container {
@@ -35,6 +34,7 @@
     position: relative;
     max-width: 800px;
     width: 100%;
+    margin-top: calc(var(--headerHeight) + var(--spacing-xxxl));
 
     & > * {
         margin: 0 auto;

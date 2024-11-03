@@ -122,6 +122,11 @@ export default function ValidatedInput({
         const value = event.target.value;
         onChange?.(value);
 
+        if (!schema && !validate) {
+            onError?.('');
+            return;
+        }
+
         if (validateOnEmpty || value.length > 0) {
             setState(State.PENDING);
         } else {

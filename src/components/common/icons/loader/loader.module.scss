@@ -17,7 +17,8 @@
 }
 
 .spinner {
-    position: absolute;
+    display: flex;
+    align-items: center;
     height: inherit;
     width: inherit;
     inset: 0;
