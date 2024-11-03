@@ -109,13 +109,16 @@
     z-index: 2;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     gap: var(--spacing-xxl);
     background-color: var(--bgColor-default);
     width: 100%;
     height: calc(100% - var(--headerHeight));
     margin-top: var(--headerHeight);
     padding: var(--spacing-xxl);
+
+    &--center {
+        justify-content: center;
+    }
 
     & > button {
         transition: border-color var(--transition-default),

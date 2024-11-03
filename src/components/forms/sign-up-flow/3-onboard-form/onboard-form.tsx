@@ -52,51 +52,53 @@ export default function OnboardForm() {
     }
 
     return (
-        <div className={styles.wrapper}>
-            <div className={styles.container}>
-                <div className={styles.header}>
-                    <h1 className={formStyles.header}>
-                        Almost there! Just a final touch
-                    </h1>
-                    <p className={formStyles.description}>
-                        Let's finish setting up your account.
-                    </p>
-                    <p className={formStyles.description}>
-                        Everything except the username can later be changed
-                        through profile settings.
-                    </p>
-                </div>
-                <Form
-                    onSubmit={handleSubmit}
-                    onSubmitSuccess={handleSubmitSuccess}
-                    onSubmitError={handleErrorWithToast}
-                >
-                    <div className={styles.fields}>
-                        <div className={formStyles.inputGroup}>
-                            <Username
-                                value={formData.username}
-                                onChange={value =>
-                                    setFormData({
-                                        ...formData,
-                                        username: value,
-                                    })
-                                }
-                            />
-                            <DisplayName
-                                value={formData.displayName}
-                                onChange={value =>
-                                    setFormData({
-                                        ...formData,
-                                        displayName: value,
-                                    })
-                                }
-                            />
-                        </div>
-                        <FormButton submit inverted>
-                            Submit
-                        </FormButton>
+        <div className={formStyles.content}>
+            <div className={styles.wrapper}>
+                <div className={styles.container}>
+                    <div className={styles.header}>
+                        <h1 className={formStyles.header}>
+                            Almost there! Just a final touch
+                        </h1>
+                        <p className={formStyles.description}>
+                            Let's finish setting up your account.
+                        </p>
+                        <p className={formStyles.description}>
+                            Everything except the username can later be changed
+                            through profile settings.
+                        </p>
                     </div>
-                </Form>
+                    <Form
+                        onSubmit={handleSubmit}
+                        onSubmitSuccess={handleSubmitSuccess}
+                        onSubmitError={handleErrorWithToast}
+                    >
+                        <div className={styles.fields}>
+                            <div className={formStyles.inputGroup}>
+                                <Username
+                                    value={formData.username}
+                                    onChange={value =>
+                                        setFormData({
+                                            ...formData,
+                                            username: value,
+                                        })
+                                    }
+                                />
+                                <DisplayName
+                                    value={formData.displayName}
+                                    onChange={value =>
+                                        setFormData({
+                                            ...formData,
+                                            displayName: value,
+                                        })
+                                    }
+                                />
+                            </div>
+                            <FormButton submit inverted>
+                                Submit
+                            </FormButton>
+                        </div>
+                    </Form>
+                </div>
             </div>
         </div>
     );

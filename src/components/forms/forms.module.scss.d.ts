@@ -1,6 +1,7 @@
 export declare const alternateAction: string;
 export declare const buttons: string;
 export declare const content: string;
+export declare const contentCenter: string;
 export declare const contentWrapper: string;
 export declare const description: string;
 export declare const descriptionBalanced: string;

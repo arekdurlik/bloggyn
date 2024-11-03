@@ -11,7 +11,7 @@ import Password from './inputs/password';
 import React from 'react';
 import { Link } from 'next-view-transitions';
 import { Form } from '@/components/forms/form';
-import { sleep, withMinDuration } from '@/lib/helpers';
+import { cn, sleep, withMinDuration } from '@/lib/helpers';
 import { handleErrorWithToast } from '@/components/common/toasts/utils';
 import FormButton from '../form-button';
 import { useAuthIntent } from '../use-auth-intent';
@@ -68,7 +68,7 @@ export default function SignInForm() {
 
     return (
         <Template>
-            <div className={formStyles.content}>
+            <div className={cn(formStyles.content, formStyles.contentCenter)}>
                 <Form
                     disabled={oAuthLoading}
                     validate={[
