@@ -1,6 +1,7 @@
 :root {
     // LAYOUT
     --headerHeight: 61px;
+    --contentWidth: 800px;
 
     --text-small: 0.75rem;
     --text-default: 1rem;
@@ -57,8 +58,8 @@
     --color-warning: hsl(46, 70%, 55%);
     --color-error: hsl(0, 80%, 50%);
 
-    --navy-hue: 225;
-    --navy-sat: 45%;
+    --navy-hue: 215;
+    --navy-sat: 40%;
 
     --sepia-hue: 38;
     --sepia-sat: 44%;

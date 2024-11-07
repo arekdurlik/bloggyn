@@ -17,8 +17,10 @@ export function useHideOnScroll(ref: RefObject<HTMLElement>) {
 
             if (difference > headerHeight || difference < -headerHeight) return;
 
+            const headerBorderOffset = -1;
             const newPosition = currentPosition.current + difference;
-            const newOffset = clamp(newPosition, -headerHeight, 0);
+            const newOffset =
+                clamp(newPosition, -headerHeight, 0) + headerBorderOffset;
 
             ref.current.style.top = `${newOffset}px`;
             currentPosition.current = newOffset;

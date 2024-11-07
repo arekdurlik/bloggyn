@@ -1,22 +1,25 @@
 .menu-bar {
     position: sticky;
-    width: 100%;
     top: 0;
     z-index: 1;
 
     display: flex;
+    justify-content: center;
     align-items: flex-end;
 
-    padding: var(--spacing-default);
-
     margin-bottom: var(--spacing-large);
-
-    margin-inline: -10px;
-    padding-inline: 15px;
-
+    border-bottom: 1px solid var(--border);
+    margin-top: 120px;
     height: var(--headerHeight);
-    background-color: var(--header-bgColor);
-    backdrop-filter: blur(10px);
+
+    margin-inline: calc(-1 * var(--spacing-xxxl));
+    height: var(--headerHeight);
+    background: linear-gradient(
+        to bottom,
+        var(--bgColor-default),
+        color-mix(in srgb, var(--header-bgColor), transparent 20%)
+    );
+    backdrop-filter: blur(5px);
 
     button {
         border-radius: var(--rounded-default);
@@ -36,21 +39,17 @@
             background-color: var(--control-default-bgColor-active);
         }
     }
-
-    &:before {
-        content: '';
-        position: absolute;
-        top: -100px;
-        width: 100%;
-        background-color: var(--bgColor-default);
-        height: 100px;
-    }
 }
 
 .content {
+    padding-block: var(--spacing-default);
     flex: 1;
     display: flex;
     justify-content: space-between;
+    height: var(--headerHeight);
+    align-items: flex-end;
+    max-width: min(var(--contentWidth), 100vw);
+    width: 100%;
 }
 
 .buttons {

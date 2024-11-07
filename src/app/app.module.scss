@@ -11,7 +11,6 @@
     width: 100%;
     display: flex;
     justify-content: center;
-    overflow: hidden;
 }
 
 .posts {
@@ -32,7 +31,7 @@
     flex-direction: column;
     justify-content: center;
     position: relative;
-    max-width: 800px;
+    max-width: var(--contentWidth);
     width: 100%;
     margin-top: calc(var(--headerHeight) + var(--spacing-xxxl));
 

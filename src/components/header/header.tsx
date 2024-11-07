@@ -17,7 +17,7 @@ export default function Header({ theme }: { theme?: string }) {
 
     return (
         <Fragment>
-            <nav ref={ref} id={HEADER_ID} className={`${styles.container}`}>
+            <header ref={ref} id={HEADER_ID} className={`${styles.container}`}>
                 <div className={styles.content}>
                     <div className={styles.logo}>
                         <Link id="home" href="/" onClick={() => api.setQuery('')}>
@@ -27,7 +27,7 @@ export default function Header({ theme }: { theme?: string }) {
                     </div>
                     <Actions />
                 </div>
-            </nav>
+            </header>
         </Fragment>
     );
 }
