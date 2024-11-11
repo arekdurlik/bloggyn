@@ -6,7 +6,7 @@
 
 .container {
     position: relative;
-    height: 100%;
+    min-height: 100%;
     min-height: 100vh;
     width: 100%;
     display: flex;
@@ -34,6 +34,7 @@
     max-width: var(--contentWidth);
     width: 100%;
     margin-top: calc(var(--headerHeight) + var(--spacing-xxxl));
+    margin-inline: var(--spacing-xxl);
 
     & > * {
         margin: 0 auto;

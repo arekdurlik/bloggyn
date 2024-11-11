@@ -1,6 +1,7 @@
+@import 'src/styles/mixins';
+
 .menu-bar {
     position: sticky;
-    top: 0;
     z-index: 1;
 
     display: flex;
@@ -42,17 +43,49 @@
 }
 
 .content {
-    padding-block: var(--spacing-default);
     flex: 1;
     display: flex;
     justify-content: space-between;
     height: var(--headerHeight);
     align-items: flex-end;
     max-width: min(var(--contentWidth), 100vw);
+    padding-inline: var(--spacing-large);
+    margin-inline: var(--spacing-large);
+    margin-bottom: -1px;
     width: 100%;
 }
 
 .buttons {
     display: flex;
     gap: var(--spacing-default);
+    padding-block: var(--spacing-large);
+
+    button {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: border-color var(--transition-default),
+            background-color var(--transition-default);
+        cursor: pointer;
+        border: 1px solid transparent;
+        &:before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--fgColor-default);
+            opacity: 0;
+            transition: opacity var(--transition-default);
+        }
+
+        &.active {
+            border: 1px solid var(--border);
+            /* &:before {
+                opacity: 1;
+            } */
+        }
+    }
 }

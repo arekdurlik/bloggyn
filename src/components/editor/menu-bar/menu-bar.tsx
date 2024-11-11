@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import styles from './menu-bar.module.scss';
-import { Bold, Italic } from 'lucide-react';
+import { Bold, Heading, Italic, MessageSquareQuote, Quote, Strikethrough, Underline } from 'lucide-react';
 import { useHeader } from '@/lib/hooks/use-header';
 import { useEditorStore } from '../store';
 import { trpc } from '@/trpc/client';
@@ -27,7 +27,7 @@ export default function MenuBar() {
                     .getPropertyValue('top')
                     .replace('px', '')
             );
-            menu.style.top = header.offsetHeight - Math.abs(headerTop) + 'px';
+            menu.style.top = header.offsetHeight - Math.abs(headerTop) -1 + 'px';
         }
 
         window.addEventListener('scroll', handleScroll);
@@ -48,16 +48,17 @@ export default function MenuBar() {
                 <div className={styles.buttons}>
                     <button
                         onClick={() =>
-                            editor?.chain().focus().toggleItalic().run()
+                            editor?.chain().focus().toggleBold().run()
                         }
                         disabled={
                             editor &&
-                            !editor?.can().chain().focus().toggleItalic().run()
+                            !editor?.can().chain().focus().toggleBold().run()
                         }
-                        className={editor?.isActive('italic') ? 'active' : ''}
+                        className={editor?.isActive('bold') ? styles.active : ''}
                     >
                         <Bold />
                     </button>
+
                     <button
                         onClick={() =>
                             editor?.chain().focus().toggleItalic().run()
@@ -66,11 +67,62 @@ export default function MenuBar() {
                             editor &&
                             !editor?.can().chain().focus().toggleItalic().run()
                         }
-                        className={editor?.isActive('italic') ? 'active' : ''}
+                        className={editor?.isActive('italic') ? styles.active : ''}
                     >
                         <Italic />
                     </button>
-                    <button>Aa</button>
+
+                    <button
+                        onClick={() =>
+                            editor?.chain().focus().toggleStrike().run()
+                        }
+                        disabled={
+                            editor &&
+                            !editor?.can().chain().focus().toggleStrike().run()
+                        }
+                        className={editor?.isActive('strike') ? styles.active : ''}
+                    >
+                        <Strikethrough />
+                    </button>
+
+                    <button
+                        onClick={() =>
+                            editor?.chain().focus().toggleUnderline().run()
+                        }
+                        disabled={
+                            editor &&
+                            !editor?.can().chain().focus().toggleUnderline().run()
+                        }
+                        className={editor?.isActive('underline') ? styles.active : ''}
+                    >
+                        <Underline />
+                    </button>
+
+                    <button
+                        onClick={() =>
+                            editor?.chain().focus().toggleBlockquote().run()
+                        }
+                        disabled={
+                            editor &&
+                            !editor?.can().chain().focus().toggleBlockquote().run()
+                        }
+                        className={editor?.isActive('blockquote') ? styles.active : ''}
+                    >
+                        <MessageSquareQuote />
+                    </button>
+
+                    <button
+                        onClick={() =>
+                            editor?.chain().focus().toggleHeading({ level: 2 }).run()
+                        }
+                        disabled={
+                            editor &&
+                            !editor?.can().chain().focus().toggleHeading({ level: 2 }).run()
+                        }
+                        className={editor?.isActive('strike') ? styles.active : ''}
+                    >
+                        <Heading />
+                    </button>
                 </div>
                 <div className={styles.buttons}>
                 </div>
