@@ -9,7 +9,8 @@ export function useHideOnScroll(ref: RefObject<HTMLElement>) {
         function handleScroll() {
             if (!ref.current) return;
 
-            const headerHeight = ref.current.offsetHeight;
+            const borderOffset = 1;
+            const headerHeight = ref.current.offsetHeight + borderOffset;
             const scrollPosition = window.scrollY;
 
             const difference = previousScroll.current - scrollPosition;
@@ -17,10 +18,8 @@ export function useHideOnScroll(ref: RefObject<HTMLElement>) {
 
             if (difference > headerHeight || difference < -headerHeight) return;
 
-            const headerBorderOffset = -1;
             const newPosition = currentPosition.current + difference;
-            const newOffset =
-                clamp(newPosition, -headerHeight, 0) + headerBorderOffset;
+            const newOffset = clamp(newPosition, -headerHeight, 0);
 
             ref.current.style.top = `${newOffset}px`;
             currentPosition.current = newOffset;

@@ -5,6 +5,7 @@ import slugify from 'slug';
 import { and, desc, eq, like, lt, lte, or, sql } from 'drizzle-orm';
 import { type inferRouterOutputs, TRPCError } from '@trpc/server';
 import { stripHtml } from 'string-strip-html';
+import { postSchema } from '@/validation/user/post';
 
 export type PostRouterOutput = inferRouterOutputs<typeof postRouter>;
 
@@ -84,13 +85,7 @@ export const postRouter = router({
         }),
 
     submitPost: protectedProcedure
-        .input(
-            z.object({
-                title: z.string().min(15),
-                content: z.string().min(1),
-                tags: z.array(z.string()),
-            })
-        )
+        .input(postSchema)
         .mutation(async ({ input, ctx: { session, db } }) => {
             try {
                 let slug = slugify(input.title);
@@ -120,6 +115,10 @@ export const postRouter = router({
 
                 // TODO: Emit socket event to followers
                 /* getServerSocket().emit(SOCKET_EV.NOTIFY, session.user.id); */
+
+                return {
+                    url: `/${slug}`,
+                };
             } catch {
                 throw new TRPCError({
                     message: 'Error saving post',

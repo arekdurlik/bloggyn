@@ -23,14 +23,14 @@ export function Toasts() {
         if (toastsState.toasts.length >= visibleToasts.length) {
             setVisibleToasts(toastsState.toasts);
         }
-
+        
         visibleToasts.forEach(item => {
             if (!toastsState.toasts.includes(item)) {
                 refMap.get(item)?.classList.add(styles.fadeOut);
             }
         });
     }, [toastsState.toasts]);
-
+    
     // lifetime animation
     useEffect(() => {
         visibleToasts.forEach(toast => {
@@ -61,6 +61,7 @@ export function Toasts() {
                 return <CheckCircle />;
             case ToastType.WARNING:
                 return <TriangleAlert />;
+            case ToastType.PENDING_ERROR:
             case ToastType.ERROR:
                 return <TriangleAlert />;
         }
@@ -72,7 +73,7 @@ export function Toasts() {
         }
     };
 
-    const handleEndOfLife = (itemId: number) => () => {
+    const handleEndOfLife = (itemId: number, itemType: ToastType) => () => {
         toastsState.api.closeToast(itemId);
     };
 
@@ -89,6 +90,7 @@ export function Toasts() {
                             styles.success,
                         item.type === ToastType.WARNING && styles.warning,
                         item.type === ToastType.ERROR && styles.error,
+                        item.type === ToastType.PENDING_ERROR && styles.error,
                         !toastsState.toasts.includes(item) && styles.fadeOut
                     )}
                     key={item.id}
@@ -100,26 +102,26 @@ export function Toasts() {
                     <div className={styles.content}>
                         <div>{getIcon(item.type)}</div>
                         <span>{item.message}</span>
-                        {item.type !== ToastType.PENDING &&
-                            item.type !== ToastType.PENDING_SUCCESS && (
-                                <>
-                                    <button
-                                        className={styles.close}
-                                        onClick={e => {
-                                            e.stopPropagation();
-                                            toastsState.api.closeToast(item.id);
-                                        }}
-                                    >
-                                        <X />
-                                    </button>
-                                    <div
-                                        className={cn(styles.life)}
-                                        onAnimationEnd={handleEndOfLife(
-                                            item.id
-                                        )}
-                                    />
-                                </>
-                            )}
+                        {item.type !== ToastType.PENDING && (
+                            <>
+                                <button
+                                    className={styles.close}
+                                    onClick={e => {
+                                        e.stopPropagation();
+                                        toastsState.api.closeToast(item.id);
+                                    }}
+                                >
+                                    <X />
+                                </button>
+                                <div
+                                    className={cn(styles.life)}
+                                    onAnimationEnd={handleEndOfLife(
+                                        item.id,
+                                        item.type
+                                    )}
+                                />
+                            </>
+                        )}
                     </div>
                 </div>
             ))}

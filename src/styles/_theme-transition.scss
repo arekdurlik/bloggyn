@@ -20,6 +20,7 @@
 
     div,
     nav,
+    header,
     a:has(span),
     button {
         $transition: background-color var(--transition-theme),

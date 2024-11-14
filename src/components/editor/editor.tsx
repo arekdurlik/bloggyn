@@ -23,10 +23,11 @@ import Blockquote from '@tiptap/extension-blockquote';
 
 export default function Editor() {
     const api = useEditorStore(state => state.api);
+    const submitting = useEditorStore(state => state.submitting);
     const [isDirty, setIsDirty] = useState(false);
 
     useNavigationGuard({
-        enabled: isDirty,
+        enabled: isDirty && !submitting,
         confirm: () =>
             window.confirm('You have unsaved changes that will be lost.'),
     });

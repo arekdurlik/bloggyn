@@ -16,7 +16,12 @@ type ToastsState = {
          * @returns the id of the new toast
          */
         openToast: (type: ToastType, message: string) => number;
-        closeToast: (id: number, immediate?: boolean) => Promise<void>;
+        closeToast: (id: number) => Promise<void>;
+        resolveToast: (
+            id: number,
+            success: boolean,
+            message: string
+        ) => Promise<void>;
     };
 };
 
@@ -24,6 +29,7 @@ export enum ToastType {
     INFO = 'INFO',
     PENDING = 'PENDING',
     PENDING_SUCCESS = 'PENDING_SUCCESS',
+    PENDING_ERROR = 'PENDING_ERROR',
     SUCCESS = 'SUCCESS',
     WARNING = 'WARNING',
     ERROR = 'ERROR',
@@ -52,28 +58,32 @@ export const useToasts = create<ToastsState>((set, get) => ({
 
             return id;
         },
-        closeToast: async (id: number, immediate = false) => {
+        closeToast: async (id: number) => {
             const toasts = get().toasts;
             const toast = toasts.find(toast => toast.id === id);
 
             if (toast) {
-                if (toast.type === ToastType.PENDING && !immediate) {
+                const filteredToasts = get().toasts.filter(
+                    toast => toast.id !== id
+                );
+                set(() => ({ toasts: filteredToasts }));
+            }
+        },
+        resolveToast: async (id: number, success: boolean, message: string) => {
+            const toasts = [...get().toasts];
+            const toast = toasts.find(toast => toast.id === id);
+
+            if (toast && toast.type === ToastType.PENDING) {
+                if (success) {
+                    toast.message = addDotIfMissing(message);
                     toast.type = ToastType.PENDING_SUCCESS;
-                    set(() => ({ toasts }));
-
-                    await sleep(1000);
-
-                    const filteredToasts = get().toasts.filter(
-                        toast => toast.id !== id
-                    );
-                    set(() => ({ toasts: filteredToasts }));
                 } else {
-                    const filteredToasts = get().toasts.filter(
-                        toast => toast.id !== id
-                    );
-                    set(() => ({ toasts: filteredToasts }));
+                    toast.type = ToastType.PENDING_ERROR;
+                    toast.message = addDotIfMissing(message);
                 }
             }
+
+            set(() => ({ toasts }));
         },
     },
 }));
@@ -84,3 +94,4 @@ export const useToasts = create<ToastsState>((set, get) => ({
  */
 export const openToast = useToasts.getState().api.openToast;
 export const closeToast = useToasts.getState().api.closeToast;
+export const resolveToast = useToasts.getState().api.resolveToast;

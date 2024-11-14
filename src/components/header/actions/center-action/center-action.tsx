@@ -1,23 +1,58 @@
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import styles from './center-action.module.scss';
 import { BookCheck } from 'lucide-react';
 import Button from '@/components/common/inputs/button';
-import { cn } from '@/lib/helpers';
+import { cn, sleep, withMinDuration } from '@/lib/helpers';
 import { Fragment } from 'react';
 import Search from './search';
 import { useEditorStore } from '@/components/editor/store';
+import {
+    openToast,
+    resolveToast,
+    ToastType,
+} from '@/components/common/toasts/store';
+import { ZodError } from 'zod';
+import { postSchema, TITLE_MIN_LENGTH } from '@/validation/user/post';
 import { trpc } from '@/trpc/client';
 
 export default function CenterAction() {
     const pathname = usePathname();
     const editorState = useEditorStore();
+    const router = useRouter();
     const submitPost = trpc.submitPost.useMutation();
 
-    function handlePublish() {
-        const content = editorState.editor?.getHTML();
+    async function handlePublish() {
+        const toast = openToast(ToastType.PENDING, 'Publishing...');
 
-        if (content) {
-            submitPost.mutate({ ...editorState.data, content });
+        try {
+            const content = editorState.editor?.getHTML();
+
+            const postData = { ...editorState.data, content: content! };
+
+            postSchema.parse(postData);
+
+            const res = await withMinDuration(
+                submitPost.mutateAsync(postData),
+                450
+            );
+
+            await sleep(500);
+            router.push(res.url);
+            resolveToast(toast, true, 'Published!');
+        } catch (error) {
+            if (error instanceof ZodError) {
+                const path = error.errors[0]?.path[0];
+
+                if (path === 'title') {
+                    resolveToast(toast, false, `The title has to be at least ${TITLE_MIN_LENGTH} characters long`);
+                }
+
+                if (path === 'tags') {
+                    resolveToast(toast, false, `Please select at least one tag`);
+                }
+            }
+            resolveToast(toast, false, 'Failed to publish');
+            editorState.api.setSubmitting(false);
         }
     }
 

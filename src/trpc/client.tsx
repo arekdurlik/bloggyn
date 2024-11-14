@@ -2,13 +2,21 @@
 
 import type { QueryClient } from '@tanstack/react-query';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { httpBatchLink } from '@trpc/client';
+import { createTRPCClient, httpBatchLink } from '@trpc/client';
 import { createTRPCReact } from '@trpc/react-query';
 import { useState } from 'react';
 import { makeQueryClient } from './query-client';
 import { type AppRouter } from '../server';
 
 export const trpc = createTRPCReact<AppRouter>();
+
+export const trpcVanilla = createTRPCClient<AppRouter>({
+    links: [
+        httpBatchLink({
+            url: `${process.env.BASE_URL}/api/trpc`,
+        }),
+    ],
+});
 
 let clientQueryClientSingleton: QueryClient;
 
@@ -25,7 +33,7 @@ function getUrl() {
     const base = (() => {
         if (typeof window !== 'undefined') return '';
         if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
-        return 'http://localhost:3000';
+        return process.env.BASE_URL;
     })();
     return `${base}/api/trpc`;
 }
