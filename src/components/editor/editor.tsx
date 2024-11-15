@@ -10,6 +10,7 @@ const content = `<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Dui
 
 import { EditorContent, useEditor } from '@tiptap/react';
 import Underline from '@tiptap/extension-underline';
+import TextAlign from '@tiptap/extension-text-align';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
 import MenuBar from './menu-bar/menu-bar';
@@ -43,6 +44,7 @@ export default function Editor() {
         StarterKit,
         Placeholder.configure({ placeholder: 'Write something...' }),
         Underline,
+        TextAlign.configure({ types: ['paragraph'] }),
         Blockquote
     ];
 

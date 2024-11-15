@@ -78,7 +78,7 @@
         }
 
         &.active {
-            border: 1px solid var(--border);
+            background-color: var(--control-default-bgColor-active);
             /* &:before {
                 opacity: 1;
             } */

@@ -33,6 +33,6 @@
     position: relative;
     max-width: var(--contentWidth);
     width: 100%;
-    margin-top: calc(var(--headerHeight) + var(--spacing-xxxl));
+    margin-top: calc(var(--headerHeight) * 2);
     margin-inline: var(--spacing-xxl);
 }

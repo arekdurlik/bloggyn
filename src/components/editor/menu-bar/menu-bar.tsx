@@ -2,15 +2,12 @@
 
 import { useEffect, useRef } from 'react';
 import styles from './menu-bar.module.scss';
-import { Bold, Heading, Italic, MessageSquareQuote, Quote, Strikethrough, Underline } from 'lucide-react';
+import { AlignCenter, AlignJustify, AlignLeft, AlignRight, Bold, Heading, Italic, MessageSquareQuote, Quote, Strikethrough, Underline } from 'lucide-react';
 import { useHeader } from '@/lib/hooks/use-header';
 import { useEditorStore } from '../store';
-import { postSchema } from '@/validation/user/post';
-import { ZodError } from 'zod';
 
 export default function MenuBar() {
     const editor = useEditorStore(state => state.editor);
-    const data = useEditorStore(state => state.data)
     const menuBarRef = useRef<HTMLDivElement>(null!);
     const headerRef = useHeader();
 
@@ -115,6 +112,58 @@ export default function MenuBar() {
                         className={editor?.isActive('strike') ? styles.active : ''}
                     >
                         <Heading />
+                    </button>
+
+                    <button
+                        onClick={() =>
+                            editor?.commands.setTextAlign('left')
+                        }
+                        disabled={
+                            editor &&
+                            !editor?.can().chain().focus().toggleHeading({ level: 2 }).run()
+                        }
+                        className={editor?.isActive({ textAlign: 'left' }) ? styles.active : ''}
+                    >
+                        <AlignLeft />
+                    </button>
+
+                    <button
+                        onClick={() =>
+                            editor?.commands.setTextAlign('center')
+                        }
+                        disabled={
+                            editor &&
+                            !editor?.can().chain().focus().toggleHeading({ level: 2 }).run()
+                        }
+                        className={editor?.isActive({ textAlign: 'center' }) ? styles.active : ''}
+                    >
+                        <AlignCenter />
+                    </button>
+
+                    <button
+                        onClick={() =>
+                            editor?.commands.setTextAlign('right')
+                        }
+                        disabled={
+                            editor &&
+                            !editor?.can().chain().focus().toggleHeading({ level: 2 }).run()
+                        }
+                        className={editor?.isActive({ textAlign: 'right' }) ? styles.active : ''}
+                    >
+                        <AlignRight />
+                    </button>
+
+                    <button
+                        onClick={() =>
+                            editor?.commands.setTextAlign('justify')
+                        }
+                        disabled={
+                            editor &&
+                            !editor?.can().chain().focus().toggleHeading({ level: 2 }).run()
+                        }
+                        className={editor?.isActive({ textAlign: 'justify' }) ? styles.active : ''}
+                    >
+                        <AlignJustify />
                     </button>
                 </div>
                 <div className={styles.buttons}>

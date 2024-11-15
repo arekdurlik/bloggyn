@@ -13,6 +13,26 @@ const SUMMARY_LENGTH = 130;
 const READ_TIME = 225;
 
 export const postRouter = router({
+    getPost: procedure
+        .input(
+            z.object({
+                slug: z.string(),
+            })
+        )
+        .query(async ({ input, ctx: { db } }) => {
+            try {
+                const post = await db.query.posts.findFirst({
+                    where: eq(posts.slug, input.slug),
+                });
+
+                return post;
+            } catch {
+                throw new TRPCError({
+                    message: 'Error retrieving post',
+                    code: 'INTERNAL_SERVER_ERROR',
+                });
+            }
+        }),
     getPosts: procedure
         .input(
             z.object({
@@ -78,7 +98,7 @@ export const postRouter = router({
                 };
             } catch {
                 throw new TRPCError({
-                    message: 'Error getting posts',
+                    message: 'Error retrieving posts',
                     code: 'INTERNAL_SERVER_ERROR',
                 });
             }
@@ -101,12 +121,14 @@ export const postRouter = router({
                 }
 
                 const stripped = stripHtml(input.content).result;
+                const summary = stripped.slice(0, 200);
                 const length = stripped.trim().split(/\s+/).length;
                 const readTime = length / READ_TIME;
                 const roundedReadTime = Math.min(1, Math.round(readTime));
 
                 await db.insert(posts).values({
                     content: input.content,
+                    summary,
                     createdById: session.user.id,
                     slug,
                     title: input.title,
