@@ -7,7 +7,7 @@ import AnimatedUnmount from '@/components/common/animate-unmount/animate-unmount
 
 type Props = {
     children: React.ReactNode;
-    align: 'left' | 'center' | 'right';
+    align?: 'left' | 'center' | 'right';
     offsetTop?: number;
 };
 
@@ -16,14 +16,18 @@ export default function DropdownMenuContent({
     align = 'left',
     offsetTop = 0,
 }: Props) {
-    const [{ open, triggerRef }, set] = useDropdownContext();
+    const [{ open, hoverMode, triggerRef }, api] = useDropdownContext();
     const ref = useRef<HTMLUListElement | null>(null);
 
-    useOutsideClick(ref, event => {
-        if (!triggerRef.current?.contains(event.target as Node)) {
-            set(v => ({ ...v, open: false }));
-        }
-    });
+    useOutsideClick(
+        ref,
+        event => {
+            if (!triggerRef.current?.contains(event.target as Node)) {
+                api.set(v => ({ ...v, open: false }));
+            }
+        },
+        { enabled: !hoverMode }
+    );
 
     function calculatePosition() {
         if (!ref.current || !triggerRef.current) return;
@@ -69,7 +73,7 @@ export default function DropdownMenuContent({
         });
 
         if (items) {
-            set(v => ({ ...v, items: tabbable }));
+            api.set(v => ({ ...v, items: tabbable }));
         }
 
         items[0]?.focus();
@@ -80,6 +84,10 @@ export default function DropdownMenuContent({
             <ul
                 ref={ref}
                 className={cn(styles.container, 'animation-slideIn')}
+                {...(hoverMode && {
+                    onMouseEnter: api.handleMouseEnter,
+                    onMouseLeave: api.handleMouseLeave,
+                })}
             >
                 {children}
             </ul>

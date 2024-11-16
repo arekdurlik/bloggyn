@@ -1,0 +1,28 @@
+.author-details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-default);
+    padding: var(--spacing-large);
+    width: 300px;
+}
+
+.top {
+    display: flex;
+    justify-content: space-between;
+}
+.avatar {
+    border-radius: var(--rounded-full);
+    margin-bottom: var(--spacing-default);
+}
+
+.name-details {
+    display: flex;
+    flex-direction: column;
+}
+.name {
+    font-weight: 500;
+}
+
+.username {
+    color: var(--fgColor-subtle);
+}

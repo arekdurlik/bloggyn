@@ -5,12 +5,18 @@ const DEFAULT_OPTIONS = { cancelOnDrag: false, dragCancelThreshold: 32 };
 export function useOutsideClick(
     ref: MutableRefObject<HTMLElement | null>,
     callback: (event: MouseEvent) => void,
-    options?: { cancelOnDrag?: boolean; dragCancelThreshold?: number }
+    options?: {
+        cancelOnDrag?: boolean;
+        dragCancelThreshold?: number;
+        enabled?: boolean;
+    }
 ) {
     const opts = { ...DEFAULT_OPTIONS, ...options };
     const mouseDown = useRef({ x: 0, y: 0 });
 
     useEffect(() => {
+        if (!opts.enabled) return;
+
         const handleClick = function (event: MouseEvent) {
             if (ref.current) {
                 if (!ref.current.contains(event.target as Node)) {
@@ -46,5 +52,11 @@ export function useOutsideClick(
             document.removeEventListener('click', handleClick, true);
             document.removeEventListener('mousedown', handleMouseDown, true);
         };
-    }, [callback, opts.cancelOnDrag, opts.dragCancelThreshold, ref]);
+    }, [
+        callback,
+        opts.cancelOnDrag,
+        opts.dragCancelThreshold,
+        ref,
+        opts.enabled,
+    ]);
 }

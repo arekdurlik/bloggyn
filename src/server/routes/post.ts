@@ -21,11 +21,25 @@ export const postRouter = router({
         )
         .query(async ({ input, ctx: { db } }) => {
             try {
-                const post = await db.query.posts.findFirst({
-                    where: eq(posts.slug, input.slug),
-                });
+                const post = await db
+                    .select({
+                        title: posts.title,
+                        content: posts.content,
+                        createdAt: posts.createdAt,
+                        createdAtFormatted: sql<string>`to_char(${posts.createdAt}, 'Mon DD')`,
+                        readTime: posts.readTime,
+                        user: {
+                            username: users.username,
+                            name: users.name,
+                            avatar: users.image,
+                        },
+                    })
+                    .from(posts)
+                    .leftJoin(users, eq(users.id, posts.createdById))
+                    .where(eq(posts.slug, input.slug))
+                    .limit(1);
 
-                return post;
+                return post[0];
             } catch {
                 throw new TRPCError({
                     message: 'Error retrieving post',

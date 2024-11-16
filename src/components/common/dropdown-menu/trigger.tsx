@@ -7,22 +7,26 @@ type Props = {
 };
 
 export default function DropdownMenuTrigger({ children, className }: Props) {
-    const [, set] = useDropdownContext();
+    const [{ hoverMode }, api] = useDropdownContext();
     const ref = useRef<HTMLButtonElement | null>(null);
 
     useEffect(() => {
         if (!ref.current) return;
 
-        set((v) => ({
+        api.set(v => ({
             ...v,
             triggerRef: ref,
         }));
-    }, [ref, set]);
+    }, [ref]);
 
     return (
         <button
             ref={ref}
-            onClick={() => set((v) => ({ ...v, open: !v.open }))}
+            onClick={() => api.set(v => ({ ...v, open: !v.open }))}
+            {...(hoverMode && {
+                onMouseEnter: api.handleMouseEnter,
+                onMouseLeave: api.handleMouseLeave,
+            })}
             className={className}
         >
             {children}

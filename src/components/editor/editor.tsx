@@ -68,7 +68,7 @@ export default function Editor() {
     return (
         <Fragment>
             <MenuBar />
-            <div className={cn('article-content', styles.editor)}>
+            <div className={cn('post-content', styles.editor)}>
                 {editor && <Title />}
                 <EditorContent editor={editor} />
             </div>

@@ -12,6 +12,9 @@ import {
 
 export type DropdownContextType = {
     open: boolean;
+    hoverMode?: boolean;
+    hoverOpenDelay?: number;
+    hoverCloseDelay?: number;
     manualOpen?: boolean;
     triggerRef: RefObject<HTMLButtonElement | null>;
     items: HTMLElement[];
@@ -19,7 +22,11 @@ export type DropdownContextType = {
 
 export type DropdownContextValueType = [
     DropdownContextType,
-    Dispatch<SetStateAction<DropdownContextType>>
+    {
+        set: Dispatch<SetStateAction<DropdownContextType>>;
+        handleMouseEnter: () => void;
+        handleMouseLeave: () => void;
+    }
 ];
 
 const DropdownContext = createContext<DropdownContextValueType>(null!);
@@ -28,17 +35,29 @@ export const useDropdownContext = () => useContext(DropdownContext);
 type Props = {
     children: React.ReactNode;
     open?: boolean;
+    hoverMode?: boolean;
+    hoverOpenDelay?: number;
+    hoverCloseDelay?: number;
 };
 
-export default function DropdownMenu({ open, children }: Props) {
+export default function DropdownMenu({
+    open,
+    hoverMode,
+    hoverOpenDelay = 300,
+    hoverCloseDelay = hoverOpenDelay,
+    children,
+}: Props) {
     const [value, setValue] = useState<DropdownContextType>({
         manualOpen: open,
+        hoverMode: hoverMode,
         open: false,
         triggerRef: createRef(),
         items: [],
     });
     const openRef = useRef(value.open);
     openRef.current = value.open;
+    const openTimeout = useRef<NodeJS.Timeout>();
+    const closeTimeout = useRef<NodeJS.Timeout>();
 
     useEffect(() => {
         setValue(v => ({ ...v, manualOpen: open }));
@@ -55,8 +74,35 @@ export default function DropdownMenu({ open, children }: Props) {
         return () => window.removeEventListener('scroll', close);
     }, [value]);
 
+    function handleMouseEnter() {
+        clearTimeout(openTimeout.current!);
+        clearTimeout(closeTimeout.current!);
+
+        openTimeout.current = setTimeout(() => {
+            if (openRef.current) return;
+
+            setValue(v => ({ ...v, open: true }));
+        }, hoverOpenDelay);
+    }
+
+    function handleMouseLeave() {
+        clearTimeout(openTimeout.current!);
+        clearTimeout(closeTimeout.current!);
+
+        closeTimeout.current = setTimeout(() => {
+            if (!openRef.current) return;
+
+            setValue(v => ({ ...v, open: false }));
+        }, hoverCloseDelay);
+    }
+
     return (
-        <DropdownContext.Provider value={[value, setValue]}>
+        <DropdownContext.Provider
+            value={[
+                value,
+                { set: setValue, handleMouseLeave, handleMouseEnter },
+            ]}
+        >
             {children}
         </DropdownContext.Provider>
     );

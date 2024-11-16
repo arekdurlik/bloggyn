@@ -1,0 +1,33 @@
+.post-info {
+    display: flex;
+    gap: var(--spacing-large);
+    margin-bottom: var(--spacing-xxxl);
+
+    &-image {
+        border-radius: var(--rounded-full);
+        cursor: pointer;
+        transition: var(--transition-default);
+        &:hover {
+            filter: brightness(0.9);
+        }
+    }
+
+    &-text {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-default);
+    }
+
+    &-extra {
+        display: flex;
+        gap: var(--spacing-default);
+        color: var(--fgColor-subtle);
+    }
+}
+
+.name {
+    font-weight: 500;
+}
+.username {
+    color: var(--fgColor-subtle);
+}
