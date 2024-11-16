@@ -4,6 +4,7 @@
     width: clamp(10vw, 450px, calc(100vw + 2px));
     box-shadow: -35px 0px 60px -90px #000000, 35px 0px 60px -90px #000000;
     height: 100%;
+    margin: 0 auto;
 
     & > * {
         margin: 0 auto;

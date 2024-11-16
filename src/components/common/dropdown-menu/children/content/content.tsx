@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import { useOutsideClick } from '@/lib/hooks/use-outside-click';
 import { cn } from '@/lib/helpers';
 import AnimatedUnmount from '@/components/common/animate-unmount/animate-unmount';
+import { useIsInPortal } from '../portal';
 
 type Props = {
     children: React.ReactNode;
@@ -14,25 +15,46 @@ type Props = {
 export default function DropdownMenuContent({
     children,
     align = 'left',
-    offsetTop = 0,
+    offsetTop = 5,
 }: Props) {
-    const [{ open, hoverMode, triggerRef }, api] = useDropdownContext();
+    const [{ open, manualOpen, hoverMode, triggerRefs }, api] =
+        useDropdownContext();
     const ref = useRef<HTMLUListElement | null>(null);
+    const finalOpen = manualOpen ? manualOpen : open;
+    const isInPortal = useIsInPortal();
 
     useOutsideClick(
         ref,
         event => {
-            if (!triggerRef.current?.contains(event.target as Node)) {
-                api.set(v => ({ ...v, open: false }));
-            }
+            triggerRefs.forEach(triggerRef => {
+                if (!triggerRef.current?.contains(event.target as Node)) {
+                    api.set(v => ({ ...v, open: false }));
+                }
+            });
         },
         { enabled: !hoverMode }
     );
 
     function calculatePosition() {
-        if (!ref.current || !triggerRef.current) return;
+        if (!ref.current) return;
 
-        const trigger = triggerRef.current;
+        if (!triggerRefs.length) return;
+
+        const triggerRef = triggerRefs[0];
+        const trigger = triggerRef?.current;
+
+        if (!trigger) return;
+
+        let rectOffsetLeft = 0;
+        let rectOffsetTop = 0;
+
+        if (isInPortal) {
+            const triggerRect = trigger?.getBoundingClientRect();
+            if (triggerRect) {
+                rectOffsetLeft = triggerRect.left;
+                rectOffsetTop = triggerRect.top;
+            }
+        }
 
         let alignment = 0;
 
@@ -42,23 +64,23 @@ export default function DropdownMenuContent({
             alignment = -(ref.current.offsetWidth - trigger.offsetWidth);
         }
 
-        const left = trigger.offsetLeft + alignment;
-        const right = trigger.offsetTop + trigger.offsetHeight + offsetTop;
+        const left = rectOffsetLeft + alignment;
+        const top = rectOffsetTop + trigger.offsetHeight + offsetTop;
         ref.current.style.left = left + 'px';
-        ref.current.style.top = right + 'px';
+        ref.current.style.top = top + 'px';
     }
 
     useEffect(() => {
-        if (!open) return;
+        if (!finalOpen) return;
 
         calculatePosition();
 
         window.addEventListener('resize', calculatePosition);
         return () => window.removeEventListener('resize', calculatePosition);
-    }, [open, ref, triggerRef]);
+    }, [finalOpen, ref, triggerRefs]);
 
     useEffect(() => {
-        if (!open || !ref.current) return;
+        if (!finalOpen || !ref.current) return;
 
         const items = Array.from(
             ref.current.querySelectorAll('*')
@@ -77,10 +99,10 @@ export default function DropdownMenuContent({
         }
 
         items[0]?.focus();
-    }, [open, ref]);
+    }, [finalOpen, ref]);
 
     return (
-        <AnimatedUnmount mounted={open} onRender={calculatePosition}>
+        <AnimatedUnmount mounted={finalOpen} onRender={calculatePosition}>
             <ul
                 ref={ref}
                 className={cn(styles.container, 'animation-slideIn')}

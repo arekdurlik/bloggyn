@@ -16,7 +16,7 @@ export type DropdownContextType = {
     hoverOpenDelay?: number;
     hoverCloseDelay?: number;
     manualOpen?: boolean;
-    triggerRef: RefObject<HTMLButtonElement | null>;
+    triggerRefs: RefObject<HTMLButtonElement | HTMLAnchorElement | null>[];
     items: HTMLElement[];
 };
 
@@ -51,7 +51,7 @@ export default function DropdownMenu({
         manualOpen: open,
         hoverMode: hoverMode,
         open: false,
-        triggerRef: createRef(),
+        triggerRefs: [],
         items: [],
     });
     const openRef = useRef(value.open);

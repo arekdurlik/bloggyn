@@ -76,6 +76,7 @@ export const postRouter = router({
                         readTime: posts.readTime,
                         avatar: users.image,
                         name: users.name,
+                        username: users.username,
                     })
                     .from(posts)
                     .where(

@@ -25,8 +25,15 @@
     }
 }
 
+.author {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-default);
+}
+
 .name {
     font-weight: 500;
+    cursor: pointer !important;
 }
 .username {
     color: var(--fgColor-subtle);

@@ -1,7 +1,20 @@
-import { type ReactNode, useEffect, useState } from 'react';
+import {
+    createContext,
+    type ReactNode,
+    useContext,
+    useEffect,
+    useState,
+} from 'react';
 import { createPortal } from 'react-dom';
 
-export default function DropdownMenuPortal({ children }: { children: ReactNode }) {
+const PortalContext = createContext(false);
+export const useIsInPortal = () => useContext(PortalContext);
+
+export default function DropdownMenuPortal({
+    children,
+}: {
+    children: ReactNode;
+}) {
     const [overlay, setOverlay] = useState<HTMLElement | null>(null);
 
     useEffect(() => {
@@ -12,5 +25,18 @@ export default function DropdownMenuPortal({ children }: { children: ReactNode }
         }
     }, []);
 
-    return overlay && createPortal(children, overlay);
+    if (overlay) {
+        return createPortal(
+            <PortalContext.Provider value={true}>
+                {children}
+            </PortalContext.Provider>,
+            overlay
+        );
+    }
+
+    return (
+        <PortalContext.Provider value={false}>
+            {children}
+        </PortalContext.Provider>
+    );
 }

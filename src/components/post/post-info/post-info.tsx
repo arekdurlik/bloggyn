@@ -6,10 +6,11 @@ import styles from './post-info.module.scss';
 import {
     DropdownMenu,
     DropdownMenuContent,
+    DropdownMenuPortal,
     DropdownMenuTrigger,
 } from '../../common/dropdown-menu';
 import { Link } from 'next-view-transitions';
-import AuthorDetails from './author-details/author-details';
+import UserDetails from '../../common/user-details/user-details';
 
 export type Post = Exclude<PostRouterOutput['getPost'], undefined>;
 
@@ -28,27 +29,33 @@ export default function PostInfo({ post }: { post: Post }) {
                         />
                     </Link>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="center">
-                    <AuthorDetails post={post} />
-                </DropdownMenuContent>
-            <div className={styles.postInfoText}>
-                <span>
-                    <Link className={styles.name} href={`@${post.user?.username}`}>
-                        {post.user?.name}{' '}
-                    </Link>
-                    <span className={styles.username}>
-                        @{post.user?.username}
-                    </span>
-                </span>
-                <div className={styles.postInfoExtra}>
-                    <span>•</span>
-                    <span>{post.createdAtFormatted}</span>
-                    <span>•</span>
-                    <span>{post.readTime} min</span>
+                <DropdownMenuPortal>
+                    <DropdownMenuContent>
+                        <UserDetails username={post.user?.username ?? ''} />
+                    </DropdownMenuContent>
+                </DropdownMenuPortal>
+                <div className={styles.postInfoText}>
+                    <div className={styles.author}>
+                        <DropdownMenuTrigger>
+                            <Link
+                                className={styles.name}
+                                href={`@${post.user?.username}`}
+                            >
+                                {post.user?.name}{' '}
+                            </Link>
+                        </DropdownMenuTrigger>
+                        <span className={styles.username}>
+                            @{post.user?.username}
+                        </span>
+                    </div>
+                    <div className={styles.postInfoExtra}>
+                        <span>•</span>
+                        <span>{post.createdAtFormatted}</span>
+                        <span>•</span>
+                        <span>{post.readTime} min</span>
+                    </div>
                 </div>
-            </div>
             </DropdownMenu>
-
         </div>
     );
 }

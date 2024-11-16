@@ -3,6 +3,14 @@ import styles from './post-card.module.scss';
 import { Bookmark, Heart, MessageSquareMore } from 'lucide-react';
 import { type PostRouterOutput } from '@/server/routes/post';
 import { Link } from 'next-view-transitions';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuPortal,
+    DropdownMenuTrigger,
+} from '@/components/common/dropdown-menu';
+import UserDetails from '@/components/common/user-details/user-details';
+import { DropdownMenuTriggerLink } from '@/components/common/dropdown-menu/trigger';
 
 export default function PostCard({
     post,
@@ -14,10 +22,36 @@ export default function PostCard({
             <div className={styles.content}>
                 <div className={styles.contentInfo}>
                     <div className={styles.author}>
-                        <div className={styles.authorImage}>
-                            <Image src={post.avatar ?? '/default-avatar.jpg'} fill alt="Author image" />
-                        </div>
-                        <span className={styles.authorName}>{post.name}</span>
+                        <DropdownMenu
+                            hoverMode
+                            hoverOpenDelay={500}
+                            hoverCloseDelay={100}
+                        >
+                            <DropdownMenuTrigger>
+                                <div className={styles.authorImage}>
+                                    <Image
+                                        src={
+                                            post.avatar ?? '/default-avatar.jpg'
+                                        }
+                                        fill
+                                        alt="Author image"
+                                    />
+                                </div>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuTrigger>
+                                <span className={styles.authorName}>
+                                    {post.name}
+                                </span>
+                            </DropdownMenuTrigger>
+
+                            <DropdownMenuPortal>
+                                <DropdownMenuContent>
+                                    <UserDetails
+                                        username={post.username ?? ''}
+                                    />
+                                </DropdownMenuContent>
+                            </DropdownMenuPortal>
+                        </DropdownMenu>
                     </div>
                     <h2 className={styles.title}>{post.title}</h2>
                     <span className={styles.contentInfoSubtitle}>
