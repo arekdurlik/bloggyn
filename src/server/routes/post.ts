@@ -6,6 +6,7 @@ import { and, desc, eq, like, lt, lte, or, sql } from 'drizzle-orm';
 import { type inferRouterOutputs, TRPCError } from '@trpc/server';
 import { stripHtml } from 'string-strip-html';
 import { postSchema } from '@/validation/user/post';
+import { modifySingleCharWords } from '@/lib/helpers';
 
 export type PostRouterOutput = inferRouterOutputs<typeof postRouter>;
 
@@ -135,9 +136,13 @@ export const postRouter = router({
                     slug += '-' + index;
                 }
 
-                const stripped = stripHtml(input.content).result;
-                const summary = stripped.slice(0, 200);
-                const length = stripped.trim().split(/\s+/).length;
+                const nonBreakingSingleCharTitle = modifySingleCharWords(
+                    input.title
+                );
+                const strippedContent = stripHtml(input.content).result;
+                const summary = strippedContent.slice(0, 200);
+                const length = strippedContent.trim().split(/\s+/).length;
+
                 const readTime = length / READ_TIME;
                 const roundedReadTime = Math.min(1, Math.round(readTime));
 
@@ -146,7 +151,7 @@ export const postRouter = router({
                     summary,
                     createdById: session.user.id,
                     slug,
-                    title: input.title,
+                    title: nonBreakingSingleCharTitle,
                     readTime: roundedReadTime,
                 });
 

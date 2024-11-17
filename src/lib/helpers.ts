@@ -62,3 +62,7 @@ export function isObjectAndHasProperty<K extends string>(
 export function never(_: unknown) {
     throw new Error('unimplemented');
 }
+
+export function modifySingleCharWords(str: string) {
+    return str.replace(/ ([a-zA-Z]) /g, ' $1' + '\u00A0');
+}

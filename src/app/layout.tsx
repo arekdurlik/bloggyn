@@ -8,7 +8,6 @@ import { getServerAuthSession } from '@/server/auth';
 import Providers from '@/components/common/providers';
 import { cookies } from 'next/headers';
 import { OVERLAY_ID } from '@/lib/constants';
-import { ViewTransitions } from 'next-view-transitions';
 import { cn } from '@/lib/helpers';
 import shared from '@/styles/shared.module.scss';
 import { Toasts } from '@/components/common/toasts/toasts';
@@ -26,7 +25,6 @@ export default async function RootLayout({
 
     return (
         <html lang="en" data-theme={theme} suppressHydrationWarning>
-            <ViewTransitions>
                 <body className={GeistSans.className}>
                     <Toasts />
                     <Providers>
@@ -41,7 +39,6 @@ export default async function RootLayout({
                         <div id={OVERLAY_ID} />
                     </Providers>
                 </body>
-            </ViewTransitions>
         </html>
     );
 }
