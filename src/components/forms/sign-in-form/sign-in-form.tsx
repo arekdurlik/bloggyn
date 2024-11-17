@@ -9,7 +9,6 @@ import Google from '@/components/common/icons/google';
 import Email from './inputs/email';
 import Password from './inputs/password';
 import React from 'react';
-import { Link } from 'next-view-transitions';
 import { Form } from '@/components/forms/form';
 import { cn, sleep, withMinDuration } from '@/lib/helpers';
 import { handleErrorWithToast } from '@/components/common/toasts/utils';
@@ -22,6 +21,7 @@ import {
     openToast,
     ToastType,
 } from '@/components/common/toasts/store';
+import Link from 'next/link';
 
 export default function SignInForm() {
     const [oAuthLoading, setOAuthLoading] = useState(false);

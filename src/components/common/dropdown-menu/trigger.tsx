@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useDropdownContext } from './dropdown-menu';
-import { Link } from 'next-view-transitions';
-import { LinkProps } from 'next/link';
+import Link, { LinkProps } from 'next/link';
 
 type Props = {
     children: React.ReactNode;
@@ -9,7 +8,7 @@ type Props = {
 };
 
 export function DropdownMenuTrigger({ children, className }: Props) {
-    const [{ hoverMode, }, api] = useDropdownContext();
+    const [{ hoverMode }, api] = useDropdownContext();
     const ref = useRef<HTMLButtonElement | null>(null);
 
     useEffect(() => {
@@ -36,10 +35,13 @@ export function DropdownMenuTrigger({ children, className }: Props) {
     );
 }
 
-
-export function DropdownMenuTriggerLink({ children, className, ...props }: Props & LinkProps) {
-    const [{ hoverMode, }, api] = useDropdownContext();
-    const ref = useRef<HTMLAnchorElement | null>(null);
+export function DropdownMenuTriggerLink({
+    children,
+    className,
+    ...props
+}: Props & LinkProps) {
+    const [{ hoverMode }, api] = useDropdownContext();
+    const ref = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
         if (!ref.current) return;
@@ -51,17 +53,18 @@ export function DropdownMenuTriggerLink({ children, className, ...props }: Props
     }, [ref]);
 
     return (
-        <Link
-            ref={ref}
-            onClick={() => api.set(v => ({ ...v, open: !v.open }))}
-            {...(hoverMode && {
-                onMouseEnter: api.handleMouseEnter,
-                onMouseLeave: api.handleMouseLeave,
-            })}
-            className={className}
-            {...props}
-        >
-            {children}
-        </Link>
+        <div ref={ref}>
+            <Link
+                onClick={() => api.set(v => ({ ...v, open: !v.open }))}
+                {...(hoverMode && {
+                    onMouseEnter: api.handleMouseEnter,
+                    onMouseLeave: api.handleMouseLeave,
+                })}
+                className={className}
+                {...props}
+            >
+                {children}
+            </Link>
+        </div>
     );
 }

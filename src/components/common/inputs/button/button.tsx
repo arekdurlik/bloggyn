@@ -1,7 +1,6 @@
 import { type CSSProperties, type ButtonHTMLAttributes } from 'react';
 import styles from './button.module.scss';
-import { type LinkProps } from 'next/link';
-import { Link } from 'next-view-transitions';
+import Link, { type LinkProps } from 'next/link';
 import { cn } from '@/lib/helpers';
 
 export type ButtonProps = {

@@ -45,14 +45,14 @@ export default function DropdownMenuContent({
 
         if (!trigger) return;
 
-        let rectOffsetLeft = 0;
-        let rectOffsetTop = 0;
+        let rectOffsetLeft = trigger.offsetLeft;
+        let rectOffsetTop = trigger.offsetTop;
 
         if (isInPortal) {
             const triggerRect = trigger?.getBoundingClientRect();
             if (triggerRect) {
-                rectOffsetLeft = triggerRect.left;
-                rectOffsetTop = triggerRect.top;
+                rectOffsetLeft = triggerRect.left + window.scrollX;
+                rectOffsetTop = triggerRect.top + window.scrollY;
             }
         }
 
@@ -107,7 +107,7 @@ export default function DropdownMenuContent({
                 ref={ref}
                 className={cn(styles.container, 'animation-slideIn')}
                 {...(hoverMode && {
-                    onMouseEnter: api.handleMouseEnter,
+                    onMouseEnter: () => open && api.handleMouseEnter(),
                     onMouseLeave: api.handleMouseLeave,
                 })}
             >

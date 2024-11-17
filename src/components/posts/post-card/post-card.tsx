@@ -2,15 +2,16 @@ import Image from 'next/image';
 import styles from './post-card.module.scss';
 import { Bookmark, Heart, MessageSquareMore } from 'lucide-react';
 import { type PostRouterOutput } from '@/server/routes/post';
-import { Link } from 'next-view-transitions';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuPortal,
     DropdownMenuTrigger,
 } from '@/components/common/dropdown-menu';
-import UserDetails from '@/components/common/user-details/user-details';
+import UserDetails from '@/components/common/user-details-popover/user-details-popover';
+import Link from 'next/link';
 import { DropdownMenuTriggerLink } from '@/components/common/dropdown-menu/trigger';
+import { cn } from '@/lib/helpers';
 
 export default function PostCard({
     post,
@@ -18,47 +19,36 @@ export default function PostCard({
     post: PostRouterOutput['getPosts']['items'][number];
 }) {
     return (
-        <Link href={post.slug} className={styles.container}>
+        <div className={styles.container}>
+            <Link className={styles.link} href={post.slug} aria-label={`Read more about "${post.title}"`}></Link>
             <div className={styles.content}>
-                <div className={styles.contentInfo}>
+                <div className={styles.contentLeft}>
                     <div className={styles.author}>
-                        <DropdownMenu
-                            hoverMode
-                            hoverOpenDelay={500}
-                            hoverCloseDelay={100}
-                        >
-                            <DropdownMenuTrigger>
-                                <div className={styles.authorImage}>
-                                    <Image
-                                        src={
-                                            post.avatar ?? '/default-avatar.jpg'
-                                        }
-                                        fill
-                                        alt="Author image"
-                                    />
-                                </div>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuTrigger>
-                                <span className={styles.authorName}>
-                                    {post.name}
-                                </span>
-                            </DropdownMenuTrigger>
-
-                            <DropdownMenuPortal>
-                                <DropdownMenuContent>
-                                    <UserDetails
-                                        username={post.username ?? ''}
-                                    />
-                                </DropdownMenuContent>
-                            </DropdownMenuPortal>
-                        </DropdownMenu>
+                        <UserDetails username={post.username ?? ''}>
+                            <DropdownMenuTriggerLink href={`@${post.username}`}>
+                                    <div className={cn(styles.authorImage, styles.linkOnTop)}>
+                                        <Image
+                                            src={
+                                                post.avatar ??
+                                                '/default-avatar.jpg'
+                                            }
+                                            fill
+                                            alt="Author image"
+                                        />
+                                    </div>
+                            </DropdownMenuTriggerLink>
+                            <DropdownMenuTriggerLink href={`@${post.username}`}>
+                                    <span className={cn(styles.authorName, styles.linkOnTop)}>
+                                        {post.name}
+                                    </span>
+                            </DropdownMenuTriggerLink>
+                        </UserDetails>
                     </div>
-                    <h2 className={styles.title}>{post.title}</h2>
-                    <span className={styles.contentInfoSubtitle}>
-                        {post.summary}
-                    </span>
+                        <h2 className={styles.title}>{post.title}</h2>
+                        <span className={styles.summary}>{post.summary}</span>
+                    
                 </div>
-                <div className={styles.contentImage}>
+                <div className={styles.contentRight}>
                     <Image
                         src="https://picsum.photos/250/150"
                         width={250}
@@ -86,6 +76,6 @@ export default function PostCard({
                     </span>
                 </div>
             </div>
-        </Link>
+        </div>
     );
 }

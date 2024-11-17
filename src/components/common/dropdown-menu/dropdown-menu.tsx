@@ -16,7 +16,7 @@ export type DropdownContextType = {
     hoverOpenDelay?: number;
     hoverCloseDelay?: number;
     manualOpen?: boolean;
-    triggerRefs: RefObject<HTMLButtonElement | HTMLAnchorElement | null>[];
+    triggerRefs: RefObject<HTMLButtonElement | HTMLDivElement | null>[];
     items: HTMLElement[];
 };
 

@@ -1,13 +1,34 @@
 import { clamp } from '@/lib/helpers';
+import { usePathname } from 'next/navigation';
 import { type RefObject, useEffect, useRef } from 'react';
 
 export function useHideOnScroll(ref: RefObject<HTMLElement>) {
     const previousScroll = useRef(0);
     const currentPosition = useRef(0);
+    const pathname = usePathname();
+    const manual = useRef(false);
+
+    useEffect(() => {
+        function manualOff() {
+            manual.current = true;
+        }
+
+        document.addEventListener('wheel', manualOff);
+        return () => document.removeEventListener('wheel', manualOff);
+    }, []);
+
+    useEffect(() => {
+        if (ref.current) {
+            ref.current.style.top = '0';
+            previousScroll.current = 0;
+            currentPosition.current = 0;
+            manual.current = false;
+        }
+    }, [pathname]);
 
     useEffect(() => {
         function handleScroll() {
-            if (!ref.current) return;
+            if (!ref.current || !manual.current) return;
 
             const borderOffset = 1;
             const headerHeight = ref.current.offsetHeight + borderOffset;

@@ -11,7 +11,6 @@ import Email from './inputs/email';
 import Password from './inputs/password';
 import React from 'react';
 import { SignUpStep } from '@/lib/constants';
-import { Link } from 'next-view-transitions';
 import { Form } from '@/components/forms/form';
 import { useCrossfadeFormContext } from '../../../common/crossfade-form';
 import FormButton from '../../form-button';
@@ -19,6 +18,7 @@ import { isObjectAndHasProperty, sleep, withMinDuration } from '@/lib/helpers';
 import { signUpSchema } from '@/validation/user';
 import { handleErrorWithToast } from '@/components/common/toasts/utils';
 import { useAuthIntent } from '../../use-auth-intent';
+import Link from 'next/link';
 
 export default function SignUpForm() {
     const [formData, setFormData] = useState({

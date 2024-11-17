@@ -4,11 +4,12 @@ import ThemeSwitcher from './theme-switcher';
 import { Fragment, useRef } from 'react';
 import { useHideOnScroll } from './use-hide-on-scroll';
 import { HEADER_ID } from '@/lib/constants';
-import { Link } from 'next-view-transitions';
+
 
 import styles from './header.module.scss';
 import Actions from './actions/actions';
 import { useSearchState } from '@/stores/search';
+import Link from 'next/link';
 
 export default function Header({ theme }: { theme?: string }) {
     const ref = useRef<HTMLDivElement>(null);
