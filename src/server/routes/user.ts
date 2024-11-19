@@ -20,6 +20,7 @@ export const userRouter = router({
                     .select({
                         username: users.username,
                         name: users.name,
+                        bio: users.bio,
                         avatar: users.image,
                         postsCount: sql<number>`COUNT(${posts.id})`,
                     })

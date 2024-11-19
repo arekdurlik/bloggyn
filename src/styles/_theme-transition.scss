@@ -39,7 +39,9 @@
     }
 
     textarea {
-        transition: color var(--transition-theme) !important;
+        &:not(:empty) {
+            transition: color var(--transition-theme) !important;
+        }
         &::placeholder {
             transition: color var(--transition-theme);
         }

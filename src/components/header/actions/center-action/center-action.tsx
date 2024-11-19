@@ -14,6 +14,7 @@ import {
 import { ZodError } from 'zod';
 import { postSchema, TITLE_MIN_LENGTH } from '@/validation/user/post';
 import { trpc } from '@/trpc/client';
+import revalidate from '@/app/actions';
 
 export default function CenterAction() {
     const pathname = usePathname();
@@ -36,6 +37,7 @@ export default function CenterAction() {
             );
 
             await sleep(500);
+            revalidate('/');
             router.push(res.url);
             resolveToast(toast, true, 'Published!');
         } catch (error) {

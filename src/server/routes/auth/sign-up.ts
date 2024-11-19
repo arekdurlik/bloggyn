@@ -17,6 +17,7 @@ import {
     users,
     verificationCodes,
 } from '@/server/db/schema';
+import { onboardSchema } from '@/validation/user';
 
 export type SignUpRouterOutput = inferRouterOutputs<typeof signUpRouter>;
 
@@ -213,12 +214,7 @@ export const signUpRouter = router({
             }
         }),
     completeSignUp: protectedProcedure
-        .input(
-            z.object({
-                username: usernameSchema,
-                displayName: displayNameSchema,
-            })
-        )
+        .input(onboardSchema)
         .mutation(async ({ input, ctx: { session, db } }) => {
             try {
                 const user = await db.query.users.findFirst({
@@ -258,6 +254,7 @@ export const signUpRouter = router({
                     .set({
                         username: input.username,
                         name: input.displayName,
+                        bio: input.bio,
                     })
                     .where(eq(users.id, session.user.id));
             } catch (error) {

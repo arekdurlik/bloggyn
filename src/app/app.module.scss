@@ -4,7 +4,7 @@
     min-height: 100%;
 }
 
-.container {
+.wrapper {
     position: relative;
     min-height: 100%;
     min-height: 100vh;
@@ -19,20 +19,17 @@
     gap: var(--spacing-xxxl);
 }
 
-.header-margin {
-    display: flex;
-    margin-top: var(--headerHeight);
-    margin-bottom: var(--headerHeight);
-    min-height: 100%;
-}
-
-.content {
+.container {
     display: flex;
     flex-direction: column;
     justify-content: center;
     position: relative;
     max-width: var(--contentWidth);
     width: 100%;
-    margin-top: calc(var(--headerHeight) * 2);
+    margin-top: var(--headerHeight);
     margin-inline: var(--spacing-xxl);
+}
+
+.content {
+    margin-top: var(--headerHeight);
 }

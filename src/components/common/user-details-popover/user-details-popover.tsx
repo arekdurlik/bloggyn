@@ -1,6 +1,6 @@
 import { trpc } from '@/trpc/client';
 import { usePathname } from 'next/navigation';
-import { cloneElement, ReactNode } from 'react';
+import { cloneElement, type ReactNode } from 'react';
 import {
     DropdownMenu,
     DropdownMenuContent,

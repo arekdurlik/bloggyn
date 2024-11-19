@@ -42,7 +42,7 @@ export default function PostInfo({ post }: { post: Post }) {
                     <span>•</span>
                     <span>{post.createdAtFormatted}</span>
                     <span>•</span>
-                    <span>{post.readTime} min</span>
+                    <span>{post.readTime} min read</span>
                 </div>
             </div>
         </div>

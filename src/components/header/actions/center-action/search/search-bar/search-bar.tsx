@@ -3,7 +3,7 @@ import { SearchIcon } from 'lucide-react';
 import styles from './search-bar.module.scss';
 import { type ChangeEvent, Fragment, useRef } from 'react';
 import { useSearchState } from '@/stores/search';
-import TextInput from '@/components/common/inputs/text-input/text-input';
+import TextInput from '@/components/common/inputs/text-inputs/text-input/text-input';
 
 type Props = {
     onChange?: (value: string) => void;

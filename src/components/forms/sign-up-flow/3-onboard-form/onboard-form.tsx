@@ -14,14 +14,15 @@ import FormButton from '../../form-button';
 import { onboardSchema } from '@/validation/user';
 import { sleep, withMinDuration } from '@/lib/helpers';
 import { handleErrorWithToast } from '@/components/common/toasts/utils';
-import { openToast, ToastType } from '@/components/common/toasts/store';
 import { useCrossfadeFormContext } from '@/components/common/crossfade-form';
 import { SignUpStep } from '@/lib/constants';
+import Bio from './inputs/bio';
 
 export default function OnboardForm() {
     const [formData, setFormData] = useState({
         username: '',
         displayName: '',
+        bio: '',
     });
     const { api } = useCrossfadeFormContext();
     const { update } = useSession();
@@ -90,6 +91,12 @@ export default function OnboardForm() {
                                             ...formData,
                                             displayName: value,
                                         })
+                                    }
+                                />
+                                <Bio
+                                    value={formData.bio}
+                                    onChange={value =>
+                                        setFormData({ ...formData, bio: value })
                                     }
                                 />
                             </div>

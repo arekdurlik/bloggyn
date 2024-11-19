@@ -49,13 +49,25 @@
         }
     }
 
+    textarea {
+        resize: none;
+        background-color: transparent;
+        width: 100%;
+        border: none;
+        outline: none;
+        font-size: inherit;
+        padding-block: var(--spacing-xl);
+    }
     input {
         width: 100%;
         outline: none;
         background-color: transparent;
         color: var(--fgColor-default);
         transition: color var(--transition-default);
+    }
 
+    textarea,
+    input {
         &::placeholder {
             transition: color var(--transition-default);
             color: var(--fgColor-subtle);

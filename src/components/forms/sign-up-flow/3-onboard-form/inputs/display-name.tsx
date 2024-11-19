@@ -5,7 +5,7 @@ import {
     displayNameSchema,
 } from '@/validation/user/display-name';
 import FormInput from '@/components/forms/form-input';
-import { FormInputProps } from '@/components/forms/types';
+import { type FormInputProps } from '@/components/forms/types';
 import { useFormContext } from '@/components/forms/context';
 
 export default function DisplayName({ value: displayName, onChange }: FormInputProps) {

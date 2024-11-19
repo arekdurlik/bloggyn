@@ -3,21 +3,19 @@ import { State, useFormContext } from './context';
 import ValidatedInput, {
     type ValidatedInputProps,
 } from '../common/inputs/validated-input';
-import textInputStyles from '@/components/common/inputs/text-inputs/text-input.module.scss';
+import textInputStyles from '@/components/common/inputs/text-input/text-input.module.scss';
 import { cn } from '@/lib/helpers';
 
-type FormInputProps = {
+type FormTextAreaProps = {
     name: string;
-    textarea?: boolean;
-    rows?: number;
 } & ValidatedInputProps;
 
-export default function FormInput({
+export default function FormTextArea({
     onChange,
     onError,
     onValidate,
     ...props
-}: FormInputProps) {
+}: FormTextAreaProps) {
     const { errors, state, attemptedSubmit, api } = useFormContext();
     const [flashingError, setFlashingError] = useState(false);
     const timeoutRef = useRef<NodeJS.Timeout>();

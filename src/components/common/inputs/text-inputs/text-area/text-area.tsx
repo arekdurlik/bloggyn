@@ -2,18 +2,17 @@
 
 import {
     type ChangeEvent,
-    type CSSProperties,
     type FocusEvent,
     forwardRef,
-    type InputHTMLAttributes,
     type MouseEvent,
     type ReactNode,
+    type TextareaHTMLAttributes,
     useRef,
     useState,
 } from 'react';
-import styles from './text-input.module.scss';
+import styles from '../text-input.module.scss';
 import { cn } from '@/lib/helpers';
-import { X } from 'lucide-react';
+import InputSharedWrapper from '../shared-wrapper';
 
 export type TextInputProps = {
     value: string;
@@ -26,12 +25,15 @@ export type TextInputProps = {
     error?: string;
     helpText?: string;
     clearButton?: boolean;
-    onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
+    className?: string;
+    disabled?: boolean;
+    placeholder?: string;
+    onChange?: (event: ChangeEvent<HTMLTextAreaElement>) => void;
     onFocus?: (event: FocusEvent<HTMLElement>) => void;
     onBlur?: (event: FocusEvent<HTMLElement>) => void;
-} & InputHTMLAttributes<HTMLInputElement>;
+};
 
-const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
+const TextArea = forwardRef<HTMLTextAreaElement, TextInputProps>(
     (
         {
             value,
@@ -54,7 +56,7 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
         ref
     ) => {
         const [focused, setFocused] = useState(false);
-        const inputRef = useRef<HTMLInputElement>(null!);
+        const inputRef = useRef<HTMLTextAreaElement>(null!);
         const wrapperRef = useRef<HTMLDivElement>(null!);
         const focusedViaMouse = useRef(false);
         const notEmpty = value?.length > 0;
@@ -83,7 +85,7 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
             event.stopPropagation();
             onChange?.({
                 target: { value: '' },
-            } as ChangeEvent<HTMLInputElement>);
+            } as ChangeEvent<HTMLTextAreaElement>);
 
             focusedViaMouse.current = true;
             inputRef.current.focus();
@@ -101,22 +103,25 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
                     className
                 )}
             >
-                {label && (
-                    <label htmlFor={label}>
-                        {label}
-                        {required && <span className={styles.required}>*</span>}
-                    </label>
-                )}
-                <div
-                    className={cn(
-                        styles.inputWrapper,
-                        focused && styles.focused
-                    )}
+                <InputSharedWrapper
+                    {...{
+                        label,
+                        required,
+                        focused,
+                        prefixIcon,
+                        clearButton,
+                        notEmpty,
+                        validateIcon,
+                        suffixIcon,
+                        helpText,
+                        error,
+                        onClick: handleClear,
+                        onBlur,
+                        onFocus,
+                        onClear: handleClear,
+                    }}
                 >
-                    {prefixIcon && (
-                        <span className={styles.prefixIcon}>{prefixIcon}</span>
-                    )}
-                    <input
+                    <textarea
                         ref={node => {
                             node && (inputRef.current = node);
                             if (typeof ref === 'function') {
@@ -125,9 +130,9 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
                                 ref.current = node;
                             }
                         }}
+                        rows={2}
                         id={label?.toLowerCase() ?? id}
                         value={value}
-                        type="text"
                         onChange={onChange}
                         onFocus={e => {
                             handleFocus();
@@ -137,39 +142,13 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
                         disabled={disabled}
                         {...props}
                     />
-                    {clearButton && notEmpty && (
-                        <button
-                            className={styles.clearButton}
-                            type="button"
-                            onMouseDown={handleClick}
-                            onClick={handleClear}
-                            onFocus={handleFocus}
-                            onBlur={handleBlur}
-                        >
-                            <X />
-                        </button>
-                    )}
-                    {validateIcon && (
-                        <div className={styles.suffixIcon}>{validateIcon}</div>
-                    )}
-                    {suffixIcon && (
-                        <div className={styles.suffixIcon}>{suffixIcon}</div>
-                    )}
-                </div>
-                {helpText && (
-                    <span className={styles.helpText}>{helpText}</span>
-                )}
-                {error !== undefined && (
-                    <div className={cn(styles.errorText)}>
-                        {error && <span>{error}</span>}
-                    </div>
-                )}
+                </InputSharedWrapper>
             </div>
         );
     }
 );
 
 if (process.env.NODE_ENV !== 'production') {
-    TextInput.displayName = 'TextInput';
+    TextArea.displayName = 'TextArea';
 }
-export default TextInput;
+export default TextArea;

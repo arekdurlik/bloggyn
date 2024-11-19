@@ -5,6 +5,7 @@ import Link, { LinkProps } from 'next/link';
 type Props = {
     children: React.ReactNode;
     className?: string;
+    tabIndex?: number;
 };
 
 export function DropdownMenuTrigger({ children, className }: Props) {
@@ -38,6 +39,7 @@ export function DropdownMenuTrigger({ children, className }: Props) {
 export function DropdownMenuTriggerLink({
     children,
     className,
+    tabIndex,
     ...props
 }: Props & LinkProps) {
     const [{ hoverMode }, api] = useDropdownContext();
@@ -61,6 +63,7 @@ export function DropdownMenuTriggerLink({
                     onMouseLeave: api.handleMouseLeave,
                 })}
                 className={className}
+                tabIndex={tabIndex}
                 {...props}
             >
                 {children}

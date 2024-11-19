@@ -1,3 +1,4 @@
+import { BIO_MAX } from '@/validation/user/bio';
 import { relations, sql } from 'drizzle-orm';
 import {
     index,
@@ -48,6 +49,7 @@ export const users = createTable('user', {
         .$defaultFn(() => crypto.randomUUID()),
     username: varchar('username', { length: 36 }).unique(),
     name: varchar('name', { length: 255 }),
+    bio: varchar('bio', { length: BIO_MAX }),
     email: varchar('email', { length: 255 }).notNull().unique(),
     emailVerified: timestamp('emailVerified', { mode: 'date' }),
     image: varchar('image', { length: 255 }),

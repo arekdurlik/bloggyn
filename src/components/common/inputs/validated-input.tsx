@@ -1,8 +1,4 @@
-import {
-    type ChangeEvent,
-    useEffect,
-    useState,
-} from 'react';
+import { type ChangeEvent, useEffect, useState } from 'react';
 import useDebouncedEffect from '@/lib/hooks/use-debounced-effect';
 import { sleep } from '@/lib/helpers';
 import { ZodError, type ZodType } from 'zod';
@@ -10,9 +6,11 @@ import { getResponse } from '@/validation/utils';
 import Validating from '@/components/common/icons/validating';
 import TextInput, {
     type TextInputProps,
-} from '@/components/common/inputs/text-input/text-input';
+} from '@/components/common/inputs/text-inputs/text-input/text-input';
+import TextArea from './text-inputs/text-area/text-area';
 
 export type ValidatedInputProps = {
+    textarea?: boolean;
     label: string;
     placeholder?: string;
     value: string;
@@ -40,6 +38,7 @@ enum State {
 }
 
 export default function ValidatedInput({
+    textarea,
     label,
     placeholder,
     value,
@@ -117,8 +116,9 @@ export default function ValidatedInput({
         state === State.PENDING
     );
 
-
-    function handleChange(event: ChangeEvent<HTMLInputElement>) {
+    function handleChange(
+        event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) {
         const value = event.target.value;
         onChange?.(value);
 
@@ -134,7 +134,22 @@ export default function ValidatedInput({
         }
     }
 
-    return (
+    return textarea ? (
+        <TextArea
+            name={label.toLowerCase()}
+            label={label}
+            value={value}
+            validateIcon={validateIcon}
+            suffixIcon={suffixIcon}
+            onChange={handleChange}
+            error={finalError}
+            helpText={helpText}
+            placeholder={placeholder}
+            autoComplete="off"
+            spellCheck={false}
+            {...props}
+        />
+    ) : (
         <TextInput
             name={label.toLowerCase()}
             label={label}

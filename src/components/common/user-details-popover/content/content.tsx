@@ -1,11 +1,11 @@
 import Image from 'next/image';
 import styles from './content.module.scss';
 import { useSession } from 'next-auth/react';
-import { UserRouterOutput } from '@/server/routes/user';
+import { type UserRouterOutput } from '@/server/routes/user';
 import Button from '../../inputs/button';
 import Link from 'next/link';
 
-export default function UserDetailsContent({ details, username }: { details: UserRouterOutput['getUserDetails'], username: string }) {
+export default function UserDetailsContent({ details }: { details: UserRouterOutput['getUserDetails'], username: string }) {
     const { data: session } = useSession();
 
     return details && (
@@ -37,7 +37,7 @@ export default function UserDetailsContent({ details, username }: { details: Use
                     </Link>
                     <span className={styles.username}>@{details.username}</span>
                 </div>
-                <p>bio</p>
+                <p>{details.bio}</p>
                 <div className={styles.counters}>
                     <span>0 followers</span>
                     <span>

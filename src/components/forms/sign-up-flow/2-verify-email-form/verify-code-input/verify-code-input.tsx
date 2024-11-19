@@ -4,8 +4,8 @@ import styles from './verify-code-input.module.scss';
 import { OTPInput, OTPInputSlot } from '@/components/common/inputs/otp-input';
 import { cn } from '@/lib/helpers';
 import { VerifyEmailState } from '../verify-email-form';
-import inputStyles from '@/components/common/inputs/text-input/text-input.module.scss';
-import { useFormContext } from '@/components/forms/context';
+import inputStyles from '@/components/common/inputs/text-inputs/text-input.module.scss';
+
 type Props = {
     value: string;
     disabled?: boolean;
