@@ -1,6 +1,6 @@
 import { trpc } from '@/trpc/client';
 import { usePathname } from 'next/navigation';
-import { cloneElement, type ReactNode } from 'react';
+import { useRef, useState, type ReactNode } from 'react';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -10,6 +10,8 @@ import {
 import UserDetailsContent from './content/content';
 import { DropdownMenuTriggerLink } from '../dropdown-menu/trigger';
 
+const INTENT_DELAY = 200;
+
 export default function UserDetailsPopover({
     username,
     children,
@@ -17,18 +19,42 @@ export default function UserDetailsPopover({
     username: string;
     children: ReactNode;
 }) {
-    const getUserDetails = trpc.getUserDetails.useQuery({
-        username: username,
-        path: usePathname(),
-    });
+    const [enabled, setEnabled] = useState(false);
+    const { data: details } = trpc.getUserDetails.useQuery(
+        {
+            username: username,
+            path: usePathname(),
+        },
+        { enabled, queryHash: username, staleTime: 1000 * 60 }
+    );
+    const timeout = useRef<NodeJS.Timeout>();
 
-    const details = getUserDetails.data;
+    function handleMouseEnter() {
+        timeout.current = setTimeout(() => {
+            setEnabled(true);
+        }, INTENT_DELAY);
+    }
+
+    function handleMouseLeave() {
+        clearTimeout(timeout.current!);
+        setEnabled(false);
+    }
 
     return (
-        <DropdownMenu hoverMode>
+        <DropdownMenu
+            open={details !== undefined ? undefined : false}
+            hoverMode
+            onTriggerMouseEnter={handleMouseEnter}
+            onTriggerMouseLeave={handleMouseLeave}
+        >
             <DropdownMenuPortal>
                 <DropdownMenuContent>
-                    <UserDetailsContent details={details} username={username} />
+                    {details && (
+                        <UserDetailsContent
+                            details={details}
+                            username={username}
+                        />
+                    )}
                 </DropdownMenuContent>
             </DropdownMenuPortal>
             {children}

@@ -20,7 +20,7 @@ export default function DropdownMenuContent({
     const [{ open, manualOpen, hoverMode, triggerRefs }, api] =
         useDropdownContext();
     const ref = useRef<HTMLUListElement | null>(null);
-    const finalOpen = manualOpen ? manualOpen : open;
+    const finalOpen = manualOpen !== undefined ? manualOpen : open;
     const isInPortal = useIsInPortal();
 
     useOutsideClick(

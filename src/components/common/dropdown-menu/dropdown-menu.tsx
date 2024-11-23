@@ -1,3 +1,4 @@
+import { on } from 'events';
 import {
     createContext,
     createRef,
@@ -38,14 +39,18 @@ type Props = {
     hoverMode?: boolean;
     hoverOpenDelay?: number;
     hoverCloseDelay?: number;
+    onTriggerMouseEnter?: () => void;
+    onTriggerMouseLeave?: () => void;
 };
 
 export default function DropdownMenu({
+    children,
     open,
     hoverMode,
     hoverOpenDelay = 300,
     hoverCloseDelay = hoverOpenDelay,
-    children,
+    onTriggerMouseEnter,
+    onTriggerMouseLeave,
 }: Props) {
     const [value, setValue] = useState<DropdownContextType>({
         manualOpen: open,
@@ -77,6 +82,7 @@ export default function DropdownMenu({
     function handleMouseEnter() {
         clearTimeout(openTimeout.current!);
         clearTimeout(closeTimeout.current!);
+        onTriggerMouseEnter?.();
 
         openTimeout.current = setTimeout(() => {
             if (openRef.current) return;
@@ -88,6 +94,7 @@ export default function DropdownMenu({
     function handleMouseLeave() {
         clearTimeout(openTimeout.current!);
         clearTimeout(closeTimeout.current!);
+        onTriggerMouseLeave?.();
 
         closeTimeout.current = setTimeout(() => {
             if (!openRef.current) return;
