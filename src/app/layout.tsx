@@ -29,11 +29,11 @@ export default async function RootLayout({
                     <Toasts />
                     <Providers>
                         <div
-                            className={cn(styles.container, shared.buttonGroup)}
+                            className={styles.wrapper}
                         >
                             <SessionProvider session={session}>
                                 <Header theme={theme} />
-                                <div className={styles.content}>{children}</div>
+                                <div className={styles.container}>{children}</div>
                             </SessionProvider>
                         </div>
                         <div id={OVERLAY_ID} />

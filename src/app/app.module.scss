@@ -24,7 +24,7 @@
     flex-direction: column;
     justify-content: center;
     position: relative;
-    max-width: var(--contentWidth);
+    max-width: min(100vw, var(--contentWidth));
     width: 100%;
     margin-top: var(--headerHeight);
     margin-inline: var(--spacing-xxl);
@@ -32,4 +32,5 @@
 
 .content {
     margin-top: var(--headerHeight);
+    width: 100%;
 }

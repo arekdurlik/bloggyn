@@ -15,7 +15,7 @@ export default function Actions() {
     const pathname = usePathname();
 
     return (
-        <div className={cn(shared.buttonGroup, styles.centerAction)}>
+        <div className={cn(shared.buttonGroup, styles.actions)}>
             <CenterAction />
             {session?.user ? (
                 <Fragment>

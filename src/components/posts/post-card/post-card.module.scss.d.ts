@@ -7,7 +7,6 @@ export declare const contentLeft: string;
 export declare const contentRight: string;
 export declare const footer: string;
 export declare const footerLeft: string;
-export declare const info: string;
 export declare const link: string;
 export declare const linkOnTop: string;
 export declare const summary: string;

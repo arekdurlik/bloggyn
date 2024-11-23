@@ -9,22 +9,25 @@
     display: grid;
     place-items: center;
     cursor: pointer;
-    transition: border-color var(--transition-default), color var(--transition-default), background-color var(--transition-default);
+    transition: border-color var(--transition-default),
+        color var(--transition-default),
+        background-color var(--transition-default);
 
     &.no-border {
         border: none;
     }
 }
 
-.center-action {
+.actions {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
 }
 
 a.new-post {
-
     & span > span {
-        transition: width var(--transition-default), opacity var(--transition-default);
+        transition: width var(--transition-default),
+            opacity var(--transition-default);
         width: 75px;
         white-space: nowrap;
         overflow: hidden;

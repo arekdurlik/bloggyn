@@ -3,8 +3,9 @@
 .container {
     position: fixed;
     z-index: 4;
-    width: 100%;
-    height: var(--headerHeight);
+    width: 100vw;
+    box-sizing: border-box;
+    min-height: var(--headerHeight);
     background-color: var(--header-bgColor);
 
     display: flex;
@@ -45,6 +46,10 @@
     letter-spacing: 1px;
     cursor: pointer;
     user-select: none;
+
+    @include responsive('xs') {
+        width: 100%;
+    }
 
     a {
         color: var(--fgColor-heading);

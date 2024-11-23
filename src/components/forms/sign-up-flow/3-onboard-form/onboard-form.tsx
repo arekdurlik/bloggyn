@@ -96,7 +96,10 @@ export default function OnboardForm() {
                                 <Bio
                                     value={formData.bio}
                                     onChange={value =>
-                                        setFormData({ ...formData, bio: value })
+                                        setFormData({
+                                            ...formData,
+                                            bio: value,
+                                        })
                                     }
                                 />
                             </div>

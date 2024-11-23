@@ -14,7 +14,7 @@ import { SignUpStep } from '@/lib/constants';
 import { Form } from '@/components/forms/form';
 import { useCrossfadeFormContext } from '../../../common/crossfade-form';
 import FormButton from '../../form-button';
-import { isObjectAndHasProperty, sleep, withMinDuration } from '@/lib/helpers';
+import { cn, isObjectAndHasProperty, sleep, withMinDuration } from '@/lib/helpers';
 import { signUpSchema } from '@/validation/user';
 import { handleErrorWithToast } from '@/components/common/toasts/utils';
 import { useAuthIntent } from '../../use-auth-intent';
@@ -81,7 +81,7 @@ export default function SignUpForm() {
     }
 
     return (
-        <div className={formStyles.content}>
+        <div className={cn(formStyles.content, formStyles.contentCenter)}>
             <Form
                 onSubmit={handleSubmit}
                 onSubmitSuccess={handleSubmitSuccess}

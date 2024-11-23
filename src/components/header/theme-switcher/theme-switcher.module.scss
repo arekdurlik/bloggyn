@@ -1,3 +1,5 @@
+@import 'src/styles/mixins';
+
 $collapsed: 12px;
 $expanded: calc($collapsed * 2.5);
 $maxVisible: 4;
@@ -11,6 +13,10 @@ $maxVisibleHalf: calc($maxVisible / 2);
     min-width: 100px;
     z-index: 2;
     cursor: pointer;
+
+    @include responsive('xs') {
+        max-width: min(150px, 100vw);
+    }
 
     transform: translateY(10px);
     border-bottom-left-radius: var(--rounded-default);
@@ -36,6 +42,12 @@ $maxVisibleHalf: calc($maxVisible / 2);
 
     &:hover {
         height: $expanded;
+    }
+
+    @include responsive('xs') {
+        margin: 0 auto;
+        left: 0;
+        right: 0;
     }
 }
 
