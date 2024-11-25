@@ -12,9 +12,25 @@
     height: 40px;
     width: fit-content;
     min-width: 100px;
+    box-shadow: var(--shadow-barely-visible);
     transition: border-color var(--transition-default),
         background-color var(--transition-default);
-    box-shadow: var(--shadow-barely-visible);
+
+    &--danger {
+        background-color: var(--control-danger-bgColor-rest);
+        color: var(--control-danger-fgColor-rest);
+        border-color: var(--control-danger-borderColor-rest);
+
+        &:hover {
+            background-color: var(--control-danger-bgColor-hover);
+            border-color: var(--control-danger-borderColor-hover);
+        }
+
+        &:active {
+            background-color: var(--control-danger-bgColor-active);
+            border-color: var(--control-danger-borderColor-active);
+        }
+    }
 }
 
 .inverted {

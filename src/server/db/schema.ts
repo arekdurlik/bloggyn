@@ -20,27 +20,6 @@ import { type AdapterAccount } from 'next-auth/adapters';
  */
 export const createTable = pgTableCreator(name => `bloggyn_${name}`);
 
-export const posts = createTable('post', {
-    id: serial('id').primaryKey(),
-    title: varchar('title', { length: 200 }).notNull(),
-    slug: varchar('slug', { length: 230 }).notNull(),
-    content: varchar('content').notNull(),
-    summary: varchar('summary').notNull(),
-    readTime: integer('read_time').notNull(),
-    createdById: varchar('created_by', { length: 255 })
-        .notNull()
-        .references(() => users.id),
-    createdAt: timestamp('created_at', {
-        mode: 'string',
-        withTimezone: true,
-    })
-        .default(sql`CURRENT_TIMESTAMP`)
-        .notNull(),
-    updatedAt: timestamp('updated_at', { withTimezone: true }).$onUpdate(
-        () => new Date()
-    ),
-});
-
 export type User = typeof users.$inferSelect;
 export const users = createTable('user', {
     id: varchar('id', { length: 255 })
@@ -57,7 +36,45 @@ export const users = createTable('user', {
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
-    accounts: many(accounts),
+    account: many(accounts),
+    follower: many(following, { relationName: 'follower' }),
+    followed: many(following, { relationName: 'followed' }),
+    post: many(posts),
+}));
+
+export type Following = typeof following.$inferSelect;
+export const following = createTable(
+    'following',
+    {
+        followerId: varchar('follower_id', { length: 255 })
+            .notNull()
+            .references(() => users.id, { onDelete: 'cascade' }),
+        followedId: varchar('followed_id', { length: 255 })
+            .notNull()
+            .references(() => users.id, { onDelete: 'cascade' }),
+        createdAt: timestamp('created_at', {
+            mode: 'string',
+            withTimezone: true,
+        })
+            .default(sql`CURRENT_TIMESTAMP`)
+            .notNull(),
+    },
+    table => ({
+        pk: primaryKey({ columns: [table.followerId, table.followedId] }),
+    })
+);
+
+export const followingRelations = relations(following, ({ one }) => ({
+    follower: one(users, {
+        fields: [following.followerId],
+        references: [users.id],
+        relationName: 'follower',
+    }),
+    followed: one(users, {
+        fields: [following.followedId],
+        references: [users.id],
+        relationName: 'followed',
+    }),
 }));
 
 export const accounts = createTable(
@@ -119,3 +136,28 @@ export const verificationCodes = createTable(
         }),
     })
 );
+
+export const posts = createTable('post', {
+    id: serial('id').primaryKey(),
+    title: varchar('title', { length: 200 }).notNull(),
+    slug: varchar('slug', { length: 230 }).notNull(),
+    content: varchar('content').notNull(),
+    summary: varchar('summary').notNull(),
+    readTime: integer('read_time').notNull(),
+    createdById: varchar('created_by', { length: 255 })
+        .notNull()
+        .references(() => users.id),
+    createdAt: timestamp('created_at', {
+        mode: 'string',
+        withTimezone: true,
+    })
+        .default(sql`CURRENT_TIMESTAMP`)
+        .notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).$onUpdate(
+        () => new Date()
+    ),
+});
+
+export const postsRelations = relations(posts, ({ one }) => ({
+    user: one(users, { fields: [posts.createdById], references: [users.id] }),
+}));

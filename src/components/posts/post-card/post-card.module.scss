@@ -58,11 +58,6 @@
 .author {
     display: flex;
     align-items: center;
-    gap: var(--spacing-large);
-
-    &-name {
-        font-size: var(--text-small);
-    }
 
     &-image {
         position: relative;
@@ -77,11 +72,18 @@
             outline: var(--outline);
         }
     }
+
+    &-name {
+        padding-left: var(--spacing-large);
+        font-size: var(--text-small);
+    }
 }
 
 .title {
     overflow-wrap: break-word;
     hyphens: manual;
+    word-break: break-word;
+    line-height: 1.2;
 }
 
 .summary {

@@ -1,9 +1,8 @@
 import Image from 'next/image';
 import styles from './content.module.scss';
-import { useSession } from 'next-auth/react';
 import { type UserRouterOutput } from '@/server/routes/user';
-import Button from '../../inputs/button';
 import Link from 'next/link';
+import FollowingButton from './following-button/following-button';
 
 export default function UserDetailsContent({
     details,
@@ -11,8 +10,6 @@ export default function UserDetailsContent({
     details: UserRouterOutput['getUserDetails'];
     username: string;
 }) {
-    const { data: session } = useSession();
-
     return (
         details && (
             <div className={styles.details} onClick={e => e.stopPropagation()}>
@@ -29,9 +26,7 @@ export default function UserDetailsContent({
                             alt="Author's profile image"
                         />
                     </Link>
-                    {session?.user?.username !== details.username && (
-                        <Button>Follow</Button>
-                    )}
+                    <FollowingButton details={details} />
                 </div>
                 <div className={styles.bottom}>
                     <div className={styles.nameDetails}>
@@ -47,7 +42,7 @@ export default function UserDetailsContent({
                     </div>
                     <p>{details.bio}</p>
                     <div className={styles.counters}>
-                        <span>0 followers</span>
+                        <span>{details.followersCount == 1 ? '1 follower' : `${details.followersCount} followers`}</span>
                         <span>
                             {details.postsCount}{' '}
                             {details.postsCount == 1 ? 'post' : 'posts'}

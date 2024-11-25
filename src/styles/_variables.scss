@@ -122,6 +122,26 @@
         background-color var(--transition-default),
         border-color var(--transition-default);
 
+    --control-danger-fgColor-rest: var(--color-error);
+    --control-danger-bgColor-rest: color-mix(
+        in srgb,
+        var(--color-error),
+        var(--bgColor-default) 90%
+    );
+    --control-danger-bgColor-hover: color-mix(
+        in srgb,
+        var(--color-error),
+        var(--bgColor-default) 85%
+    );
+    --control-danger-bgColor-active: color-mix(
+        in srgb,
+        var(--color-error),
+        var(--bgColor-default) 75%
+    );
+    --control-danger-borderColor-rest: var(--color-error);
+    --control-danger-borderColor-hover: var(--color-error);
+    --control-danger-borderColor-active: var(--color-error);
+
     --control-inverted-fgColor-rest: var(--bgColor-default);
     --control-inverted-fgColor-hover: var(--color-base-95);
     --control-inverted-bgColor-disabled: var(--color-base-40);

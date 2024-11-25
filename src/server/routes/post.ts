@@ -1,12 +1,14 @@
 import { procedure, protectedProcedure, router } from '@/trpc';
 import { z } from 'zod';
-import { posts, users } from '../db/schema';
+import { following, posts, users } from '../db/schema';
 import slugify from 'slug';
 import { and, desc, eq, like, lt, lte, or, sql } from 'drizzle-orm';
 import { type inferRouterOutputs, TRPCError } from '@trpc/server';
 import { stripHtml } from 'string-strip-html';
 import { postSchema } from '@/validation/user/post';
 import { modifySingleCharWords } from '@/lib/helpers';
+import { SOCKET_EV } from '@/lib/constants';
+import { getServerSocket } from '@/sockets/serverSocket';
 
 export type PostRouterOutput = inferRouterOutputs<typeof postRouter>;
 
@@ -144,7 +146,7 @@ export const postRouter = router({
                 const length = strippedContent.trim().split(/\s+/).length;
 
                 const readTime = length / READ_TIME;
-                const roundedReadTime = Math.min(1, Math.round(readTime));
+                const roundedReadTime = Math.max(1, Math.round(readTime));
 
                 await db.insert(posts).values({
                     content: input.content,
@@ -155,13 +157,23 @@ export const postRouter = router({
                     readTime: roundedReadTime,
                 });
 
-                // TODO: Emit socket event to followers
-                /* getServerSocket().emit(SOCKET_EV.NOTIFY, session.user.id); */
+                const followers = await db
+                    .select({
+                        id: following.followerId,
+                    })
+                    .from(following)
+                    .where(eq(following.followedId, session.user.id));
+
+                followers.forEach(follower => {
+                    getServerSocket().emit(SOCKET_EV.NOTIFY, follower.id);
+                });
 
                 return {
                     url: `/${slug}`,
                 };
-            } catch {
+            } catch (error) {
+                console.error('Error saving post', error);
+
                 throw new TRPCError({
                     message: 'Error saving post',
                     code: 'INTERNAL_SERVER_ERROR',

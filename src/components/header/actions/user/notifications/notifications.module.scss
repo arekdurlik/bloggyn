@@ -4,7 +4,6 @@
     50% {
         transform: translateX(14px) translateY(-14px) scale(1.2);
     }
-
 }
 
 @keyframes ring {
@@ -40,10 +39,11 @@
     transition: transform var(--transition-slow);
     scale: 0;
     box-shadow: var(--shadow-default);
+    user-select: none;
 }
 
 .visible {
-        scale: 1;
+    scale: 1;
 }
 
 .new-notification {

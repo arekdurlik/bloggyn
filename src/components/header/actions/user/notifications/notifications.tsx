@@ -12,6 +12,7 @@ import actionStyles from '../../actions.module.scss';
 export default function Notifications() {
     const [count, setCount] = useState(0);
     const countRef = useRef<HTMLDivElement | null>(null);
+    const newNotifications = useRef<string[]>([]);
 
     useUpdateEffect(() => {
         const classes = countRef.current?.classList;
@@ -32,8 +33,16 @@ export default function Notifications() {
 
         clientSocket.emit(SOCKET_EV.SUBSCRIBE);
 
-        clientSocket.on(SOCKET_EV.NOTIFICATION, () => {
+        clientSocket.on(SOCKET_EV.NOTIFICATION, data => {
+            if (typeof data === 'string' && newNotifications.current.includes(data)) {
+                return;
+            }
+
             setCount(v => v + 1);
+
+            if (typeof data === 'string') {
+                newNotifications.current.push(data);
+            }
         });
 
         const close = () => {
