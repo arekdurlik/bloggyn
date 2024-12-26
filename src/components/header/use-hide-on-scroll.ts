@@ -2,56 +2,49 @@ import { clamp } from '@/lib/helpers';
 import { usePathname } from 'next/navigation';
 import { type RefObject, useEffect, useRef } from 'react';
 
+const borderOffset = 1;
+
 export function useHideOnScroll(ref: RefObject<HTMLElement>) {
-    const previousScroll = useRef(0);
-    const currentPosition = useRef(0);
+    const previousScroll = useRef(Infinity);
     const pathname = usePathname();
-    const manual = useRef(false);
-
-    useEffect(() => {
-        function manualOff() {
-            manual.current = true;
-        }
-
-        document.addEventListener('wheel', manualOff);
-        return () => document.removeEventListener('wheel', manualOff);
-    }, []);
+    const offset = useRef(Infinity);
 
     useEffect(() => {
         if (ref.current) {
             ref.current.style.top = '0';
-            previousScroll.current = 0;
-            currentPosition.current = 0;
-            manual.current = false;
+            previousScroll.current = Infinity;
+            offset.current = ref.current.offsetHeight + borderOffset;
         }
     }, [pathname]);
 
     useEffect(() => {
         function handleScroll() {
-            if (!ref.current || !manual.current) return;
-
-            const borderOffset = 1;
-            const headerHeight = ref.current.offsetHeight + borderOffset;
             const scrollPosition = window.scrollY;
+
+            if (previousScroll.current === Infinity) {
+                previousScroll.current = scrollPosition;
+                return;
+            }
+
+            if (!ref.current) return;
+
+            const headerHeight = ref.current.offsetHeight + borderOffset;
 
             const difference = previousScroll.current - scrollPosition;
             previousScroll.current = scrollPosition;
 
-            if (difference > headerHeight || difference < -headerHeight) return;
-
-            const newPosition = currentPosition.current + difference;
-            const newOffset = clamp(newPosition, -headerHeight, 0);
-
-            ref.current.style.top = `${newOffset}px`;
-            currentPosition.current = newOffset;
-
-            if (newOffset === -headerHeight) {
-                ref.current.style.backdropFilter = 'none';
-            } else if (
-                ref.current.style.getPropertyValue('backdrop-filter') === 'none'
+            if (
+                (difference > 0 && offset.current === 0) ||
+                (difference < 0 && offset.current === -headerHeight)
             ) {
-                ref.current.style.backdropFilter = 'revert-layer';
+                return;
             }
+
+            const newOffset = offset.current + difference;
+            const newClampedOffset = clamp(newOffset, -headerHeight, 0);
+
+            ref.current.style.top = `${newClampedOffset}px`;
+            offset.current = newClampedOffset;
         }
 
         window.addEventListener('scroll', handleScroll);
