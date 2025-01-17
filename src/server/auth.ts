@@ -1,14 +1,14 @@
-import { DrizzleAdapter } from '@auth/drizzle-adapter';
-import { getServerSession, type NextAuthOptions } from 'next-auth';
-import { type Adapter } from 'next-auth/adapters';
+import { never } from '@/lib/helpers';
 import { db } from '@/server/db';
 import { accounts, users } from '@/server/db/schema';
-import GitHubProvider from 'next-auth/providers/github';
-import CredentialsProvider from 'next-auth/providers/credentials';
-import { and, eq, isNotNull } from 'drizzle-orm';
+import { DrizzleAdapter } from '@auth/drizzle-adapter';
 import bcrypt from 'bcrypt';
+import { and, eq, isNotNull } from 'drizzle-orm';
+import { getServerSession, type NextAuthOptions } from 'next-auth';
+import { type Adapter } from 'next-auth/adapters';
+import CredentialsProvider from 'next-auth/providers/credentials';
+import GitHubProvider from 'next-auth/providers/github';
 import { cookies } from 'next/headers';
-import { never } from '@/lib/helpers';
 
 export function compareAsync(password: string, hashedPassword: string) {
     return new Promise(function (resolve, reject) {
@@ -106,13 +106,13 @@ export const authOptions: NextAuthOptions = {
                                 credentials.email.toLowerCase()
                             ),
                             with: {
-                                accounts: true,
+                                account: true,
                             },
                         });
 
                         if (!user) return null;
 
-                        const account = user.accounts[0];
+                        const account = user.account[0];
 
                         if (!account) return null;
 

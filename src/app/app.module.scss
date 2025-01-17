@@ -26,6 +26,7 @@
     position: relative;
     max-width: min(100vw, var(--contentWidth));
     width: 100%;
+    min-height: 100%;
     margin-top: var(--headerHeight);
     margin-inline: var(--spacing-xxl);
 }

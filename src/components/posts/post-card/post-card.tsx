@@ -1,11 +1,11 @@
-import Image from 'next/image';
-import styles from './post-card.module.scss';
-import { Bookmark, Heart, MessageSquareMore } from 'lucide-react';
-import { type PostRouterOutput } from '@/server/routes/post';
-import UserDetails from '@/components/common/user-details-popover/user-details-popover';
-import Link from 'next/link';
 import { DropdownMenuTriggerLink } from '@/components/common/dropdown-menu/trigger';
+import UserDetails from '@/components/common/user-details-popover/user-details-popover';
 import { cn } from '@/lib/helpers';
+import { type PostRouterOutput } from '@/server/routes/post';
+import { Bookmark, Heart, MessageSquareMore } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import styles from './post-card.module.scss';
 
 export default function PostCard({
     post,
@@ -23,15 +23,13 @@ export default function PostCard({
                 <div className={styles.contentLeft}>
                     <div className={styles.author}>
                         <UserDetails username={post.username ?? ''}>
-                            <DropdownMenuTriggerLink
-                                href={`@${post.username}`}
-                            >
-                            <div
-                                className={cn(
-                                    styles.authorImage,
-                                    styles.linkOnTop
-                                )}
-                            >
+                            <DropdownMenuTriggerLink href={`@${post.username}`}>
+                                <div
+                                    className={cn(
+                                        styles.authorImage,
+                                        styles.linkOnTop
+                                    )}
+                                >
                                     <Image
                                         src={
                                             post.avatar ?? '/default-avatar.jpg'
@@ -39,9 +37,12 @@ export default function PostCard({
                                         fill
                                         alt="Author image"
                                     />
-                            </div>
-                                </DropdownMenuTriggerLink>
-                            <DropdownMenuTriggerLink href={`@${post.username}`} tabIndex={-1}>
+                                </div>
+                            </DropdownMenuTriggerLink>
+                            <DropdownMenuTriggerLink
+                                href={`@${post.username}`}
+                                tabIndex={-1}
+                            >
                                 <span
                                     className={cn(
                                         styles.authorName,

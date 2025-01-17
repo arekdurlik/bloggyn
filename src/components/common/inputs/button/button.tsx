@@ -1,7 +1,7 @@
-import { type CSSProperties, type ButtonHTMLAttributes } from 'react';
-import styles from './button.module.scss';
-import Link, { type LinkProps } from 'next/link';
 import { cn } from '@/lib/helpers';
+import Link, { type LinkProps } from 'next/link';
+import { type ButtonHTMLAttributes, type CSSProperties } from 'react';
+import styles from './button.module.scss';
 
 export type ButtonProps = {
     inverted?: boolean;
@@ -44,7 +44,7 @@ export function ButtonLink({
                 styles.button,
                 inverted && styles.inverted,
                 disabled && styles.disabled,
-                className,
+                className
             )}
             {...props}
         >

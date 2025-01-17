@@ -1,15 +1,15 @@
 'use client';
 
-import { useSearchState } from '@/stores/search';
-import styles from './search-results.module.scss';
-import { cn } from '@/lib/helpers';
-import { useEffect, useRef, useState } from 'react';
-import { useHeaderScrollVisibility } from '@/lib/hooks/use-header-scroll-visibility';
 import AnimatedUnmount from '@/components/common/animate-unmount/animate-unmount';
-import SearchBar from '../search-bar/search-bar';
-import { trpc } from '@/trpc/client';
+import { cn } from '@/lib/helpers';
 import { useDebounce } from '@/lib/hooks/use-debounce';
-import { usePathname} from 'next/navigation';
+import { useHeaderScrollVisibility } from '@/lib/hooks/use-header-scroll-visibility';
+import { useSearchState } from '@/stores/search';
+import { trpc } from '@/trpc/client';
+import { usePathname } from 'next/navigation';
+import { useRef, useState } from 'react';
+import SearchBar from '../search-bar/search-bar';
+import styles from './search-results.module.scss';
 
 export default function SearchResults() {
     const { active, query, api } = useSearchState();
@@ -29,10 +29,6 @@ export default function SearchResults() {
         0.5,
         active && debouncedQuery.length > 1
     );
-
-    useEffect(() => {
-        api.setQuery('');
-    }, [pathname]);
 
     return (
         <AnimatedUnmount
@@ -66,12 +62,14 @@ export default function SearchResults() {
                             aria-atomic="true"
                         >
                             {results.data?.people.length ? (
-                                <span>
+                                <div>
                                     <p>PEOPLE</p>
-                                    {results.data.people.map((peep, i) => (
-                                        <div key={i}>{peep.name}</div>
-                                    ))}
-                                </span>
+                                    <ul>
+                                        {results.data.people.map((peep, i) => (
+                                            <li key={i}>{peep.name}</li>
+                                        ))}
+                                    </ul>
+                                </div>
                             ) : null}
                         </div>
                     </AnimatedUnmount>

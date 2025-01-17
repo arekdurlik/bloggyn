@@ -1,16 +1,14 @@
+import Providers from '@/components/common/providers';
+import { Toasts } from '@/components/common/toasts/toasts';
+import { OVERLAY_ID } from '@/lib/constants';
+import { getServerAuthSession } from '@/server/auth';
 import '@/styles/main.scss';
-import styles from './app.module.scss';
 import { GeistSans } from 'geist/font/sans';
 import { type Metadata } from 'next';
-import Header from '../components/header';
-import SessionProvider from './session-provider';
-import { getServerAuthSession } from '@/server/auth';
-import Providers from '@/components/common/providers';
 import { cookies } from 'next/headers';
-import { OVERLAY_ID } from '@/lib/constants';
-import { cn } from '@/lib/helpers';
-import shared from '@/styles/shared.module.scss';
-import { Toasts } from '@/components/common/toasts/toasts';
+import Header from '../components/header';
+import styles from './app.module.scss';
+import SessionProvider from './session-provider';
 
 export const metadata: Metadata = {
     title: 'bloggyn',
@@ -25,20 +23,24 @@ export default async function RootLayout({
 
     return (
         <html lang="en" data-theme={theme} suppressHydrationWarning>
-                <body className={GeistSans.className}>
-                    <Toasts />
-                    <Providers>
-                        <div
-                            className={styles.wrapper}
-                        >
-                            <SessionProvider session={session}>
-                                <Header theme={theme} />
-                                <div className={styles.container}>{children}</div>
-                            </SessionProvider>
-                        </div>
-                        <div id={OVERLAY_ID} />
-                    </Providers>
-                </body>
+            <body className={GeistSans.className}>
+                <Toasts />
+                <Providers>
+                    <div className={styles.wrapper}>
+                        <SessionProvider session={session}>
+                            <Header theme={theme} />
+                            <div className={styles.container}>
+                                <main className={styles.main}>
+                                    <div className={styles.content}>
+                                        {children}
+                                    </div>
+                                </main>
+                            </div>
+                        </SessionProvider>
+                    </div>
+                    <div id={OVERLAY_ID} />
+                </Providers>
+            </body>
         </html>
     );
 }

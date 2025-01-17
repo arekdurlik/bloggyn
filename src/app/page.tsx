@@ -1,9 +1,6 @@
-import { HydrateClient } from '@/trpc/server';
-import styles from './app.module.scss';
 import Posts from '@/components/posts/posts';
-import { trpc } from '@/trpc/server';
 import { config } from '@/lib/config';
-import appStyles from './app.module.scss';
+import { HydrateClient, trpc } from '@/trpc/server';
 
 export default async function Home() {
     await trpc.getPosts.prefetchInfinite({
@@ -11,12 +8,8 @@ export default async function Home() {
     });
 
     return (
-        <main className={styles.main}>
-            <HydrateClient>
-                <div className={appStyles.content}>
-                    <Posts />
-                </div>
-            </HydrateClient>
-        </main>
+        <HydrateClient>
+            <Posts />
+        </HydrateClient>
     );
 }
