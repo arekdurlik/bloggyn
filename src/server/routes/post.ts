@@ -12,8 +12,9 @@ import { following, posts, users } from '../db/schema';
 
 export type PostRouterOutput = inferRouterOutputs<typeof postRouter>;
 
-const SUMMARY_STORE_LENGTH = 200;
-const SUMMARY_DISPLAY_LENGTH = 130;
+const SUMMARY_STORE_LENGTH = 300;
+const SUMMARY_IMAGE_LENGTH = 100;
+const SUMMARY_NO_IMAGE_LENGTH = 190;
 const READ_TIME = 225;
 
 export const postRouter = router({
@@ -83,8 +84,22 @@ export const postRouter = router({
                     .select({
                         id: posts.id,
                         title: posts.title,
+                        cardImage: posts.cardImage,
                         slug: posts.slug,
-                        summary: sql<string>`CONCAT(TRIM(SUBSTRING(${posts.summary}, 4, ${SUMMARY_DISPLAY_LENGTH})), '...')`,
+                        summary: sql<string>`
+            CONCAT(
+                TRIM(SUBSTRING(
+                    ${posts.summary} FROM 0 FOR 
+                    CASE 
+                        WHEN ${
+                            posts.cardImage
+                        } IS NULL THEN ${SUMMARY_NO_IMAGE_LENGTH}
+                        ELSE ${sql.raw(SUMMARY_IMAGE_LENGTH.toString())}
+                    END
+                )),
+                '...'
+            )
+        `,
                         createdAt: posts.createdAt,
                         createdAtFormatted: sql<string>`to_char(${posts.createdAt}, 'Mon DD')`,
                         readTime: posts.readTime,
@@ -139,8 +154,6 @@ export const postRouter = router({
             try {
                 let slug = slugify(input.title);
 
-                console.log('POSSSSSSSSSSSSST', input.content);
-
                 const sameTitle = await db
                     .select()
                     .from(posts)
@@ -155,11 +168,13 @@ export const postRouter = router({
                     input.title
                 );
 
+                const cardImage = getCardImage(input.content);
                 const summary = createPostSummary(input.content);
                 const readTime = calculateReadTime(input.content);
 
                 await db.insert(posts).values({
                     title: nonBreakingSingleCharTitle,
+                    cardImage,
                     slug,
                     summary,
                     readTime,
@@ -202,6 +217,18 @@ function extractFirstTextNode(content: JSONContent): string | undefined {
             const text = extractFirstTextNode(child);
             if (text !== undefined && text.length > 0) {
                 return text;
+            }
+        }
+    }
+
+    return undefined;
+}
+
+function getCardImage(content: JSONContent): string | undefined {
+    if (content.content) {
+        for (const child of content.content) {
+            if (child.type === 'imageComponent') {
+                return child.attrs?.src;
             }
         }
     }

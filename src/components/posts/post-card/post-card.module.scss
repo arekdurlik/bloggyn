@@ -40,13 +40,9 @@
 
     &-right {
         position: relative;
-        height: 125px;
 
         img {
             border-radius: var(--rounded-default);
-            object-fit: fill;
-            width: 100%;
-            height: 100%;
         }
 
         @include responsive('md') {

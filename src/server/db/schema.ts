@@ -140,6 +140,7 @@ export const verificationCodes = createTable(
 export const posts = createTable('post', {
     id: serial('id').primaryKey(),
     title: varchar('title', { length: 200 }).notNull(),
+    cardImage: varchar('card_image', { length: 255 }),
     slug: varchar('slug', { length: 230 }).notNull(),
     content: varchar('content').notNull(),
     summary: varchar('summary').notNull(),

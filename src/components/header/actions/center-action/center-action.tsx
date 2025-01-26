@@ -44,7 +44,6 @@ export default function CenterAction() {
             if (error instanceof ZodError) {
                 const path = error.errors[0]?.path[0];
 
-                console.log(error);
                 if (path === 'title') {
                     resolveToast(
                         toast,

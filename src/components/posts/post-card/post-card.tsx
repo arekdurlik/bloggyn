@@ -2,7 +2,8 @@ import { DropdownMenuTriggerLink } from '@/components/common/dropdown-menu/trigg
 import UserDetails from '@/components/common/user-details-popover/user-details-popover';
 import { cn } from '@/lib/helpers';
 import { type PostRouterOutput } from '@/server/routes/post';
-import { Bookmark, Heart, MessageSquareMore } from 'lucide-react';
+import { Heart, MessageSquareMore } from 'lucide-react';
+import { CldImage } from 'next-cloudinary';
 import Image from 'next/image';
 import Link from 'next/link';
 import styles from './post-card.module.scss';
@@ -57,14 +58,25 @@ export default function PostCard({
                     <h2 className={styles.title}>{post.title}</h2>
                     <span className={styles.summary}>{post.summary}</span>
                 </div>
-                <div className={styles.contentRight}>
-                    <Image
-                        src="https://picsum.photos/250/150"
-                        width={250}
-                        height={150}
-                        alt="Post image"
-                    />
-                </div>
+                {post.cardImage && (
+                    <div className={styles.contentRight}>
+                        <CldImage
+                            src={post.cardImage}
+                            alt={post.title}
+                            crop={{
+                                width: Math.ceil(222 * window.devicePixelRatio),
+                                height: Math.ceil(
+                                    125 * window.devicePixelRatio
+                                ),
+                                type: 'thumb',
+                                source: true,
+                            }}
+                            height={125}
+                            width={222}
+                            aspectRatio="16:9"
+                        />
+                    </div>
+                )}
             </div>
             <div className={styles.footer}>
                 <div className={styles.footerLeft}>
@@ -78,11 +90,6 @@ export default function PostCard({
                         <MessageSquareMore />
                         <span>20</span>
                     </div>
-                </div>
-                <div>
-                    <span className={styles.withIcon}>
-                        <Bookmark />
-                    </span>
                 </div>
             </div>
         </div>
