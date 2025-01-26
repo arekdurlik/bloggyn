@@ -1,11 +1,12 @@
+import { trpcVanilla } from '@/trpc/client';
+import { type Editor } from '@tiptap/react';
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
-import { type Editor } from '@tiptap/react';
-import { trpcVanilla } from '@/trpc/client';
 
 const initialData = {
     title: '',
     tags: [],
+    images: [],
 };
 
 type EditorStore = {
@@ -14,6 +15,7 @@ type EditorStore = {
     data: {
         title: string;
         tags: string[];
+        images: { id: string; url: string }[];
     };
     api: {
         publish: () => Promise<{ url: string }>;
@@ -22,6 +24,7 @@ type EditorStore = {
         setState: (state: EditorStore['data']) => void;
         setTitle: (title: string) => void;
         setTags: (tags: string[]) => void;
+        setImages: (images: { id: string; url: string }[]) => void;
         setSubmitting: (submitting: boolean) => void;
     };
 };
@@ -53,6 +56,9 @@ export const useEditorStore = create<EditorStore>()(
                 set(state => ({ ...state, data: { ...state.data, title } })),
             setTags: tags =>
                 set(state => ({ ...state, data: { ...state.data, tags } })),
+            setImages: images => {
+                set(state => ({ ...state, data: { ...state.data, images } }));
+            },
             setSubmitting: submitting =>
                 set(state => ({ ...state, submitting })),
         },

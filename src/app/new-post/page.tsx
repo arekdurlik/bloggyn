@@ -1,5 +1,5 @@
-import Editor from '../../components/editor';
 import appStyles from '../app.module.scss';
+import Editor from './_components';
 
 export default function Home() {
     return (

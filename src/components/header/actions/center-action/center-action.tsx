@@ -1,20 +1,20 @@
-import { usePathname, useRouter } from 'next/navigation';
-import styles from './center-action.module.scss';
-import { BookCheck } from 'lucide-react';
+import revalidate from '@/app/actions';
+import { useEditorStore } from '@/app/new-post/_components/store';
 import Button from '@/components/common/inputs/button';
-import { cn, sleep, withMinDuration } from '@/lib/helpers';
-import { Fragment } from 'react';
-import Search from './search';
-import { useEditorStore } from '@/components/editor/store';
 import {
     openToast,
     resolveToast,
     ToastType,
 } from '@/components/common/toasts/store';
-import { ZodError } from 'zod';
-import { postSchema, TITLE_MIN_LENGTH } from '@/validation/user/post';
+import { cn, sleep, withMinDuration } from '@/lib/helpers';
 import { trpc } from '@/trpc/client';
-import revalidate from '@/app/actions';
+import { postSchema, TITLE_MIN_LENGTH } from '@/validation/user/post';
+import { BookCheck } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
+import { Fragment } from 'react';
+import { ZodError } from 'zod';
+import styles from './center-action.module.scss';
+import Search from './search';
 
 export default function CenterAction() {
     const pathname = usePathname();
@@ -45,9 +45,13 @@ export default function CenterAction() {
                 const path = error.errors[0]?.path[0];
 
                 if (path === 'title') {
-                    resolveToast(toast, false, `The title has to be at least ${TITLE_MIN_LENGTH} characters long`);
+                    resolveToast(
+                        toast,
+                        false,
+                        `The title has to be at least ${TITLE_MIN_LENGTH} characters long`
+                    );
                 }
-                
+
                 if (path === 'content') {
                     resolveToast(toast, false, `Content is required`);
                 }

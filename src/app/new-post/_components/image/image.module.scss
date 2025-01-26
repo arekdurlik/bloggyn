@@ -1,0 +1,36 @@
+.image {
+    display: flex;
+    justify-content: center;
+    margin-bottom: var(--spacing-xxxl);
+
+    figcaption {
+        position: relative;
+        outline: none;
+        &:empty::before {
+            pointer-events: none;
+            content: attr(data-placeholder);
+            color: var(--fgColor-barely-visible);
+        }
+    }
+
+    figure {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: var(--spacing-xl);
+
+        img {
+            margin: auto;
+        }
+
+        figcaption {
+            color: var(--fgColor-subtle);
+            user-select: text;
+        }
+    }
+}
+
+.placeholder {
+    color: var(--fgColor-barely-visible);
+}
