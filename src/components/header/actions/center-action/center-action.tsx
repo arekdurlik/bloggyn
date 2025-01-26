@@ -8,7 +8,7 @@ import {
 } from '@/components/common/toasts/store';
 import { cn, sleep, withMinDuration } from '@/lib/helpers';
 import { trpc } from '@/trpc/client';
-import { postSchema, TITLE_MIN_LENGTH } from '@/validation/user/post';
+import { Content, postSchema, TITLE_MIN_LENGTH } from '@/validation/user/post';
 import { BookCheck } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { Fragment } from 'react';
@@ -26,8 +26,8 @@ export default function CenterAction() {
         const toast = openToast(ToastType.PENDING, 'Publishing...');
 
         try {
-            const content = editorState.editor?.getHTML();
-            const postData = { ...editorState.data, content: content! };
+            const content = editorState.editor?.getJSON() as Content;
+            const postData = { ...editorState.data, content };
             postSchema.parse(postData);
             editorState.api.setSubmitting(true);
 
@@ -44,6 +44,7 @@ export default function CenterAction() {
             if (error instanceof ZodError) {
                 const path = error.errors[0]?.path[0];
 
+                console.log(error);
                 if (path === 'title') {
                     resolveToast(
                         toast,

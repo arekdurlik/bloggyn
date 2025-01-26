@@ -1,8 +1,8 @@
 import { trpcVanilla } from '@/trpc/client';
+import { Content } from '@/validation/user/post';
 import { type Editor } from '@tiptap/react';
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
-
 const initialData = {
     title: '',
     tags: [],
@@ -37,7 +37,7 @@ export const useEditorStore = create<EditorStore>()(
         api: {
             publish: async () => {
                 set({ submitting: true });
-                const content = get().editor?.getHTML();
+                const content = get().editor?.getJSON() as Content;
 
                 if (!content) {
                     throw new Error();

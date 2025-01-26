@@ -1,18 +1,19 @@
+import { SOCKET_EV } from '@/lib/constants';
+import { modifySingleCharWords } from '@/lib/helpers';
+import { getServerSocket } from '@/sockets/serverSocket';
 import { procedure, protectedProcedure, router } from '@/trpc';
+import { postSchema } from '@/validation/user/post';
+import type { JSONContent } from '@tiptap/react';
+import { type inferRouterOutputs, TRPCError } from '@trpc/server';
+import { and, desc, eq, like, lt, lte, or, sql } from 'drizzle-orm';
+import slugify from 'slug';
 import { z } from 'zod';
 import { following, posts, users } from '../db/schema';
-import slugify from 'slug';
-import { and, desc, eq, like, lt, lte, or, sql } from 'drizzle-orm';
-import { type inferRouterOutputs, TRPCError } from '@trpc/server';
-import { stripHtml } from 'string-strip-html';
-import { postSchema } from '@/validation/user/post';
-import { modifySingleCharWords } from '@/lib/helpers';
-import { SOCKET_EV } from '@/lib/constants';
-import { getServerSocket } from '@/sockets/serverSocket';
 
 export type PostRouterOutput = inferRouterOutputs<typeof postRouter>;
 
-const SUMMARY_LENGTH = 130;
+const SUMMARY_STORE_LENGTH = 200;
+const SUMMARY_DISPLAY_LENGTH = 130;
 const READ_TIME = 225;
 
 export const postRouter = router({
@@ -42,8 +43,18 @@ export const postRouter = router({
                     .where(eq(posts.slug, input.slug))
                     .limit(1);
 
-                return post[0];
-            } catch {
+                if (post.length === 0) {
+                    throw new TRPCError({
+                        message: 'Post not found',
+                        code: 'NOT_FOUND',
+                    });
+                } else if (post[0]) {
+                    return {
+                        ...post[0],
+                        content: JSON.parse(post[0].content) as JSONContent,
+                    };
+                }
+            } catch (error) {
                 throw new TRPCError({
                     message: 'Error retrieving post',
                     code: 'INTERNAL_SERVER_ERROR',
@@ -73,7 +84,7 @@ export const postRouter = router({
                         id: posts.id,
                         title: posts.title,
                         slug: posts.slug,
-                        summary: sql<string>`CONCAT(TRIM(SUBSTRING(${posts.content}, 4, ${SUMMARY_LENGTH})), '...')`,
+                        summary: sql<string>`CONCAT(TRIM(SUBSTRING(${posts.summary}, 4, ${SUMMARY_DISPLAY_LENGTH})), '...')`,
                         createdAt: posts.createdAt,
                         createdAtFormatted: sql<string>`to_char(${posts.createdAt}, 'Mon DD')`,
                         readTime: posts.readTime,
@@ -128,6 +139,8 @@ export const postRouter = router({
             try {
                 let slug = slugify(input.title);
 
+                console.log('POSSSSSSSSSSSSST', input.content);
+
                 const sameTitle = await db
                     .select()
                     .from(posts)
@@ -141,20 +154,17 @@ export const postRouter = router({
                 const nonBreakingSingleCharTitle = modifySingleCharWords(
                     input.title
                 );
-                const strippedContent = stripHtml(input.content).result;
-                const summary = strippedContent.slice(0, 200);
-                const length = strippedContent.trim().split(/\s+/).length;
 
-                const readTime = length / READ_TIME;
-                const roundedReadTime = Math.max(1, Math.round(readTime));
+                const summary = createPostSummary(input.content);
+                const readTime = calculateReadTime(input.content);
 
                 await db.insert(posts).values({
-                    content: input.content,
-                    summary,
-                    createdById: session.user.id,
-                    slug,
                     title: nonBreakingSingleCharTitle,
-                    readTime: roundedReadTime,
+                    slug,
+                    summary,
+                    readTime,
+                    content: JSON.stringify(input.content),
+                    createdById: session.user.id,
                 });
 
                 const followers = await db
@@ -181,3 +191,55 @@ export const postRouter = router({
             }
         }),
 });
+
+function extractFirstTextNode(content: JSONContent): string | undefined {
+    if (content.text !== undefined) {
+        return content.text;
+    }
+
+    if (content.content) {
+        for (const child of content.content) {
+            const text = extractFirstTextNode(child);
+            if (text !== undefined && text.length > 0) {
+                return text;
+            }
+        }
+    }
+
+    return undefined;
+}
+
+function createPostSummary(content: JSONContent): string {
+    const firstText = extractFirstTextNode(content);
+    if (firstText) {
+        const summary = firstText.slice(0, SUMMARY_STORE_LENGTH);
+        return summary;
+    }
+
+    return '';
+}
+
+function extractAllText(content: JSONContent): string {
+    let fullText = '';
+
+    if (content.text) {
+        fullText += content.text;
+    }
+
+    if (content.content) {
+        for (const child of content.content) {
+            fullText += extractAllText(child);
+        }
+    }
+
+    return fullText;
+}
+
+function calculateReadTime(content: JSONContent): number {
+    const allText = extractAllText(content);
+
+    const length = allText.split(/\s+/).length;
+    const readTime = length / READ_TIME;
+    const roundedReadTime = Math.max(1, Math.round(readTime));
+    return roundedReadTime;
+}

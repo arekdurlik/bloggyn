@@ -37,18 +37,19 @@ export function Image(props: NodeViewProps) {
         );
     }, []);
 
-    useOutsideClick(ref, () => setActive(false));
+    useOutsideClick(ref, () => setActive(false), { onMouseDown: true });
 
     return (
-        <NodeViewWrapper>
-            <div
-                ref={ref}
-                className={styles.image}
-                draggable={true}
-                onClick={() => setActive(true)}
-            >
+        <NodeViewWrapper onClick={() => setActive(true)} ref={ref}>
+            <div className={styles.image} draggable={true}>
                 <figure>
                     <img
+                        style={{
+                            outline: active
+                                ? '3px solid var(--color-selection)'
+                                : '',
+                            outlineOffset: -3,
+                        }}
                         width={props.node.attrs.width}
                         height={props.node.attrs.height}
                         draggable={true}

@@ -2,18 +2,12 @@
     display: flex;
     justify-content: center;
     margin-bottom: var(--spacing-xxxl);
-
-    figcaption {
-        position: relative;
-        outline: none;
-        &:empty::before {
-            pointer-events: none;
-            content: attr(data-placeholder);
-            color: var(--fgColor-barely-visible);
-        }
-    }
+    max-width: 100%;
+    position: relative;
 
     figure {
+        max-width: 100%;
+
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -21,12 +15,22 @@
         gap: var(--spacing-xl);
 
         img {
-            margin: auto;
+            max-width: 100%;
+            height: auto;
         }
 
         figcaption {
-            color: var(--fgColor-subtle);
+            position: relative;
+            outline: none;
             user-select: text;
+            word-wrap: break-word;
+            font-size: var(--text-caption);
+
+            &:empty::before {
+                pointer-events: none;
+                content: attr(data-placeholder);
+                color: var(--fgColor-subtle);
+            }
         }
     }
 }

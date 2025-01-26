@@ -5,6 +5,7 @@ const DEFAULT_OPTIONS = {
     cancelOnDrag: false,
     dragCancelThreshold: 32,
     enabled: true,
+    onMouseDown: false,
 };
 export function useOutsideClick(
     ref: MutableRefObject<HTMLElement | null>,
@@ -13,6 +14,7 @@ export function useOutsideClick(
         cancelOnDrag?: boolean;
         dragCancelThreshold?: number;
         enabled?: boolean;
+        onMouseDown?: boolean;
     }
 ) {
     const opts = { ...DEFAULT_OPTIONS, ...options };
@@ -49,10 +51,15 @@ export function useOutsideClick(
             };
         };
 
-        document.addEventListener('click', handleClick, true);
+        if (opts.onMouseDown) {
+            document.addEventListener('mousedown', handleClick, true);
+        } else {
+            document.addEventListener('click', handleClick, true);
+        }
         opts.cancelOnDrag &&
             document.addEventListener('mousedown', handleMouseDown, true);
         return () => {
+            document.removeEventListener('mousedown', handleClick, true);
             document.removeEventListener('click', handleClick, true);
             document.removeEventListener('mousedown', handleMouseDown, true);
         };
