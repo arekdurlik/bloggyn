@@ -49,6 +49,7 @@ export function ImageUpload() {
                                 `
                                 <image-component 
                                     count="2" 
+                                    publicId=""
                                     src="${result}" 
                                     width="${width}"
                                     height="${height}"

@@ -25,5 +25,6 @@ const contentSchema: z.ZodType<Content> = baseContentSchema.extend({
 export const postSchema = z.object({
     title: z.string().min(TITLE_MIN_LENGTH),
     content: contentSchema,
+    imageIds: z.array(z.string()).optional(),
     /* tags: z.array(z.string()).min(1), */
 });

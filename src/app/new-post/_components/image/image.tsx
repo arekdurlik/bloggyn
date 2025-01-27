@@ -29,6 +29,7 @@ export function Image(props: NodeViewProps) {
                     setSrc(res.url);
                     api.setImages([...data.images, res]);
                     props.updateAttributes({
+                        publicId: res.id,
                         src: res.url,
                         uploaded: true,
                     });

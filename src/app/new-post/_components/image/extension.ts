@@ -9,6 +9,7 @@ export default Node.create({
     draggable: true,
     addAttributes() {
         return {
+            publicId: '',
             src: '',
             caption: '',
             uploaded: false,

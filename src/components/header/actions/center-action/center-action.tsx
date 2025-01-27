@@ -26,8 +26,13 @@ export default function CenterAction() {
         const toast = openToast(ToastType.PENDING, 'Publishing...');
 
         try {
+            const images = editorState.data.images;
             const content = editorState.editor?.getJSON() as Content;
-            const postData = { ...editorState.data, content };
+            const postData = {
+                ...editorState.data,
+                content,
+                imageIds: images.map(image => image.id),
+            };
             postSchema.parse(postData);
             editorState.api.setSubmitting(true);
 

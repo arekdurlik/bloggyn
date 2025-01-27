@@ -154,11 +154,28 @@ export const posts = createTable('post', {
     })
         .default(sql`CURRENT_TIMESTAMP`)
         .notNull(),
-    updatedAt: timestamp('updated_at', { withTimezone: true }).$onUpdate(
-        () => new Date()
-    ),
 });
 
 export const postsRelations = relations(posts, ({ one }) => ({
     user: one(users, { fields: [posts.createdById], references: [users.id] }),
 }));
+
+export const postImages = createTable(
+    'post_image',
+    {
+        image_id: varchar('image_id', { length: 255 }).notNull(),
+        post_id: integer('post_id').notNull(),
+
+        createdAt: timestamp('created_at', {
+            mode: 'string',
+            withTimezone: true,
+        })
+            .default(sql`CURRENT_TIMESTAMP`)
+            .notNull(),
+    },
+    postImage => ({
+        compoundKey: primaryKey({
+            columns: [postImage.image_id, postImage.post_id],
+        }),
+    })
+);

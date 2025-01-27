@@ -8,7 +8,7 @@ import { type inferRouterOutputs, TRPCError } from '@trpc/server';
 import { and, desc, eq, like, lt, lte, or, sql } from 'drizzle-orm';
 import slugify from 'slug';
 import { z } from 'zod';
-import { following, posts, users } from '../db/schema';
+import { following, postImages, posts, users } from '../db/schema';
 
 export type PostRouterOutput = inferRouterOutputs<typeof postRouter>;
 
@@ -172,16 +172,32 @@ export const postRouter = router({
                 const summary = createPostSummary(input.content);
                 const readTime = calculateReadTime(input.content);
 
-                await db.insert(posts).values({
-                    title: nonBreakingSingleCharTitle,
-                    cardImage,
-                    slug,
-                    summary,
-                    readTime,
-                    content: JSON.stringify(input.content),
-                    createdById: session.user.id,
-                });
+                // store post
+                const res = await db
+                    .insert(posts)
+                    .values({
+                        title: nonBreakingSingleCharTitle,
+                        cardImage,
+                        slug,
+                        summary,
+                        readTime,
+                        content: JSON.stringify(input.content),
+                        createdById: session.user.id,
+                    })
+                    .returning();
 
+                // store image ids
+                const post = res[0];
+                if (post && input.imageIds && input.imageIds.length > 0) {
+                    await db.insert(postImages).values(
+                        input.imageIds.map(id => ({
+                            post_id: post.id,
+                            image_id: id,
+                        }))
+                    );
+                }
+
+                // notify followers
                 const followers = await db
                     .select({
                         id: following.followerId,
