@@ -45,6 +45,6 @@ export const imageRouter = router({
             })
         )
         .mutation(async ({ input }) => {
-            await cloudinary.uploader.destroy(input.id, (error, result) => {});
+            await cloudinary.uploader.destroy(input.id);
         }),
 });

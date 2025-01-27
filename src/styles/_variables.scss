@@ -47,7 +47,7 @@
     --text-default: 1rem;
     --text-logo: 2.5rem;
 
-    --outline-color: black;
+    --outline-color: var(--color-selection);
     --outline: 2px solid var(--outline-color);
 
     // COLORS
@@ -92,15 +92,15 @@
     --fgColor-heading: var(--color-base-10);
     --fgColor-default: var(--color-base-20);
     --fgColor-quote: var(--color-base-40);
-    --fgColor-subtle: var(--color-base-60);
-    --fgColor-barely-visible: var(--color-base-80);
+    --fgColor-subtle: var(--color-base-50);
+    --fgColor-barely-visible: var(--color-base-70);
 
     --header-bgColor: var(--bgColor-default);
     --border: var(--color-base-85);
     --progressBarColor: var(--color-base-70);
 
     // THEME SWITCHER
-    --color-navy: hsl(var(--navy-hue), var(--navy-sat), 20%);
+    --color-navy: hsl(var(--navy-hue), var(--navy-sat), 15%);
     --color-light: white;
     --color-dark: black;
     --color-sepia: hsl(var(--sepia-hue), var(--sepia-sat), 78%);

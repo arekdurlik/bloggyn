@@ -13,6 +13,17 @@ export default function PostCard({
 }: {
     post: PostRouterOutput['getPosts']['items'][number];
 }) {
+    const width = 222;
+    const height = 125;
+
+    const widthMult = Math.ceil(
+        width * (typeof window !== 'undefined' ? window.devicePixelRatio : 1)
+    );
+
+    const heightMult = Math.ceil(
+        height * (typeof window !== 'undefined' ? window.devicePixelRatio : 1)
+    );
+
     return (
         <div className={styles.container}>
             <Link
@@ -24,7 +35,10 @@ export default function PostCard({
                 <div className={styles.contentLeft}>
                     <div className={styles.author}>
                         <UserDetails username={post.username ?? ''}>
-                            <DropdownMenuTriggerLink href={`@${post.username}`}>
+                            <DropdownMenuTriggerLink
+                                href={`@${post.username}`}
+                                className={styles.avatarLink}
+                            >
                                 <div
                                     className={cn(
                                         styles.authorImage,
@@ -64,10 +78,8 @@ export default function PostCard({
                             src={post.cardImage}
                             alt={post.title}
                             crop={{
-                                width: Math.ceil(222 * window.devicePixelRatio),
-                                height: Math.ceil(
-                                    125 * window.devicePixelRatio
-                                ),
+                                width: widthMult,
+                                height: heightMult,
                                 type: 'thumb',
                                 source: true,
                             }}

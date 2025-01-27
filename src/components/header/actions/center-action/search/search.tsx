@@ -1,11 +1,11 @@
-import { SearchIcon } from 'lucide-react';
-import styles from './search.module.scss';
 import Button from '@/components/common/inputs/button';
+import { useOutsideClick } from '@/lib/hooks/use-outside-click';
 import { useSearchState } from '@/stores/search';
+import { SearchIcon } from 'lucide-react';
+import { Fragment, useRef } from 'react';
 import SearchBar from './search-bar';
 import SearchResults from './search-results/search-results';
-import { Fragment, useRef } from 'react';
-import { useOutsideClick } from '@/lib/hooks/use-outside-click';
+import styles from './search.module.scss';
 
 export default function Search() {
     const wrapper = useRef<HTMLDivElement>(null!);

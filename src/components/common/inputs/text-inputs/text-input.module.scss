@@ -26,8 +26,9 @@
     border: 1px solid var(--control-default-borderColor-rest);
     padding-inline: var(--spacing-xl);
     outline-color: transparent;
-    transition: outline-color var(--transition-default),
-        border-color var(--transition-default),
+    outline-offset: -1px;
+
+    transition: border-color var(--transition-default),
         background-color var(--transition-default);
     box-shadow: inset var(--shadow-barely-visible);
 
@@ -42,7 +43,6 @@
 
     &.focused {
         outline: var(--outline);
-        outline-offset: -1px;
 
         svg {
             transition: none;

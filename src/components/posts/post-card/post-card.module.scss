@@ -26,6 +26,13 @@
     }
 }
 
+.avatar-link {
+    &:focus-visible {
+        img {
+            outline: var(--outline);
+        }
+    }
+}
 .content {
     flex: 1;
     display: flex;
@@ -66,6 +73,7 @@
         }
         &:focus-within {
             outline: var(--outline);
+            scale: 2;
         }
     }
 

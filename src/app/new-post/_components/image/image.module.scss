@@ -6,30 +6,37 @@
     position: relative;
 
     figure {
-        max-width: 100%;
-
+        width: 100%;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: var(--spacing-xl);
+        gap: var(--spacing-default);
 
         img {
             max-width: 100%;
             height: auto;
+            outline-offset: -2px;
+
+            &.active {
+                outline: 2px solid var(--color-selection);
+            }
         }
 
         figcaption {
+            width: 100%;
+            text-align: center;
+            display: block;
             position: relative;
             outline: none;
-            user-select: text;
             word-wrap: break-word;
             font-size: var(--text-caption);
+            padding-block: var(--spacing-large);
 
             &:empty::before {
                 pointer-events: none;
                 content: attr(data-placeholder);
-                color: var(--fgColor-subtle);
+                color: var(--fgColor-barely-visible);
             }
         }
     }

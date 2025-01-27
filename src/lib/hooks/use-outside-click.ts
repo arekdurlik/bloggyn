@@ -23,7 +23,7 @@ export function useOutsideClick(
     useEffect(() => {
         if (!opts.enabled) return;
 
-        const handleClick = function (event: MouseEvent) {
+        function handleClick(event: MouseEvent) {
             if (ref.current) {
                 if (!ref.current.contains(event.target as Node)) {
                     if (opts.cancelOnDrag) {
@@ -42,14 +42,14 @@ export function useOutsideClick(
                     callback(event);
                 }
             }
-        };
+        }
 
-        const handleMouseDown = (event: MouseEvent) => {
+        function handleMouseDown(event: MouseEvent) {
             mouseDown.current = {
                 x: event.clientX,
                 y: event.clientY,
             };
-        };
+        }
 
         if (opts.onMouseDown) {
             document.addEventListener('mousedown', handleClick, true);

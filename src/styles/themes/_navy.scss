@@ -1,8 +1,8 @@
 [data-theme='navy'] {
     color-scheme: light dark;
-    --outline-color: white;
 
     --color-base-10: hsl(var(--navy-hue), var(--navy-sat), 10%);
+    --color-base-15: hsl(var(--navy-hue), var(--navy-sat), 15%);
     --color-base-20: hsl(var(--navy-hue), var(--navy-sat), 20%);
     --color-base-25: hsl(var(--navy-hue), var(--navy-sat), 25%);
     --color-base-30: hsl(var(--navy-hue), var(--navy-sat), 30%);
@@ -20,8 +20,8 @@
 
     --color-github: #fff;
 
-    --bgColor-default: var(--color-base-20);
-    --header-bgColor: var(--color-base-20);
+    --bgColor-default: var(--color-base-15);
+    --header-bgColor: var(--color-base-15);
 
     --fgColor-heading: var(--color-base-85);
     --fgColor-default: hsl(var(--navy-hue), calc(var(--navy-sat) - 10%), 80%);
@@ -31,11 +31,11 @@
         calc(var(--navy-sat) - 5%),
         30%
     );
-    --border: hsl(var(--navy-hue), calc(var(--navy-sat) - 5%), 27%);
+    --border: hsl(var(--navy-hue), calc(var(--navy-sat) - 5%), 22%);
 
-    --control-default-bgColor-hover: var(--color-base-25);
-    --control-default-bgColor-active: var(--color-base-30);
-    --control-default-borderColor-hover: var(--color-base-30);
+    --control-default-bgColor-hover: var(--color-base-20);
+    --control-default-bgColor-active: var(--color-base-25);
+    --control-default-borderColor-hover: var(--color-base-25);
     --control-default-borderColor-active: var(--fgColor-subtle);
 
     --control-inverted-fgColor-rest: var(--bgColor-default);

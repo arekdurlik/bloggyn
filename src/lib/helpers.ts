@@ -66,3 +66,11 @@ export function never(_: unknown) {
 export function modifySingleCharWords(str: string) {
     return str.replace(/ ([a-zA-Z]) /g, ' $1' + '\u00A0');
 }
+
+export function selectElementContents(element: HTMLElement) {
+    const range = document.createRange();
+    range.selectNodeContents(element);
+    const selection = window.getSelection();
+    selection?.removeAllRanges();
+    selection?.addRange(range);
+}

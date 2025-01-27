@@ -224,7 +224,7 @@ export const postRouter = router({
 });
 
 function extractFirstTextNode(content: JSONContent): string | undefined {
-    if (content.text !== undefined) {
+    if (content.text !== undefined && content.text.length > 0) {
         return content.text;
     }
 

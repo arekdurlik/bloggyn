@@ -1,6 +1,7 @@
 export declare const author: string;
 export declare const authorImage: string;
 export declare const authorName: string;
+export declare const avatarLink: string;
 export declare const container: string;
 export declare const content: string;
 export declare const contentLeft: string;

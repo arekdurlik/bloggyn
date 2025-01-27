@@ -13,7 +13,6 @@
     textarea,
     h1 {
         font-weight: 800;
-        color: var(--fgColor-heading);
     }
 
     p,
@@ -37,7 +36,8 @@
     blockquote,
     h1,
     h2,
-    textarea {
+    textarea,
+    .node-imageComponent {
         &:not(:last-child) {
             margin-bottom: var(--spacing-xxxl);
         }
@@ -68,7 +68,7 @@
     }
 
     font-variant-numeric: oldstyle-nums !important;
-    p.is-editor-empty:first-child::before {
+    p:first-child::before {
         content: attr(data-placeholder);
         color: var(--fgColor-barely-visible);
         float: left;

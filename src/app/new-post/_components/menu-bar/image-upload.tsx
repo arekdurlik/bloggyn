@@ -56,8 +56,6 @@ export function ImageUpload() {
                                     uploaded="false"
                                 ></image-component>`
                             );
-
-                            console.log(JSON.stringify(editor.getJSON()));
                         };
                     } catch (error) {
                         if (error instanceof Error) {
@@ -72,21 +70,29 @@ export function ImageUpload() {
         }
 
         if ('showOpenFilePicker' in window) {
-            const [fileHandle] = await window.showOpenFilePicker({
-                types: [
-                    {
-                        accept: {
-                            'image/*': ['.png', '.webp', '.jpeg', '.jpg'],
+            try {
+                const [fileHandle] = await window.showOpenFilePicker({
+                    types: [
+                        {
+                            accept: {
+                                'image/*': ['.png', '.webp', '.jpeg', '.jpg'],
+                            },
                         },
-                    },
-                ],
-                excludeAcceptAllOption: true,
-                multiple: false,
-            });
+                    ],
+                    excludeAcceptAllOption: true,
+                    multiple: false,
+                });
 
-            const file = await fileHandle.getFile();
+                const file = await fileHandle.getFile();
 
-            readFile(file);
+                readFile(file);
+            } catch (error) {
+                if (error instanceof Error) {
+                    if (error.name !== 'AbortError') {
+                        throw error;
+                    }
+                }
+            }
         } else {
             const input = document.createElement('input');
             input.type = 'file';
@@ -101,8 +107,8 @@ export function ImageUpload() {
     }
 
     return (
-        <button>
-            <ImageIcon onClick={handleUpload} />
+        <button onClick={handleUpload}>
+            <ImageIcon />
         </button>
     );
 }

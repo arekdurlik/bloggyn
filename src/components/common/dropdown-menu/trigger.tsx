@@ -1,6 +1,6 @@
+import Link, { type LinkProps } from 'next/link';
 import { useEffect, useRef } from 'react';
 import { useDropdownContext } from './dropdown-menu';
-import Link, { LinkProps } from 'next/link';
 
 type Props = {
     children: React.ReactNode;
@@ -38,8 +38,6 @@ export function DropdownMenuTrigger({ children, className }: Props) {
 
 export function DropdownMenuTriggerLink({
     children,
-    className,
-    tabIndex,
     ...props
 }: Props & LinkProps) {
     const [{ hoverMode }, api] = useDropdownContext();
@@ -62,8 +60,6 @@ export function DropdownMenuTriggerLink({
                     onMouseEnter: api.handleMouseEnter,
                     onMouseLeave: api.handleMouseLeave,
                 })}
-                className={className}
-                tabIndex={tabIndex}
                 {...props}
             >
                 {children}

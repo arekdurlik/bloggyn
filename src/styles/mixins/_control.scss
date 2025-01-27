@@ -1,11 +1,26 @@
 @mixin control {
+    --_fgColor-rest: var(--control-default-fgColor-rest);
+    --_fgColor-hover: var(--control-default-fgColor-hover);
+    --_fgColor-active: var(--control-default-fgColor-active);
+    --_fgColor-disabled: var(--fgColor-subtle);
+
+    --_bgColor-rest: var(--control-default-bgColor-rest);
+    --_bgColor-hover: var(--control-default-bgColor-hover);
+    --_bgColor-active: var(--control-default-bgColor-active);
+
+    --_borderColor-rest: var(--control-default-borderColor-rest);
+    --_borderColor-hover: var(--control-default-borderColor-hover);
+    --_borderColor-active: var(--control-default-borderColor-active);
     cursor: pointer;
     font-weight: 500;
 
-    background-color: var(--control-default-bgColor-rest);
-    color: var(--control-default-fgColor-rest);
-    stroke: var(--control-default-fgColor-rest);
-    border-color: var(--control-default-borderColor-rest);
+    background-color: var(--_bgColor-rest);
+    color: var(--_fgColor-rest);
+    border-color: var(--_borderColor-rest);
+
+    span {
+        color: var(--_fgColor-rest);
+    }
 
     svg {
         width: 16px;
@@ -13,41 +28,38 @@
     }
 
     &:hover {
-        background-color: var(--control-default-bgColor-hover);
-        stroke: var(--control-default-fgColor-hover);
-        border-color: var(--control-default-borderColor-hover);
+        background-color: var(--_bgColor-hover);
+        stroke: var(--_fgColor-hover);
+        border-color: var(--_borderColor-hover);
     }
 
     &:active {
-        background-color: var(--control-default-bgColor-active);
+        background-color: var(--_bgColor-active);
     }
 
     &:disabled {
         cursor: default;
-        background-color: var(--control-default-bgColor-hover);
-        color: var(--fgColor-subtle);
+        background-color: var(--_bgColor-hover);
+        color: var(--_fgColor-disabled);
     }
 }
 
 @mixin control-inverted {
     @include control;
 
-    background-color: var(--control-inverted-bgColor-rest);
-    color: var(--control-inverted-fgColor-rest);
-    stroke: var(--control-inverted-fgColor-rest);
-    border: none;
+    &:not(:focus-visible) {
+        --_fgColor-rest: var(--control-inverted-fgColor-rest);
+        --_fgColor-hover: var(--control-inverted-fgColor-hover);
+        --_fgColor-active: var(--control-inverted-fgColor-active);
+        --_fgColor-disabled: var(--fgColor-barely-visible);
 
-    &:hover {
-        background-color: var(--control-inverted-bgColor-hover);
-        stroke: var(--control-inverted-fgColor-hover);
-    }
+        --_bgColor-rest: var(--control-inverted-bgColor-rest);
+        --_bgColor-hover: var(--control-inverted-bgColor-hover);
+        --_bgColor-active: var(--control-inverted-bgColor-active);
+        --_bgColor-disabled: var(--color-base-50);
 
-    &:active {
-        background-color: var(--control-inverted-bgColor-active);
-    }
-
-    &:disabled {
-        background-color: var(--color-base-50);
-        color: var(--fgColor-barely-visible);
+        --_borderColor-rest: var(--control-inverted-borderColor-rest);
+        --_borderColor-hover: var(--control-inverted-borderColor-hover);
+        --_borderColor-active: var(--control-inverted-borderColor-active);
     }
 }
