@@ -19,24 +19,29 @@ export const imageRouter = router({
             })
         )
         .mutation(async ({ input }) => {
-            let url = '';
-            let id = '';
+            let result = {
+                url: '',
+                id: '',
+                width: 0,
+                height: 0,
+            };
 
             await cloudinary.uploader.unsigned_upload(
                 input.src,
                 process.env.CLOUDINARY_POST_IMAGES_PRESET!,
-                (error, result) => {
-                    if (result) {
-                        url = result.secure_url;
-                        id = result.public_id;
+                (err, res) => {
+                    if (res) {
+                        result = {
+                            url: res.secure_url,
+                            id: res.public_id,
+                            width: res.width,
+                            height: res.height,
+                        };
                     }
                 }
             );
 
-            return {
-                url,
-                id,
-            };
+            return result;
         }),
     deleteImage: protectedProcedure
         .input(

@@ -1,3 +1,4 @@
+import { OVERLAY_ID } from '@/lib/constants';
 import {
     createContext,
     type ReactNode,
@@ -10,15 +11,19 @@ import { createPortal } from 'react-dom';
 const PortalContext = createContext(false);
 export const useIsInPortal = () => useContext(PortalContext);
 
-export default function DropdownMenuPortal({
+export default function Portal({
     children,
+    selector = `#${OVERLAY_ID}`,
+    noFallback = false,
 }: {
     children: ReactNode;
+    selector?: string;
+    noFallback?: boolean;
 }) {
     const [overlay, setOverlay] = useState<HTMLElement | null>(null);
 
     useEffect(() => {
-        const elem = document.querySelector('#overlay');
+        const elem = document.querySelector(selector);
 
         if (elem && elem instanceof HTMLElement) {
             setOverlay(elem);
@@ -34,7 +39,7 @@ export default function DropdownMenuPortal({
         );
     }
 
-    return (
+    return noFallback ? null : (
         <PortalContext.Provider value={false}>
             {children}
         </PortalContext.Provider>

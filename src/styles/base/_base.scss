@@ -15,15 +15,24 @@ body {
     transition: background-color var(--transition-theme);
 }
 
-#overlay {
+#overlay,
+#img-overlay {
     position: absolute;
     inset: 0;
-    z-index: 3;
+
     pointer-events: none;
 
     & > * {
         pointer-events: initial;
     }
+}
+
+#overlay {
+    z-index: 3;
+}
+
+#img-overlay {
+    z-index: 4;
 }
 
 * {

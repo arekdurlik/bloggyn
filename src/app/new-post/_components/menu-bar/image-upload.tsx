@@ -50,6 +50,7 @@ export function ImageUpload() {
                                 <image-component 
                                     count="2" 
                                     publicId=""
+                                    caption=""
                                     src="${result}" 
                                     width="${width}"
                                     height="${height}"

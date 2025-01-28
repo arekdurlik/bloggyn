@@ -2,9 +2,24 @@ import PostInfo from '@/components/post/post-info/post-info';
 import { trpc } from '@/trpc/server';
 import type { JSONContent } from '@tiptap/react';
 import { Fragment } from 'react';
+import { ImageComponentAttributes } from '../new-post/_components/image/extension';
 import imageStyles from '../new-post/_components/image/image.module.scss';
 import appStyles from './../app.module.scss';
-import { CldImage } from './cld-image';
+import { Image } from './_components/image/image';
+
+function isImageComponentAttributes(
+    attrs: Record<string, any>
+): attrs is ImageComponentAttributes {
+    return (
+        typeof attrs.publicId === 'string' &&
+        typeof attrs.src === 'string' &&
+        typeof attrs.uploadedWidth === 'number' &&
+        typeof attrs.uploadedHeight === 'number' &&
+        typeof attrs.uploaded === 'boolean' &&
+        typeof attrs.width === 'number' &&
+        typeof attrs.height === 'number'
+    );
+}
 
 const renderContent = (jsonContent: JSONContent): React.ReactNode => {
     switch (jsonContent.type) {
@@ -19,14 +34,14 @@ const renderContent = (jsonContent: JSONContent): React.ReactNode => {
         case 'imageComponent':
             return (
                 <div className={imageStyles.image}>
-                    <figure>
-                        <CldImage {...jsonContent.attrs} />
-                        {jsonContent.attrs!.caption && (
-                            <figcaption>
-                                {jsonContent.attrs!.caption}
-                            </figcaption>
-                        )}
-                    </figure>
+                    {jsonContent.attrs && (
+                        <figure>
+                            {isImageComponentAttributes(jsonContent.attrs) && (
+                                <Image {...jsonContent.attrs} />
+                            )}
+                            <figcaption>{jsonContent.attrs.caption}</figcaption>
+                        </figure>
+                    )}
                 </div>
             );
 

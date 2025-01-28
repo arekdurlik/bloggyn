@@ -2,6 +2,17 @@ import { mergeAttributes, Node } from '@tiptap/core';
 import { ReactNodeViewRenderer } from '@tiptap/react';
 import { Image } from './image';
 
+export type ImageComponentAttributes = {
+    publicId: string;
+    src: string;
+    uploadedWidth: number;
+    uploadedHeight: number;
+    caption: string | null;
+    uploaded: boolean;
+    width: number;
+    height: number;
+};
+
 export default Node.create({
     name: 'imageComponent',
     group: 'block',
@@ -11,6 +22,8 @@ export default Node.create({
         return {
             publicId: '',
             src: '',
+            uploadedWidth: 0,
+            uploadedHeight: 0,
             caption: '',
             uploaded: false,
             width: 0,

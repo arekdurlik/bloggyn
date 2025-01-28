@@ -1,0 +1,57 @@
+.zoom {
+    --_transition: 2s;
+
+    &-backdrop {
+        position: fixed;
+        inset: 0;
+        opacity: 0;
+        width: 100vw;
+        background-color: color-mix(
+            in srgb,
+            transparent 10%,
+            var(--bgColor-default)
+        );
+        cursor: zoom-out;
+    }
+    &-container {
+        position: fixed;
+        cursor: zoom-out;
+
+        img {
+            width: auto;
+            height: auto;
+            max-width: 100%;
+            max-height: 100%;
+            min-width: 100%;
+            min-height: 100%;
+        }
+    }
+
+    &-image {
+        position: relative;
+        width: auto;
+        height: auto;
+        /* filter: invert(1); */
+        z-index: 1;
+
+        &-fade {
+            opacity: 0;
+            animation: fade-in 400ms forwards;
+        }
+
+        &-original {
+            position: absolute;
+            inset: 0;
+            width: auto;
+            height: auto;
+            max-width: 100vw;
+            max-height: 100vh;
+        }
+    }
+}
+
+@keyframes fade-in {
+    100% {
+        opacity: 1;
+    }
+}

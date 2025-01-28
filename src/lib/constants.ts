@@ -1,4 +1,6 @@
 export const OVERLAY_ID = 'overlay';
+export const IMAGE_OVERLAY_ID = 'img-overlay';
+
 export const HEADER_ID = 'header';
 
 export enum SOCKET_EV {

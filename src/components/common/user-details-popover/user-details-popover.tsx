@@ -4,11 +4,11 @@ import { useRef, useState, type ReactNode } from 'react';
 import {
     DropdownMenu,
     DropdownMenuContent,
-    DropdownMenuPortal,
     DropdownMenuTrigger,
+    Portal,
 } from '../dropdown-menu';
-import UserDetailsContent from './content/content';
 import { DropdownMenuTriggerLink } from '../dropdown-menu/trigger';
+import UserDetailsContent from './content/content';
 
 const INTENT_DELAY = 200;
 
@@ -47,7 +47,7 @@ export default function UserDetailsPopover({
             onTriggerMouseEnter={handleMouseEnter}
             onTriggerMouseLeave={handleMouseLeave}
         >
-            <DropdownMenuPortal>
+            <Portal>
                 <DropdownMenuContent>
                     {details && (
                         <UserDetailsContent
@@ -56,7 +56,7 @@ export default function UserDetailsPopover({
                         />
                     )}
                 </DropdownMenuContent>
-            </DropdownMenuPortal>
+            </Portal>
             {children}
         </DropdownMenu>
     );

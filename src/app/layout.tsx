@@ -1,6 +1,6 @@
 import Providers from '@/components/common/providers';
 import { Toasts } from '@/components/common/toasts/toasts';
-import { OVERLAY_ID } from '@/lib/constants';
+import { IMAGE_OVERLAY_ID, OVERLAY_ID } from '@/lib/constants';
 import { getServerAuthSession } from '@/server/auth';
 import '@/styles/main.scss';
 import { GeistSans } from 'geist/font/sans';
@@ -39,6 +39,7 @@ export default async function RootLayout({
                         </SessionProvider>
                     </div>
                     <div id={OVERLAY_ID} />
+                    <div id={IMAGE_OVERLAY_ID} />
                 </Providers>
             </body>
         </html>

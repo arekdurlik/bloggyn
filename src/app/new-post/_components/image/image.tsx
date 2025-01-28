@@ -37,6 +37,8 @@ export function Image(props: NodeViewProps) {
                         publicId: res.id,
                         src: res.url,
                         uploaded: true,
+                        uploadedWidth: res.width,
+                        uploadedHeight: res.height,
                     });
                 },
             }
