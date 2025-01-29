@@ -103,10 +103,7 @@ export default function DropdownMenu({
 
     return (
         <DropdownContext.Provider
-            value={[
-                value,
-                { set: setValue, handleMouseLeave, handleMouseEnter },
-            ]}
+            value={[value, { set: setValue, handleMouseLeave, handleMouseEnter }]}
         >
             {children}
         </DropdownContext.Provider>

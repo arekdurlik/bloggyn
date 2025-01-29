@@ -1,24 +1,27 @@
-import { useDropdownContext } from '../../dropdown-menu';
-import styles from './content.module.scss';
-import { useEffect, useRef } from 'react';
-import { useOutsideClick } from '@/lib/hooks/use-outside-click';
-import { cn } from '@/lib/helpers';
 import AnimatedUnmount from '@/components/common/animate-unmount/animate-unmount';
+import { cn } from '@/lib/helpers';
+import { useOutsideClick } from '@/lib/hooks/use-outside-click';
+import { AnimationEvent, useRef } from 'react';
+import { useDropdownContext } from '../../dropdown-menu';
 import { useIsInPortal } from '../portal';
+import styles from './content.module.scss';
 
 type Props = {
     children: React.ReactNode;
     align?: 'left' | 'center' | 'right';
     offsetTop?: number;
+    className?: string;
+    noAutofocus?: boolean;
 };
 
 export default function DropdownMenuContent({
     children,
     align = 'left',
     offsetTop = 5,
+    className,
+    noAutofocus = false,
 }: Props) {
-    const [{ open, manualOpen, hoverMode, triggerRefs }, api] =
-        useDropdownContext();
+    const [{ open, manualOpen, hoverMode, triggerRefs }, api] = useDropdownContext();
     const ref = useRef<HTMLUListElement | null>(null);
     const finalOpen = manualOpen !== undefined ? manualOpen : open;
     const isInPortal = useIsInPortal();
@@ -70,21 +73,11 @@ export default function DropdownMenuContent({
         ref.current.style.top = top + 'px';
     }
 
-    useEffect(() => {
-        if (!finalOpen) return;
+    function register(event: AnimationEvent<HTMLUListElement>) {
+        if (event.animationName !== 'slide-in') return;
+        if (!ref.current) return;
 
-        calculatePosition();
-
-        window.addEventListener('resize', calculatePosition);
-        return () => window.removeEventListener('resize', calculatePosition);
-    }, [finalOpen, ref, triggerRefs]);
-
-    useEffect(() => {
-        if (!finalOpen || !ref.current) return;
-
-        const items = Array.from(
-            ref.current.querySelectorAll('*')
-        ) as HTMLElement[];
+        const items = Array.from(ref.current.querySelectorAll('*')) as HTMLElement[];
 
         const tabbable: HTMLElement[] = [];
 
@@ -98,14 +91,21 @@ export default function DropdownMenuContent({
             api.set(v => ({ ...v, items: tabbable }));
         }
 
-        items[0]?.focus();
-    }, [finalOpen, ref]);
+        if (!noAutofocus) {
+            items[0]?.focus();
+
+            items.forEach(item => {
+                item.setAttribute('tabindex', '-1');
+            });
+        }
+    }
 
     return (
         <AnimatedUnmount mounted={finalOpen} onRender={calculatePosition}>
             <ul
                 ref={ref}
-                className={cn(styles.container, 'animation-slideIn')}
+                onAnimationStart={register}
+                className={cn(styles.container, 'animation-slideIn', className)}
                 {...(hoverMode && {
                     onMouseEnter: () => open && api.handleMouseEnter(),
                     onMouseLeave: api.handleMouseLeave,

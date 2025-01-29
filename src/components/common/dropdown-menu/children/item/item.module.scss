@@ -1,13 +1,5 @@
 .item {
     display: flex;
     gap: var(--spacing-large);
-    padding: var(--spacing-large) var(--spacing-xl);
     white-space: nowrap;
-    cursor: pointer;
-    border-radius: var(--rounded-default);
-    transition: background-color var(--transition-fast);
-
-    &.hovered {
-        background-color: var(--control-default-bgColor-hover);
-    }
 }

@@ -1,0 +1,18 @@
+.item-base {
+    border-radius: var(--rounded-default);
+    padding: var(--spacing-large) var(--spacing-xl);
+    transition: background-color var(--transition-fast);
+    cursor: pointer;
+
+    &:hover {
+        background-color: var(--control-default-bgColor-hover);
+    }
+
+    &:active {
+        background-color: var(--control-default-bgColor-active);
+    }
+
+    &:focus-visible {
+        outline: var(--outline);
+    }
+}
