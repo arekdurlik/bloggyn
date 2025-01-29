@@ -1,4 +1,3 @@
-import { sleep } from '@/lib/helpers';
 import { create } from 'zustand';
 
 export type Toast = {
@@ -13,15 +12,11 @@ type ToastsState = {
     api: {
         /**
          *
-         * @returns the id of the new toast
+         * @returns id of the new toast
          */
         openToast: (type: ToastType, message: string) => number;
         closeToast: (id: number) => Promise<void>;
-        resolveToast: (
-            id: number,
-            success: boolean,
-            message: string
-        ) => Promise<void>;
+        resolveToast: (id: number, success: boolean, message: string) => Promise<void>;
     };
 };
 
@@ -36,7 +31,7 @@ export enum ToastType {
 }
 
 function addDotIfMissing(str: string) {
-    return str.endsWith('.') ? str : str + '.';
+    return ['.', '!', '?'].some(c => str.endsWith(c)) ? str : str + '.';
 }
 
 export const useToasts = create<ToastsState>((set, get) => ({
@@ -63,9 +58,7 @@ export const useToasts = create<ToastsState>((set, get) => ({
             const toast = toasts.find(toast => toast.id === id);
 
             if (toast) {
-                const filteredToasts = get().toasts.filter(
-                    toast => toast.id !== id
-                );
+                const filteredToasts = get().toasts.filter(toast => toast.id !== id);
                 set(() => ({ toasts: filteredToasts }));
             }
         },
@@ -90,7 +83,7 @@ export const useToasts = create<ToastsState>((set, get) => ({
 
 /**
  *
- * @returns the id of the new toast
+ * @returns id of the new toast
  */
 export const openToast = useToasts.getState().api.openToast;
 export const closeToast = useToasts.getState().api.closeToast;

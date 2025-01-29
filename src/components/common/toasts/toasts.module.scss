@@ -1,9 +1,9 @@
 .wrapper {
-    --toastTotalHeight: 70px;
+    --toastTotalHeight: 50px;
     position: fixed;
     overflow: hidden;
     inset: 0;
-    padding: 20px;
+    padding: var(--spacing-large) var(--spacing-xxl);
     pointer-events: none;
 
     display: flex;
@@ -19,64 +19,57 @@
 }
 
 .toast {
+    interpolate-size: allow-keywords;
     position: relative;
     pointer-events: all;
-    height: var(--toastTotalHeight);
-    border-radius: var(--rounded-xl);
+    max-width: 500px;
+    overflow: hidden;
+    border-radius: var(--rounded-full);
     border: 1px solid var(--border);
-    margin-bottom: 10px;
+    margin-bottom: var(--spacing-large);
     background-color: var(--bgColor-default);
     box-shadow: var(--shadow-barely-visible);
-    overflow: hidden;
-    transition: background-color var(--transition-slow),
-        border-color var(--transition-slow), color var(--transition-slow);
+    transition: background-color var(--transition-slow), border-color var(--transition-slow),
+        color var(--transition-slow), height var(--transition-slow);
 
-    &.info {
-        color: '#4f99b8';
+    --_typeColor: var(--fgColor-default);
+
+    color: var(--_typeColor);
+    border-color: color-mix(in srgb, var(--_typeColor), transparent);
+    background-color: color-mix(in srgb, var(--_typeColor), var(--bgColor-default) 92%);
+
+    span {
+        color: var(--_typeColor);
+        line-height: initial;
+    }
+
+    svg {
+        stroke: var(--_typeColor);
+    }
+
+    .life {
+        background-color: var(--_typeColor);
     }
 
     &.pending {
-        svg {
-            stroke: var(--fgColor-default);
-        }
+        background-color: var(--bgColor-default);
+        border-color: var(--border);
+    }
+
+    &.info {
+        --_typeColor: var(--color-info);
     }
 
     &.success {
-        color: var(--color-success);
-        border-color: color-mix(in srgb, var(--color-success), transparent);
-        background-color: color-mix(
-            in srgb,
-            var(--color-success),
-            var(--bgColor-default) 92%
-        );
-        svg {
-            position: relative;
-            top: 1px;
-            stroke: var(--color-success);
-        }
+        --_typeColor: var(--color-success);
     }
 
     &.error {
-        color: var(--color-error);
-        border-color: color-mix(in srgb, var(--color-error), transparent);
-        background-color: color-mix(
-            in srgb,
-            var(--color-error),
-            var(--bgColor-default) 92%
-        );
-
-        .life {
-            opacity: 0.1;
-            background-color: var(--color-error);
-        }
-
-        svg {
-            color: var(--color-error);
-        }
+        --_typeColor: var(--color-error);
     }
 
     &.warning {
-        color: var(--color-warning);
+        --_typeColor: var(--color-warning);
     }
 
     @keyframes fade-in {
@@ -90,7 +83,7 @@
             opacity: 0;
         }
         75% {
-            height: var(--toastTotalHeight);
+            height: auto;
         }
         100% {
             opacity: 1;
@@ -100,10 +93,12 @@
     @keyframes fade-out {
         0% {
             opacity: 1;
+            height: auto;
         }
         50% {
             opacity: 0;
-            transform: translateY(25%);
+            height: 0px;
+            transform: translateY(15%);
         }
         100% {
             opacity: 0;
@@ -127,10 +122,11 @@
     position: relative;
     overflow: hidden;
     height: 100%;
+
     white-space: pre-wrap;
-    height: calc(var(--toastTotalHeight));
+    min-height: calc(var(--toastTotalHeight));
     gap: var(--spacing-xxl);
-    padding: 0 var(--spacing-xxl);
+    padding: var(--spacing-xl) var(--spacing-xxl);
 
     display: flex;
     align-items: center;

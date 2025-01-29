@@ -1,17 +1,11 @@
 'use client';
 
-import {
-    useMemo,
-    useCallback,
-    useEffect,
-    useState,
-    type AnimationEvent,
-} from 'react';
-import { CheckCircle, Info, TriangleAlert, X } from 'lucide-react';
-import styles from './toasts.module.scss';
 import { cn } from '@/lib/helpers';
+import { CheckCircle, Info, TriangleAlert, X } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useState, type AnimationEvent } from 'react';
 import Loader from '../icons/loader/loader';
-import { type Toast, ToastType, useToasts } from './store';
+import { ToastType, useToasts, type Toast } from './store';
+import styles from './toasts.module.scss';
 
 export function Toasts() {
     const refMap = useMemo(() => new WeakMap<Toast, HTMLDivElement>(), []);
@@ -23,14 +17,14 @@ export function Toasts() {
         if (toastsState.toasts.length >= visibleToasts.length) {
             setVisibleToasts(toastsState.toasts);
         }
-        
+
         visibleToasts.forEach(item => {
             if (!toastsState.toasts.includes(item)) {
                 refMap.get(item)?.classList.add(styles.fadeOut);
             }
         });
     }, [toastsState.toasts]);
-    
+
     // lifetime animation
     useEffect(() => {
         visibleToasts.forEach(toast => {
@@ -38,13 +32,8 @@ export function Toasts() {
                 const el = refMap.get(toast);
                 const life = el?.querySelector(`.${styles.life}`);
 
-                if (
-                    life instanceof HTMLElement &&
-                    !life.hasAttribute('style')
-                ) {
-                    life.style.animationDuration = `${
-                        100 + toast.message.trim().length * 125
-                    }ms`;
+                if (life instanceof HTMLElement && !life.hasAttribute('style')) {
+                    life.style.animationDuration = `${100 + toast.message.trim().length * 125}ms`;
                 }
             }
         });
@@ -86,8 +75,7 @@ export function Toasts() {
                         item.type === ToastType.INFO && styles.info,
                         item.type === ToastType.PENDING && styles.pending,
                         item.type === ToastType.SUCCESS && styles.success,
-                        item.type === ToastType.PENDING_SUCCESS &&
-                            styles.success,
+                        item.type === ToastType.PENDING_SUCCESS && styles.success,
                         item.type === ToastType.WARNING && styles.warning,
                         item.type === ToastType.ERROR && styles.error,
                         item.type === ToastType.PENDING_ERROR && styles.error,
@@ -115,10 +103,7 @@ export function Toasts() {
                                 </button>
                                 <div
                                     className={cn(styles.life)}
-                                    onAnimationEnd={handleEndOfLife(
-                                        item.id,
-                                        item.type
-                                    )}
+                                    onAnimationEnd={handleEndOfLife(item.id, item.type)}
                                 />
                             </>
                         )}

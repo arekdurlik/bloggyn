@@ -39,31 +39,16 @@ export default function PostCard({
                                 href={`@${post.username}`}
                                 className={styles.avatarLink}
                             >
-                                <div
-                                    className={cn(
-                                        styles.authorImage,
-                                        styles.linkOnTop
-                                    )}
-                                >
+                                <div className={cn(styles.authorImage, styles.linkOnTop)}>
                                     <Image
-                                        src={
-                                            post.avatar ?? '/default-avatar.jpg'
-                                        }
+                                        src={post.avatar ?? '/default-avatar.jpg'}
                                         fill
                                         alt="Author image"
                                     />
                                 </div>
                             </DropdownMenuTriggerLink>
-                            <DropdownMenuTriggerLink
-                                href={`@${post.username}`}
-                                tabIndex={-1}
-                            >
-                                <span
-                                    className={cn(
-                                        styles.authorName,
-                                        styles.linkOnTop
-                                    )}
-                                >
+                            <DropdownMenuTriggerLink href={`@${post.username}`} tabIndex={-1}>
+                                <span className={cn(styles.authorName, styles.linkOnTop)}>
                                     {post.name}
                                 </span>
                             </DropdownMenuTriggerLink>
