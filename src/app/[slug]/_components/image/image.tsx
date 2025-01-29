@@ -14,44 +14,59 @@ const RETURN_SPEED_MULTIPLIER = 1.1;
 const CONTENT_MAX_WIDTH = 800;
 
 export function Image(props: ImageComponentAttributes) {
-    const [mounted, setMounted] = useState(false);
-    const [zoomInOffset, setZoomInOffset] = useState<number | null>(null);
+    const [open, setOpen] = useState(false);
+    const [zoomedIn, setZoomedIn] = useState(false);
+    const [fade, setFade] = useState(true);
+
     const zoomContainerRef = useRef<HTMLDivElement | null>(null);
     const backdropRef = useRef<HTMLDivElement | null>(null);
     const imageRef = useRef<HTMLImageElement | null>(null);
     const originalImageRef = useRef<HTMLImageElement | null>(null);
-    const [zoomedIn, setZoomedIn] = useState(false);
-    const [fade, setFade] = useState(true);
-    const [containerReady, setContainerReady] = useState(false);
-    const scrollTopOnOpen = useRef(0);
-    const zoomingOut = useRef(false);
+
+    const zoomInOffset = useRef<number | null>(null);
 
     useEffect(() => {
-        if (containerReady && mounted) {
+        function reset() {
+            const container = zoomContainerRef.current;
+            const backdrop = backdropRef.current;
+            const image = imageRef.current;
+
+            if (!container || !backdrop || !image) return;
+
+            backdrop.style.transition = 'none';
+            backdrop.style.opacity = '0';
+
+            container.style.transition = 'none';
+            container.style.transform = 'translateY(0) scale(1)';
+
+            image.style.transition = 'none';
+            image.style.opacity = '1';
+
+            setOpen(false);
+        }
+
+        function handleKey(event: KeyboardEvent) {
+            event.key == 'Escape' && zoomOut();
+        }
+
+        if (open) {
             zoomIn();
-        }
-    }, [containerReady, mounted]);
+            document.addEventListener('keydown', handleKey);
+            window.addEventListener('resize', reset);
 
-    useEffect(() => {
-        if (imageRef.current) {
-            imageRef.current.style.cursor = 'zoom-in';
-        }
-    }, [imageRef]);
-
-    useEffect(() => {
-        if (!zoomedIn || !mounted) return;
-
-        function handleWheel() {
-            if (zoomingOut.current) {
-                document.removeEventListener('wheel', handleWheel);
-                return;
+            if (zoomedIn) {
+                document.addEventListener('scroll', zoomOut, { once: true });
             }
-            zoomOut();
-        }
 
-        document.addEventListener('wheel', handleWheel);
-        return () => document.removeEventListener('wheel', handleWheel);
-    }, [zoomedIn, mounted]);
+            return () => {
+                document.removeEventListener('keydown', handleKey);
+                window.removeEventListener('resize', reset);
+                document.removeEventListener('scroll', zoomOut);
+            };
+        } else {
+            setZoomedIn(false);
+        }
+    }, [open, zoomedIn]);
 
     function zoomIn() {
         const container = zoomContainerRef.current;
@@ -75,28 +90,24 @@ export function Image(props: ImageComponentAttributes) {
             fullHeight: props.uploadedHeight,
         });
 
-        const { translateX, translateY } = applyZoomAndCalculateOffset(
-            image,
-            scaleFactor
-        );
+        const { translateX, translateY } = applyZoomAndCalculateOffset(image, scaleFactor);
 
-        setZoomInOffset(window.scrollY);
-
-        backdrop.style.opacity = '1';
-        container.style.transform = `
-            translateX(${translateX}px) 
-            translateY(${translateY}px) 
-            scale(${scaleFactor})
-        `;
+        zoomInOffset.current = window.scrollY;
 
         backdrop.style.transition = `opacity ${DURATION}ms ease-out`;
+        backdrop.style.opacity = '1';
+
         container.style.transition = `transform ${DURATION}ms ease-out`;
+        container.style.transform = `
+        translateX(${translateX}px) 
+        translateY(${translateY}px) 
+        scale(${scaleFactor})
+        `;
 
         container.addEventListener(
             'transitionend',
             () => {
                 setZoomedIn(true);
-                scrollTopOnOpen.current = window.scrollY;
             },
             { once: true }
         );
@@ -104,68 +115,43 @@ export function Image(props: ImageComponentAttributes) {
 
     function zoomOut() {
         document.body.style.overflow = 'initial';
-        window.scrollTo({ top: scrollTopOnOpen.current });
 
         const container = zoomContainerRef.current;
         const backdrop = backdropRef.current;
         const image = imageRef.current;
 
-        if (!container || !backdrop || !image || zoomInOffset === null) return;
+        if (!container || !backdrop || !image) return;
 
-        zoomingOut.current = true;
         backdrop.style.opacity = '0';
 
-        const scrollOffsetDifference = window.scrollY - zoomInOffset;
+        zoomInOffset.current === null && (zoomInOffset.current = window.scrollY);
 
+        const scrollOffsetDifference = window.scrollY - zoomInOffset.current;
         const slowDown = Math.abs(scrollOffsetDifference / 3);
 
-        container.style.transition = `transform ${
-            DURATION + slowDown
-        }ms ease-out`;
+        container.style.transition = `transform ${DURATION + slowDown}ms ease-out`;
         container.style.transform = `translateY(${-scrollOffsetDifference}px) scale(1)`;
 
-        const scrolled = { current: false };
-
         function handleTransitionEnd() {
-            if (scrolled.current || !container || !image) return;
-            document.removeEventListener('scroll', adjustOffset);
-            image.style.opacity = '1';
-            setMounted(false);
-            zoomingOut.current = false;
-        }
-
-        function handleAdjustedTransitionEnd() {
             if (!container || !image) return;
             document.removeEventListener('scroll', adjustOffset);
             image.style.opacity = '1';
-            setMounted(false);
-            setZoomedIn(false);
-            zoomingOut.current = false;
+            setOpen(false);
         }
 
         let returnSpeed = 1;
 
         function adjustOffset() {
             if (!container || zoomInOffset === null) return;
-            scrolled.current = true;
             container.removeEventListener('transitionend', handleTransitionEnd);
-            container.removeEventListener(
-                'transitionend',
-                handleAdjustedTransitionEnd
-            );
 
-            const scrollOffsetDifference = window.pageYOffset - zoomInOffset;
+            const scrollOffsetDifference = window.pageYOffset - zoomInOffset.current!;
 
             container.style.transform = `translateY(${-scrollOffsetDifference}px) scale(1)`;
-            container.style.transition = `transform ${
-                DURATION / returnSpeed
-            }ms linear`;
+            container.style.transition = `transform ${DURATION / returnSpeed}ms linear`;
 
             returnSpeed *= RETURN_SPEED_MULTIPLIER;
-            container.addEventListener(
-                'transitionend',
-                handleAdjustedTransitionEnd
-            );
+            container.addEventListener('transitionend', handleTransitionEnd);
         }
 
         document.addEventListener('scroll', adjustOffset);
@@ -173,13 +159,10 @@ export function Image(props: ImageComponentAttributes) {
     }
 
     function hideOriginalImage() {
-        if (imageRef.current) {
-            imageRef.current.style.opacity = '0';
-        }
+        imageRef.current && (imageRef.current.style.opacity = '0');
     }
 
-    const scaleFactor =
-        props.width > CONTENT_MAX_WIDTH ? CONTENT_MAX_WIDTH / props.width : 1;
+    const scaleFactor = props.width > CONTENT_MAX_WIDTH ? CONTENT_MAX_WIDTH / props.width : 1;
 
     const calculatedWidth = Math.min(CONTENT_MAX_WIDTH, props.width);
     const calculatedHeight = Math.round(props.height * scaleFactor);
@@ -188,40 +171,29 @@ export function Image(props: ImageComponentAttributes) {
         <>
             <CldImage
                 ref={imageRef}
+                className={styles.image}
                 src={props.publicId}
                 alt={props.caption || ''}
                 height={calculatedHeight}
                 width={calculatedWidth}
                 crop="limit"
-                onClick={() => setMounted(true)}
+                onClick={() => setOpen(true)}
             />
             <Portal selector={`#${IMAGE_OVERLAY_ID}`} noFallback>
-                {mounted && (
+                {open && (
                     <>
+                        <div ref={backdropRef} className={styles.zoomBackdrop} onClick={zoomOut} />
                         <div
-                            ref={backdropRef}
-                            className={styles.zoomBackdrop}
-                            onClick={zoomOut}
-                        />
-                        <div
-                            ref={node => {
-                                if (node) {
-                                    zoomContainerRef.current = node;
-                                    setContainerReady(true);
-                                }
-                            }}
+                            ref={zoomContainerRef}
                             className={styles.zoomContainer}
                             onClick={zoomOut}
                         >
                             {zoomedIn && (
                                 <CldImage
                                     ref={originalImageRef}
-                                    className={cn(
-                                        styles.zoomImage,
-                                        fade && styles.zoomImageFade
-                                    )}
+                                    className={cn(styles.zoomImage, fade && styles.zoomImageFade)}
                                     src={props.publicId}
-                                    alt={props.caption}
+                                    alt={props.caption || ''}
                                     width={document.documentElement.clientWidth}
                                     height={window.innerHeight}
                                     onAnimationEnd={() => {
@@ -232,9 +204,10 @@ export function Image(props: ImageComponentAttributes) {
                             <CldImage
                                 className={styles.zoomImageOriginal}
                                 src={props.publicId}
-                                alt={props.caption}
-                                height={props.height}
-                                width={Math.min(800, props.width)}
+                                alt={props.caption || ''}
+                                height={calculatedHeight}
+                                width={calculatedWidth}
+                                crop="limit"
                                 onLoad={hideOriginalImage}
                             />
                         </div>

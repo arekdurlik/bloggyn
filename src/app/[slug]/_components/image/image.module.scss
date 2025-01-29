@@ -1,3 +1,7 @@
+.image {
+    cursor: zoom-in;
+}
+
 .zoom {
     --_transition: 2s;
 
@@ -6,15 +10,12 @@
         inset: 0;
         opacity: 0;
         width: 100vw;
-        background-color: color-mix(
-            in srgb,
-            transparent 10%,
-            var(--bgColor-default)
-        );
+        background-color: color-mix(in srgb, transparent 10%, var(--bgColor-default));
         cursor: zoom-out;
     }
     &-container {
         position: fixed;
+        will-change: transform;
         cursor: zoom-out;
 
         img {
@@ -31,9 +32,7 @@
         position: relative;
         width: auto;
         height: auto;
-        /* filter: invert(1); */
         z-index: 1;
-
         &-fade {
             opacity: 0;
             animation: fade-in 400ms forwards;
