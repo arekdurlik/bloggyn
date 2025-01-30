@@ -9,12 +9,11 @@
     padding: var(--spacing-default) var(--spacing-xl);
     border-radius: var(--rounded-full);
     border: 1px solid var(--control-default-borderColor-rest);
-    height: 40px;
+    height: var(--spacing-xxxl);
     width: fit-content;
     min-width: 100px;
     box-shadow: var(--shadow-barely-visible);
-    transition: border-color var(--transition-default),
-        background-color var(--transition-default);
+    transition: border-color var(--transition-default), background-color var(--transition-default);
 
     &--danger {
         background-color: var(--control-danger-bgColor-rest);

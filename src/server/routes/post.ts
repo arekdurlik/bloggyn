@@ -5,7 +5,7 @@ import { procedure, protectedProcedure, router } from '@/trpc';
 import { postSchema } from '@/validation/user/post';
 import type { JSONContent } from '@tiptap/react';
 import { type inferRouterOutputs, TRPCError } from '@trpc/server';
-import { and, desc, eq, like, lt, lte, or, sql } from 'drizzle-orm';
+import { and, desc, eq, ilike, like, lt, lte, or, sql } from 'drizzle-orm';
 import slugify from 'slug';
 import { z } from 'zod';
 import { following, postImages, posts, users } from '../db/schema';
@@ -87,19 +87,19 @@ export const postRouter = router({
                         cardImage: posts.cardImage,
                         slug: posts.slug,
                         summary: sql<string>`
-            CONCAT(
-                TRIM(SUBSTRING(
-                    ${posts.summary} FROM 0 FOR 
-                    CASE 
-                        WHEN ${
-                            posts.cardImage
-                        } IS NULL THEN ${SUMMARY_NO_IMAGE_LENGTH}
-                        ELSE ${sql.raw(SUMMARY_IMAGE_LENGTH.toString())}
-                    END
-                )),
-                '...'
-            )
-        `,
+                            CONCAT(
+                                TRIM(SUBSTRING(
+                                    ${posts.summary} FROM 0 FOR 
+                                    CASE 
+                                        WHEN ${
+                                            posts.cardImage
+                                        } IS NULL THEN ${SUMMARY_NO_IMAGE_LENGTH}
+                                        ELSE ${sql.raw(SUMMARY_IMAGE_LENGTH.toString())}
+                                    END
+                                )),
+                                '...'
+                            )
+                        `,
                         createdAt: posts.createdAt,
                         createdAtFormatted: sql<string>`to_char(${posts.createdAt}, 'Mon DD')`,
                         readTime: posts.readTime,
@@ -110,7 +110,12 @@ export const postRouter = router({
                     .from(posts)
                     .where(
                         and(
-                            query ? like(posts.title, `%${query}%`) : undefined,
+                            query
+                                ? or(
+                                      ilike(posts.title, `%${query}%`),
+                                      ilike(posts.summary, `%${query}%`)
+                                  )
+                                : undefined,
                             cursor
                                 ? or(
                                       lte(posts.createdAt, cursor.createdAt),
@@ -123,7 +128,17 @@ export const postRouter = router({
                         )
                     )
                     .leftJoin(users, eq(posts.createdById, users.id))
-                    .orderBy(desc(posts.createdAt), desc(posts.id))
+                    .orderBy(
+                        sql`
+                        CASE 
+                            WHEN ${posts.title} ILIKE ${'%' + query + '%'} THEN 1
+                            WHEN ${posts.summary} ILIKE ${'%' + query + '%'} THEN 2
+                            ELSE 3
+                        END
+                        `,
+                        desc(posts.createdAt),
+                        desc(posts.id)
+                    )
                     .limit(limit + 1);
 
                 let nextCursor: typeof cursor | undefined = undefined;
@@ -164,9 +179,7 @@ export const postRouter = router({
                     slug += '-' + index;
                 }
 
-                const nonBreakingSingleCharTitle = modifySingleCharWords(
-                    input.title
-                );
+                const nonBreakingSingleCharTitle = modifySingleCharWords(input.title);
 
                 const cardImage = getCardImage(input.content);
                 const summary = createPostSummary(input.content);

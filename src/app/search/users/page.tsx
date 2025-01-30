@@ -1,10 +1,6 @@
-import Header from '../_components/header';
+import Header from '../_components/header/header';
 
-export default function Users({
-    searchParams,
-}: {
-    searchParams?: { q?: string };
-}) {
+export default function Users({ searchParams }: { searchParams?: { q?: string } }) {
     const query = searchParams?.q;
 
     return (

@@ -20,11 +20,7 @@ export default function Header({ theme }: { theme?: string }) {
             <header ref={ref} id={HEADER_ID} className={`${styles.container}`}>
                 <div className={styles.content}>
                     <div className={styles.logo}>
-                        <Link
-                            id="home"
-                            href="/"
-                            onClick={() => api.setQuery('')}
-                        >
+                        <Link id="home" href="/" onClick={() => api.setQuery('')}>
                             bloggyn
                         </Link>
                         <ThemeSwitcher theme={theme} />

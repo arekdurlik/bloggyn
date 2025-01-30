@@ -1,0 +1,23 @@
+.container {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(#fff0, #fff);
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    z-index: 2;
+}
+
+.button {
+    text-decoration: underline;
+}
+
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid transparent;
+    height: var(--spacing-xxxl);
+    color: var(--fgColor-subtle);
+}
