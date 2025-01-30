@@ -7,12 +7,7 @@ type Props = {
     onRender?: () => void;
 };
 
-export default function AnimatedUnmount({
-    mounted,
-    children,
-    time = 200,
-    onRender,
-}: Props) {
+export default function AnimatedUnmount({ mounted, children, time = 200, onRender }: Props) {
     const [shouldRender, setShouldRender] = useState(mounted);
     const unmountedStyle = {
         opacity: 0,
@@ -24,17 +19,18 @@ export default function AnimatedUnmount({
     }, [shouldRender]);
 
     useEffect(() => {
-        let timeoutId: ReturnType<typeof setTimeout>;
         if (mounted && !shouldRender) {
             setShouldRender(true);
-        } else if (!mounted && shouldRender) {
-            timeoutId = setTimeout(() => setShouldRender(false), time);
         }
-        return () => clearTimeout(timeoutId);
     }, [mounted, time, shouldRender]);
 
     const cloned = cloneElement(children, {
-        style: mounted ? undefined : unmountedStyle,
+        onTransitionEnd: () => {
+            if (!mounted) {
+                setShouldRender(false);
+            }
+        },
+        style: mounted ? children.props.style : unmountedStyle,
     });
 
     return shouldRender && cloned;

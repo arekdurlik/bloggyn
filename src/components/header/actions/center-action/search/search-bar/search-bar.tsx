@@ -23,7 +23,7 @@ export default function SearchBar({ onChange }: Props) {
     }
 
     function handleKey(event: KeyboardEvent) {
-        if (event.key === 'Enter') {
+        if (event.key === 'Enter' && query.length) {
             router.push(`/search/posts?q=${query}`);
             api.deactivate();
             inputRef.current.blur();

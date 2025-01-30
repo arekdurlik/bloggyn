@@ -1,0 +1,7 @@
+.divider {
+    min-height: 1px;
+    background-color: var(--border);
+    width: calc(100% + 2 * var(--spacing-default));
+    margin: var(--spacing-small) calc(-1 * var(--spacing-default));
+    margin-top: var(--spacing-large);
+}

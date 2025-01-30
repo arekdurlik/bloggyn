@@ -1,7 +1,7 @@
 import AnimatedUnmount from '@/components/common/animate-unmount/animate-unmount';
 import { cn } from '@/lib/helpers';
 import { useOutsideClick } from '@/lib/hooks/use-outside-click';
-import { AnimationEvent, useRef } from 'react';
+import { type AnimationEvent, type CSSProperties, useRef } from 'react';
 import { useDropdownContext } from '../../dropdown-menu';
 import { useIsInPortal } from '../portal';
 import styles from './content.module.scss';
@@ -11,6 +11,7 @@ type Props = {
     align?: 'left' | 'center' | 'right';
     offsetTop?: number;
     className?: string;
+    style?: CSSProperties;
     noAutofocus?: boolean;
 };
 
@@ -19,6 +20,7 @@ export default function DropdownMenuContent({
     align = 'left',
     offsetTop = 5,
     className,
+    style,
     noAutofocus = false,
 }: Props) {
     const [{ open, manualOpen, hoverMode, triggerRefs }, api] = useDropdownContext();
@@ -82,8 +84,11 @@ export default function DropdownMenuContent({
         const tabbable: HTMLElement[] = [];
 
         items.forEach(item => {
-            if (item.hasAttribute('tabIndex')) {
-                tabbable.push(item);
+            if (item.hasAttribute('tabindex')) {
+                const index = Number(item.getAttribute('tabindex')) ?? -2;
+                if (index >= 0) {
+                    tabbable.push(item);
+                }
             }
         });
 
@@ -92,12 +97,12 @@ export default function DropdownMenuContent({
         }
 
         if (!noAutofocus) {
-            items[0]?.focus();
-
-            items.forEach(item => {
-                item.setAttribute('tabindex', '-1');
-            });
+            tabbable[0]?.focus();
         }
+
+        tabbable.forEach((item, i) => {
+            i > 0 && item.setAttribute('tabindex', '-1');
+        });
     }
 
     return (
@@ -110,6 +115,7 @@ export default function DropdownMenuContent({
                     onMouseEnter: () => open && api.handleMouseEnter(),
                     onMouseLeave: api.handleMouseLeave,
                 })}
+                style={style}
             >
                 {children}
             </ul>

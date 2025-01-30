@@ -1,6 +1,6 @@
 .item-base {
     border-radius: var(--rounded-default);
-    padding: var(--spacing-large) var(--spacing-xl);
+    padding: var(--spacing-large);
     transition: background-color var(--transition-fast);
     cursor: pointer;
 
@@ -14,5 +14,6 @@
 
     &:focus-visible {
         outline: var(--outline);
+        outline-offset: -1px;
     }
 }

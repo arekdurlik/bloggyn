@@ -1,22 +1,29 @@
-import { useRef, type KeyboardEvent, type ReactNode } from 'react';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { cn } from '@/lib/helpers';
+import {
+    cloneElement,
+    isValidElement,
+    useRef,
+    type KeyboardEvent,
+    type ReactElement,
+    type ReactNode,
+} from 'react';
 import { useDropdownContext } from '../../dropdown-menu';
 import styles from './item-base.module.scss';
 
 type Props = {
     children?: ReactNode;
     onClick?: () => void;
-    className?: string;
 };
 
 export default function DropdownMenuItemBase({ children, ...props }: Props) {
     const [{ items }, { set }] = useDropdownContext();
-    const ref = useRef<HTMLLIElement>(null!);
+    const ref = useRef<HTMLElement>(null);
 
-    function handleKey(event: KeyboardEvent<HTMLLIElement>) {
+    function handleKey(event: KeyboardEvent<HTMLElement>) {
         switch (event.key) {
             case 'Enter':
             case ' ':
-                event.preventDefault();
                 props.onClick?.();
                 break;
             case 'ArrowDown':
@@ -35,7 +42,6 @@ export default function DropdownMenuItemBase({ children, ...props }: Props) {
                 if (newIndex === currentIndex) return;
 
                 items[newIndex]?.focus();
-
                 break;
             }
             case 'Tab':
@@ -43,9 +49,15 @@ export default function DropdownMenuItemBase({ children, ...props }: Props) {
         }
     }
 
-    return (
-        <li ref={ref} className={styles.itemBase} tabIndex={0} onKeyDown={handleKey} {...props}>
-            {children}
-        </li>
-    );
+    const child = isValidElement(children)
+        ? cloneElement(children as ReactElement, {
+              ref,
+              tabIndex: 0,
+              onKeyDown: handleKey,
+              className: cn(styles.itemBase, (children as ReactElement).props.className),
+              ...props,
+          })
+        : children;
+
+    return <li>{child}</li>;
 }
