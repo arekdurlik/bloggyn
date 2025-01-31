@@ -1,4 +1,5 @@
 .container {
+    position: relative;
     display: flex;
     flex-direction: column;
     max-width: 100%;
@@ -13,6 +14,6 @@
     bottom: 0;
 }
 
-.last-post {
+.last-item {
     position: relative;
 }

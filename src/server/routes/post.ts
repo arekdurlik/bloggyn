@@ -72,7 +72,7 @@ export const postRouter = router({
                         id: z.number(),
                         createdAt: z.string(),
                     })
-                    .nullish(), // <-- "cursor" needs to exist, but can be any type
+                    .nullish(),
             })
         )
         .query(async ({ input, ctx: { db } }) => {

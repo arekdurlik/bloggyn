@@ -1,4 +1,4 @@
-import Posts from '@/components/posts/posts';
+import Posts from '@/components/results/posts/posts';
 import { config } from '@/lib/config';
 import { HydrateClient, trpc } from '@/trpc/server';
 

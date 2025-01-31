@@ -4,9 +4,9 @@ import { config } from '@/lib/config';
 import { useInView } from '@/lib/hooks/use-in-view';
 import { trpc } from '@/trpc/client';
 import { useRef } from 'react';
-import ShowMore from '../../app/search/_components/show-more/show-more';
+import ShowMore from '../../../app/search/_components/show-more/show-more';
+import cardStyles from '../results.module.scss';
 import PostCard from './post-card';
-import styles from './posts.module.scss';
 
 export default function Posts({
     query,
@@ -37,24 +37,22 @@ export default function Posts({
     if (!posts) return null;
 
     return (
-        <div className={styles.container}>
-            {posts.map((post, i) => (
-                <>
-                    {i === posts.length - 1 && !infinite ? (
-                        <div className={styles.lastPost}>
-                            <ShowMore
-                                hasNextPage={hasNextPage}
-                                isFetching={isFetchingNextPage}
-                                onClick={fetchNextPage}
-                            />
-                            <PostCard key={post.slug} post={post} />
-                        </div>
-                    ) : (
-                        <PostCard key={post.slug} post={post} />
-                    )}
-                </>
-            ))}
-            <div ref={trigger} className={styles.trigger} />
+        <div className={cardStyles.container}>
+            {posts.map((post, i) =>
+                i === posts.length - 1 && !infinite ? (
+                    <div key={post.slug} className={cardStyles.lastItem}>
+                        <ShowMore
+                            hasNextPage={hasNextPage}
+                            isFetching={isFetchingNextPage}
+                            onClick={fetchNextPage}
+                        />
+                        <PostCard post={post} />
+                    </div>
+                ) : (
+                    <PostCard key={post.slug} post={post} />
+                )
+            )}
+            <div ref={trigger} className={cardStyles.trigger} />
         </div>
     );
 }

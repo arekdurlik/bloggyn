@@ -1,0 +1,35 @@
+.container {
+    display: flex;
+    gap: var(--spacing-xl);
+
+    svg {
+        width: 16px;
+        height: 16px;
+    }
+}
+
+.avatar {
+    border-radius: var(--rounded-full);
+}
+
+.username {
+    color: var(--fgColor-subtle);
+}
+
+.info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--spacing-large);
+}
+
+.stats {
+    display: flex;
+    gap: var(--spacing-xxl);
+}
+
+.stat {
+    display: flex;
+    gap: var(--spacing-default);
+    align-items: center;
+}
