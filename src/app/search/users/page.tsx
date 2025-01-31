@@ -1,13 +1,19 @@
 import Users from '@/components/results/users/users';
-import Header from '../_components/header/header';
+import { HydrateClient, trpc } from '@/trpc/server';
 
-export default function UsersPage({ searchParams }: { searchParams?: { q?: string } }) {
+const LIMIT = 6;
+
+export default async function UsersPage({ searchParams }: { searchParams?: { q?: string } }) {
     const query = searchParams?.q;
 
+    await trpc.getUsers.prefetchInfinite({
+        query,
+        limit: LIMIT,
+    });
+
     return (
-        <div>
-            <Header query={query} active="users" />
-            <Users query={query} limit={6} />
-        </div>
+        <HydrateClient>
+            <Users query={query} limit={LIMIT} />
+        </HydrateClient>
     );
 }

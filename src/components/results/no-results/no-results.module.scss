@@ -1,0 +1,11 @@
+.container {
+    padding-left: var(--spacing-xxxl);
+}
+
+.tip {
+    color: var(--fgColor-subtle);
+
+    &-2 {
+        color: var(--fgColor-barely-visible);
+    }
+}

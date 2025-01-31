@@ -5,6 +5,7 @@ import { useInView } from '@/lib/hooks/use-in-view';
 import { trpc } from '@/trpc/client';
 import { useRef } from 'react';
 import ShowMore from '../../../app/search/_components/show-more/show-more';
+import NoResults from '../no-results/no-results';
 import cardStyles from '../results.module.scss';
 import PostCard from './post-card';
 
@@ -34,7 +35,7 @@ export default function Posts({
     const trigger = useRef<HTMLHRElement>(null!);
     useInView(trigger, fetchNextPage, { rootMargin: '200px' }, infinite);
 
-    if (!posts) return null;
+    if (!posts.length) return <NoResults resultsText="posts" />;
 
     return (
         <div className={cardStyles.container}>

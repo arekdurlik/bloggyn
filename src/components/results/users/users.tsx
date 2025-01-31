@@ -5,6 +5,7 @@ import { config } from '@/lib/config';
 import { useInView } from '@/lib/hooks/use-in-view';
 import { trpc } from '@/trpc/client';
 import { useRef } from 'react';
+import NoResults from '../no-results/no-results';
 import cardStyles from '../results.module.scss';
 import UserCard from './user-card/user-card';
 
@@ -35,7 +36,7 @@ export default function Users({
     const trigger = useRef<HTMLHRElement>(null!);
     useInView(trigger, fetchNextPage, { rootMargin: '200px' }, infinite);
 
-    if (!users) return null;
+    if (!users.length) return <NoResults resultsText="users" />;
 
     return (
         <div className={cardStyles.container}>

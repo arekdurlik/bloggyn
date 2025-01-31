@@ -1,13 +1,18 @@
 import Posts from '@/components/results/posts/posts';
-import Header from '../_components/header/header';
+import { config } from '@/lib/config';
+import { HydrateClient, trpc } from '@/trpc/server';
 
-export default function PostsPage({ searchParams }: { searchParams?: { q?: string } }) {
+export default async function PostsPage({ searchParams }: { searchParams?: { q?: string } }) {
     const query = searchParams?.q;
 
+    await trpc.getPosts.prefetchInfinite({
+        query,
+        limit: config.FEED_INFINITE_SCROLL_LIMIT,
+    });
+
     return (
-        <div>
-            <Header query={query} active="posts" />
-            <Posts query={query} />
-        </div>
+        <HydrateClient>
+            <Posts query={query} limit={config.FEED_INFINITE_SCROLL_LIMIT} />
+        </HydrateClient>
     );
 }
