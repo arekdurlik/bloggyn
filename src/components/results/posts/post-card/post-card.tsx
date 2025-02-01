@@ -81,7 +81,7 @@ export default function PostCard({
                     <span>{post.readTime} min read</span>
                     <div className={styles.withIcon}>
                         <Heart />
-                        <span>3</span>
+                        <span>{post.likesCount}</span>
                     </div>
                     <div className={styles.withIcon}>
                         <MessageSquareMore />

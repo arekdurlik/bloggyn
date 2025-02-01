@@ -127,13 +127,11 @@ export const userRouter = router({
                         name: users.name,
                         bio: users.bio,
                         avatar: users.image,
-                        followersCount: sql<number>`(select count(${following.followerId}) from ${following} where (${following.followedId} = ${users.id}))`,
-                        postsCount: sql<number>`COUNT(${posts.id})`,
+                        followersCount: sql<number>`(SELECT COUNT(${following.followerId}) FROM ${following} WHERE (${following.followedId} = ${users.id}))`,
+                        postsCount: sql<number>`(SELECT COUNT(${posts.id}) FROM ${posts} WHERE (${posts.createdById} = CAST(${users.id} AS TEXT)))`,
                     })
                     .from(users)
-                    .leftJoin(posts, eq(users.id, posts.createdById))
-                    .where(eq(users.username, input.username))
-                    .groupBy(users.id);
+                    .where(eq(users.username, input.username));
 
                 let followed = false;
 
@@ -162,9 +160,7 @@ export const userRouter = router({
                     ...noId,
                     followed,
                 };
-            } catch (error) {
-                console.error('Error retrieving user data', error);
-
+            } catch {
                 throw new TRPCError({
                     message: 'Error retrieving user data',
                     code: 'INTERNAL_SERVER_ERROR',

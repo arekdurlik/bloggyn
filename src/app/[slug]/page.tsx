@@ -4,7 +4,9 @@ import type { JSONContent } from '@tiptap/react';
 import { Fragment } from 'react';
 import { type ImageComponentAttributes } from '../new-post/_components/image/extension';
 import imageStyles from '../new-post/_components/image/image.module.scss';
+import { HeartButtonProvider } from './_components/heart-button-context';
 import { Image } from './_components/image/image';
+import Social from './_components/social/social';
 
 function isImageComponentAttributes(
     attrs: Record<string, unknown>
@@ -68,12 +70,17 @@ export default async function Page({ params }: { params: { slug: string } }) {
         return <p>no post</p>;
     }
     return (
-        <>
+        <HeartButtonProvider
+            initialCount={post.likesCount}
+            initialState={post.isLiked}
+            content={{ type: 'post', id: post.id, slug: post.slug }}
+        >
             <PostInfo post={post} />
             <div className="post-content">
                 <h1>{post.title}</h1>
                 <div>{renderContent(post.content)}</div>
             </div>
-        </>
+            <Social post={post} />
+        </HeartButtonProvider>
     );
 }

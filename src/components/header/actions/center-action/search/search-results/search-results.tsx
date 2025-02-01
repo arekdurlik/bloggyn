@@ -24,7 +24,7 @@ export default function SearchResults() {
     const ref = useRef<HTMLDivElement>(null!);
 
     const pathname = usePathname();
-    const { debouncedValue: debouncedQuery } = useDebounce(query, 250);
+    const debouncedQuery = useDebounce(query, 250);
     const results = trpc.search.useQuery(
         { query: debouncedQuery },
         { refetchOnMount: false, enabled: debouncedQuery.length > 1, suspense: true }

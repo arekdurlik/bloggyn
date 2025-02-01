@@ -84,9 +84,7 @@ export const accounts = createTable(
             .notNull()
             .references(() => users.id, { onDelete: 'cascade' }),
         password: text('password'),
-        type: varchar('type', { length: 255 })
-            .$type<AdapterAccount['type']>()
-            .notNull(),
+        type: varchar('type', { length: 255 }).$type<AdapterAccount['type']>().notNull(),
         provider: varchar('provider', { length: 255 }).notNull(),
         providerAccountId: varchar('provider_account_id', {
             length: 255,
@@ -156,8 +154,10 @@ export const posts = createTable('post', {
         .notNull(),
 });
 
-export const postsRelations = relations(posts, ({ one }) => ({
+export const postsRelations = relations(posts, ({ one, many }) => ({
     user: one(users, { fields: [posts.createdById], references: [users.id] }),
+    images: many(postImages),
+    likes: many(postLikes),
 }));
 
 export const postImages = createTable(
@@ -179,3 +179,33 @@ export const postImages = createTable(
         }),
     })
 );
+
+export const postImagesRelations = relations(postImages, ({ one }) => ({
+    post: one(posts, { fields: [postImages.post_id], references: [posts.id] }),
+}));
+
+export const postLikes = createTable(
+    'post_like',
+    {
+        post_id: integer('post_id')
+            .notNull()
+            .references(() => posts.id, { onDelete: 'cascade' }),
+        user_id: varchar('user_id', { length: 255 }).notNull(),
+        createdAt: timestamp('created_at', {
+            mode: 'string',
+            withTimezone: true,
+        })
+            .default(sql`CURRENT_TIMESTAMP`)
+            .notNull(),
+    },
+    postLike => ({
+        compoundKey: primaryKey({
+            columns: [postLike.post_id, postLike.user_id],
+        }),
+    })
+);
+
+export const postLikesRelations = relations(postLikes, ({ one }) => ({
+    post: one(posts, { fields: [postLikes.post_id], references: [posts.id] }),
+    user: one(users, { fields: [postLikes.user_id], references: [users.id] }),
+}));

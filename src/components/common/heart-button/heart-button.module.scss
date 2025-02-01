@@ -1,63 +1,107 @@
+@keyframes rotate {
+    10%,
+    100% {
+        transform: rotate(0deg);
+    }
+    55% {
+        transform: rotate(var(--rotation));
+    }
+}
+
+@keyframes scale {
+    10% {
+        scale: 0.9;
+    }
+    50% {
+        scale: 1.2;
+    }
+    100% {
+        scale: 1;
+    }
+}
+
+@keyframes flash {
+    50% {
+        fill: #f77;
+        stroke: #f77;
+    }
+}
+
+@keyframes shine {
+    0% {
+        opacity: 0;
+        background-position: 0% 0%;
+    }
+    15% {
+        opacity: 1;
+    }
+    50% {
+        background-position: 100% 100%;
+    }
+    100% {
+        opacity: 0;
+        background-position: 100% 100%;
+    }
+}
+
 .wrapper {
     position: relative;
     cursor: pointer;
+    display: flex;
+    gap: var(--spacing-default);
+
+    align-items: center;
+
+    span {
+        text-align: start;
+    }
+
+    svg {
+        stroke-width: 1.5px;
+        fill: transparent;
+        transition: none;
+    }
+
+    &.set {
+        svg {
+            fill: red;
+            stroke: red;
+        }
+    }
+
+    &.toggled {
+        .heart-wrapper {
+            animation: rotate 1s, scale 1s;
+        }
+
+        svg {
+            animation-name: flash;
+            animation-timing-function: ease-out;
+            animation-duration: 1s;
+            animation-fill-mode: forwards;
+        }
+    }
+}
+
+.heart-wrapper {
+    display: flex;
+    position: relative;
 
     &:before {
         background-position: 0% 0%;
         position: absolute;
         inset: 0;
-        background: linear-gradient(to top, transparent, transparent, #ffffff66, transparent);
+        background: linear-gradient(to top, transparent, transparent, #fff, transparent);
         background-size: 275% 275%;
         z-index: 1;
     }
+}
+
+.small {
+    min-width: 16px;
+    min-height: 16px;
 
     svg {
-        fill: transparent;
-        transition: none;
-    }
-
-    &.active {
-        transition: var(--transition-fast);
-
-        @keyframes activate {
-            50% {
-                transform: scale(1.2);
-            }
-            100% {
-                transform: scale(1);
-            }
-        }
-
-        animation-name: activate;
-        animation-timing-function: cubic-bezier(0.785, 0.135, 0.15, 0.86);
-        animation-duration: var(--transition-default);
-
-        &:before {
-            content: '';
-
-            @keyframes shine {
-                0% {
-                    opacity: 0;
-                    background-position: 0% 0%;
-                }
-                15% {
-                    opacity: 1;
-                }
-                50% {
-                    background-position: 100% 100%;
-                }
-                100% {
-                    background-position: 100% 100%;
-                }
-            }
-
-            animation-name: shine;
-            animation-duration: 3s;
-        }
-
-        svg {
-            fill: red;
-            stroke: red;
-        }
+        stroke-width: 2px;
     }
 }

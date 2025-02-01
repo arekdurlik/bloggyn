@@ -8,7 +8,7 @@ import { type inferRouterOutputs, TRPCError } from '@trpc/server';
 import { and, desc, eq, ilike, like, lt, lte, or, sql } from 'drizzle-orm';
 import slugify from 'slug';
 import { z } from 'zod';
-import { following, postImages, posts, users } from '../db/schema';
+import { following, postImages, postLikes, posts, users } from '../db/schema';
 
 export type PostRouterOutput = inferRouterOutputs<typeof postRouter>;
 
@@ -24,20 +24,32 @@ export const postRouter = router({
                 slug: z.string(),
             })
         )
-        .query(async ({ input, ctx: { db } }) => {
+        .query(async ({ input, ctx: { db, session } }) => {
             try {
                 const post = await db
                     .select({
+                        id: posts.id,
+                        slug: posts.slug,
                         title: posts.title,
                         content: posts.content,
                         createdAt: posts.createdAt,
-                        createdAtFormatted: sql<string>`to_char(${posts.createdAt}, 'Mon DD')`,
+                        createdAtFormatted: sql<string>`TO_CHAR(${posts.createdAt}, 'Mon DD')`,
                         readTime: posts.readTime,
                         user: {
                             username: users.username,
                             name: users.name,
                             avatar: users.image,
                         },
+                        isLiked: sql<boolean>`(
+                            SELECT CASE 
+                              WHEN COUNT(${postLikes.post_id}) > 0 THEN true 
+                              ELSE false 
+                            END 
+                            FROM ${postLikes} 
+                            WHERE ${postLikes.post_id} = ${posts.id} 
+                              AND ${postLikes.user_id} = ${session?.user.id}
+                          )`,
+                        likesCount: sql<number>`(SELECT COUNT(${postLikes.post_id}) FROM ${postLikes} WHERE (${postLikes.post_id} = ${posts.id}))`,
                     })
                     .from(posts)
                     .leftJoin(users, eq(users.id, posts.createdById))
@@ -55,7 +67,7 @@ export const postRouter = router({
                         content: JSON.parse(post[0].content) as JSONContent,
                     };
                 }
-            } catch (error) {
+            } catch {
                 throw new TRPCError({
                     message: 'Error retrieving post',
                     code: 'INTERNAL_SERVER_ERROR',
@@ -101,8 +113,10 @@ export const postRouter = router({
                             )
                         `,
                         createdAt: posts.createdAt,
-                        createdAtFormatted: sql<string>`to_char(${posts.createdAt}, 'Mon DD')`,
+                        createdAtFormatted: sql<string>`TO_CHAR(${posts.createdAt}, 'Mon DD')`,
                         readTime: posts.readTime,
+                        likesCount: sql<number>`(SELECT COUNT(${postLikes.post_id}) FROM ${postLikes} WHERE (${postLikes.post_id} = ${posts.id}))`,
+
                         avatar: users.image,
                         name: users.name,
                         username: users.username,
@@ -225,11 +239,46 @@ export const postRouter = router({
                 return {
                     url: `/${slug}`,
                 };
-            } catch (error) {
-                console.error('Error saving post', error);
-
+            } catch {
                 throw new TRPCError({
                     message: 'Error saving post',
+                    code: 'INTERNAL_SERVER_ERROR',
+                });
+            }
+        }),
+    setPostLike: protectedProcedure
+        .input(z.object({ postId: z.number(), liked: z.boolean() }))
+        .mutation(async ({ input, ctx: { session, db } }) => {
+            try {
+                const userId = session.user.id;
+
+                // Check if a like entry exists for the user and post
+                const existingLike = await db
+                    .select()
+                    .from(postLikes)
+                    .where(and(eq(postLikes.post_id, input.postId), eq(postLikes.user_id, userId)))
+                    .limit(1)
+                    .execute();
+
+                if (existingLike.length > 0 && !input.liked) {
+                    await db
+                        .delete(postLikes)
+                        .where(
+                            and(eq(postLikes.post_id, input.postId), eq(postLikes.user_id, userId))
+                        )
+                        .execute();
+                } else if (existingLike.length === 0 && input.liked) {
+                    await db
+                        .insert(postLikes)
+                        .values({
+                            post_id: input.postId,
+                            user_id: userId,
+                        })
+                        .execute();
+                }
+            } catch {
+                throw new TRPCError({
+                    message: 'Error changing like on post',
                     code: 'INTERNAL_SERVER_ERROR',
                 });
             }
