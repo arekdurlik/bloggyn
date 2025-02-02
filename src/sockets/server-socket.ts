@@ -5,7 +5,10 @@ export function getServerSocket(): Socket {
     if (!process.env.NEXTAUTH_SECRET) return globalThis.serverSocket;
 
     if (!globalThis.serverSocket) {
-        const token = sign({ sub: 'a' }, process.env.NEXTAUTH_SECRET ?? '');
+        const token = sign(
+            { sub: process.env.SOCKET_NEXTJS_ID },
+            process.env.NEXTAUTH_SECRET ?? ''
+        );
 
         const socket = io(process.env.NEXT_PUBLIC_WEBSOCKET_API_URL, {
             transports: ['websocket', 'polling'],

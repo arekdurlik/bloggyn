@@ -3,6 +3,8 @@ import { TRPCError, type inferRouterOutputs } from '@trpc/server';
 import { and, desc, eq, ilike, lt, lte, or, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import { accounts, following, posts, users } from '../db/schema';
+import { notify } from '../utils';
+import { NotificationTargetType, NotificationType } from './notifications';
 
 export type UserRouterOutput = inferRouterOutputs<typeof userRouter>;
 
@@ -154,6 +156,7 @@ export const userRouter = router({
                     } catch {}
                 }
 
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const { id, ...noId } = user[0];
 
                 return {
@@ -173,7 +176,9 @@ export const userRouter = router({
                 username: z.string(),
             })
         )
-        .mutation(async ({ input, ctx: { db, session } }) => {
+        .mutation(async ({ input, ctx }) => {
+            const { db, session } = ctx;
+
             try {
                 const toFollow = await db.query.users.findFirst({
                     where: eq(users.username, input.username),
@@ -187,6 +192,17 @@ export const userRouter = router({
                     followerId: session.user.id,
                     followedId: toFollow.id,
                 });
+
+                notify(
+                    session.user.id,
+                    [toFollow.id.toString()],
+                    {
+                        notificationType: NotificationType.FOLLOW,
+                        targetType: NotificationTargetType.USER,
+                        targetId: toFollow.id.toString(),
+                    },
+                    ctx
+                );
 
                 return 'ok';
             } catch {

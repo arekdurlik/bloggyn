@@ -1,6 +1,7 @@
 import { BIO_MAX } from '@/validation/user/bio';
 import { relations, sql } from 'drizzle-orm';
 import {
+    boolean,
     index,
     integer,
     pgTableCreator,
@@ -32,7 +33,7 @@ export const users = createTable('user', {
     email: varchar('email', { length: 255 }).notNull().unique(),
     emailVerified: timestamp('emailVerified', { mode: 'date' }),
     image: varchar('image', { length: 255 }),
-    cover_image: varchar('cover_image', { length: 255 }),
+    coverImage: varchar('cover_image', { length: 255 }),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
@@ -89,14 +90,14 @@ export const accounts = createTable(
         providerAccountId: varchar('provider_account_id', {
             length: 255,
         }).notNull(),
-        refresh_token: text('refresh_token'),
-        refresh_token_expires_in: integer('refresh_token_expires_in'),
-        access_token: text('access_token'),
-        expires_at: integer('expires_at'),
-        token_type: varchar('token_type', { length: 255 }),
+        refreshToken: text('refresh_token'),
+        refreshTokenExpires_in: integer('refresh_token_expires_in'),
+        accessToken: text('access_token'),
+        expiresAt: integer('expires_at'),
+        tokenType: varchar('token_type', { length: 255 }),
         scope: varchar('scope', { length: 255 }),
-        id_token: text('id_token'),
-        session_state: varchar('session_state', { length: 255 }),
+        idToken: text('id_token'),
+        sessionState: varchar('session_state', { length: 255 }),
         createdAt: timestamp('created_at', {
             mode: 'string',
             withTimezone: true,
@@ -163,8 +164,8 @@ export const postsRelations = relations(posts, ({ one, many }) => ({
 export const postImages = createTable(
     'post_image',
     {
-        image_id: varchar('image_id', { length: 255 }).notNull(),
-        post_id: integer('post_id').notNull(),
+        imageId: varchar('image_id', { length: 255 }).notNull(),
+        postId: integer('post_id').notNull(),
 
         createdAt: timestamp('created_at', {
             mode: 'string',
@@ -175,22 +176,22 @@ export const postImages = createTable(
     },
     postImage => ({
         compoundKey: primaryKey({
-            columns: [postImage.image_id, postImage.post_id],
+            columns: [postImage.imageId, postImage.postId],
         }),
     })
 );
 
 export const postImagesRelations = relations(postImages, ({ one }) => ({
-    post: one(posts, { fields: [postImages.post_id], references: [posts.id] }),
+    post: one(posts, { fields: [postImages.postId], references: [posts.id] }),
 }));
 
 export const postLikes = createTable(
     'post_like',
     {
-        post_id: integer('post_id')
+        postId: integer('post_id')
             .notNull()
             .references(() => posts.id, { onDelete: 'cascade' }),
-        user_id: varchar('user_id', { length: 255 }).notNull(),
+        userId: varchar('user_id', { length: 255 }).notNull(),
         createdAt: timestamp('created_at', {
             mode: 'string',
             withTimezone: true,
@@ -200,12 +201,48 @@ export const postLikes = createTable(
     },
     postLike => ({
         compoundKey: primaryKey({
-            columns: [postLike.post_id, postLike.user_id],
+            columns: [postLike.postId, postLike.userId],
         }),
     })
 );
 
 export const postLikesRelations = relations(postLikes, ({ one }) => ({
-    post: one(posts, { fields: [postLikes.post_id], references: [posts.id] }),
-    user: one(users, { fields: [postLikes.user_id], references: [users.id] }),
+    post: one(posts, { fields: [postLikes.postId], references: [posts.id] }),
+    user: one(users, { fields: [postLikes.userId], references: [users.id] }),
 }));
+
+export const notifications = createTable(
+    'notifications',
+    {
+        id: serial('id').primaryKey(),
+        fromId: varchar('from_id', { length: 255 })
+            .references(() => users.id)
+            .notNull(),
+        toId: varchar('to_id', { length: 255 })
+            .references(() => users.id)
+            .notNull(),
+        type: varchar('type', { length: 50 }).notNull(),
+        targetType: varchar('target_type', { length: 50 }).notNull(),
+        targetId: varchar('target_id', { length: 255 }).notNull(),
+        isMain: boolean('is_main').default(false),
+        moreCount: integer('more_count').default(0),
+        readAt: timestamp('read_at'),
+        createdAt: timestamp('created_at', {
+            mode: 'string',
+            withTimezone: true,
+        })
+            .default(sql`CURRENT_TIMESTAMP`)
+            .notNull(),
+        updatedAt: timestamp('updated_at', {
+            mode: 'string',
+            withTimezone: true,
+        })
+            .default(sql`CURRENT_TIMESTAMP`)
+            .notNull(),
+    },
+    table => ({
+        toIdTypeIdx: index('to_id_type_idx').on(table.toId, table.type),
+        targetIdx: index('target_idx').on(table.targetId, table.targetType),
+        createdAtIdx: index('created_at_idx').on(table.createdAt),
+    })
+);

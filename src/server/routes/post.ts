@@ -1,6 +1,4 @@
-import { SOCKET_EV } from '@/lib/constants';
 import { modifySingleCharWords } from '@/lib/helpers';
-import { getServerSocket } from '@/sockets/serverSocket';
 import { procedure, protectedProcedure, router } from '@/trpc';
 import { postSchema } from '@/validation/user/post';
 import type { JSONContent } from '@tiptap/react';
@@ -8,7 +6,9 @@ import { type inferRouterOutputs, TRPCError } from '@trpc/server';
 import { and, desc, eq, ilike, like, lt, lte, or, sql } from 'drizzle-orm';
 import slugify from 'slug';
 import { z } from 'zod';
-import { following, postImages, postLikes, posts, users } from '../db/schema';
+import { following, notifications, postImages, postLikes, posts, users } from '../db/schema';
+import { notify } from '../utils';
+import { NotificationTargetType, NotificationType } from './notifications';
 
 export type PostRouterOutput = inferRouterOutputs<typeof postRouter>;
 
@@ -42,14 +42,14 @@ export const postRouter = router({
                         },
                         isLiked: sql<boolean>`(
                             SELECT CASE 
-                              WHEN COUNT(${postLikes.post_id}) > 0 THEN true 
+                              WHEN COUNT(${postLikes.postId}) > 0 THEN true 
                               ELSE false 
                             END 
                             FROM ${postLikes} 
-                            WHERE ${postLikes.post_id} = ${posts.id} 
-                              AND ${postLikes.user_id} = ${session?.user.id}
+                            WHERE ${postLikes.postId} = ${posts.id} 
+                              AND ${postLikes.userId} = ${session?.user.id}
                           )`,
-                        likesCount: sql<number>`(SELECT COUNT(${postLikes.post_id}) FROM ${postLikes} WHERE (${postLikes.post_id} = ${posts.id}))`,
+                        likesCount: sql<number>`(SELECT COUNT(${postLikes.postId}) FROM ${postLikes} WHERE (${postLikes.postId} = ${posts.id}))`,
                     })
                     .from(posts)
                     .leftJoin(users, eq(users.id, posts.createdById))
@@ -115,7 +115,7 @@ export const postRouter = router({
                         createdAt: posts.createdAt,
                         createdAtFormatted: sql<string>`TO_CHAR(${posts.createdAt}, 'Mon DD')`,
                         readTime: posts.readTime,
-                        likesCount: sql<number>`(SELECT COUNT(${postLikes.post_id}) FROM ${postLikes} WHERE (${postLikes.post_id} = ${posts.id}))`,
+                        likesCount: sql<number>`(SELECT COUNT(${postLikes.postId}) FROM ${postLikes} WHERE (${postLikes.postId} = ${posts.id}))`,
 
                         avatar: users.image,
                         name: users.name,
@@ -177,49 +177,49 @@ export const postRouter = router({
             }
         }),
 
-    submitPost: protectedProcedure
-        .input(postSchema)
-        .mutation(async ({ input, ctx: { session, db } }) => {
-            try {
-                let slug = slugify(input.title);
+    submitPost: protectedProcedure.input(postSchema).mutation(async ({ input, ctx }) => {
+        try {
+            const { session, db } = ctx;
 
-                const sameTitle = await db
-                    .select()
-                    .from(posts)
-                    .where(like(posts.slug, `%${slug}%`));
+            let slug = slugify(input.title);
 
-                if (sameTitle.length > 0) {
-                    const index = sameTitle.length + 1;
-                    slug += '-' + index;
-                }
+            const sameTitle = await db
+                .select()
+                .from(posts)
+                .where(like(posts.slug, `%${slug}%`));
 
-                const nonBreakingSingleCharTitle = modifySingleCharWords(input.title);
+            if (sameTitle.length > 0) {
+                const index = sameTitle.length + 1;
+                slug += '-' + index;
+            }
 
-                const cardImage = getCardImage(input.content);
-                const summary = createPostSummary(input.content);
-                const readTime = calculateReadTime(input.content);
+            const nonBreakingSingleCharTitle = modifySingleCharWords(input.title);
 
-                // store post
-                const res = await db
-                    .insert(posts)
-                    .values({
-                        title: nonBreakingSingleCharTitle,
-                        cardImage,
-                        slug,
-                        summary,
-                        readTime,
-                        content: JSON.stringify(input.content),
-                        createdById: session.user.id,
-                    })
-                    .returning();
+            const cardImage = getCardImage(input.content);
+            const summary = createPostSummary(input.content);
+            const readTime = calculateReadTime(input.content);
 
+            // store post
+            const [post] = await db
+                .insert(posts)
+                .values({
+                    title: nonBreakingSingleCharTitle,
+                    cardImage,
+                    slug,
+                    summary,
+                    readTime,
+                    content: JSON.stringify(input.content),
+                    createdById: session.user.id,
+                })
+                .returning();
+
+            if (post) {
                 // store image ids
-                const post = res[0];
-                if (post && input.imageIds && input.imageIds.length > 0) {
+                if (input.imageIds && input.imageIds.length > 0) {
                     await db.insert(postImages).values(
                         input.imageIds.map(id => ({
-                            post_id: post.id,
-                            image_id: id,
+                            postId: post.id,
+                            imageId: id,
                         }))
                     );
                 }
@@ -232,49 +232,114 @@ export const postRouter = router({
                     .from(following)
                     .where(eq(following.followedId, session.user.id));
 
-                followers.forEach(follower => {
-                    getServerSocket().emit(SOCKET_EV.NOTIFY, follower.id);
-                });
-
-                return {
-                    url: `/${slug}`,
-                };
-            } catch {
-                throw new TRPCError({
-                    message: 'Error saving post',
-                    code: 'INTERNAL_SERVER_ERROR',
-                });
+                notify(
+                    session.user.id,
+                    followers.map(follower => follower.id.toString()),
+                    {
+                        notificationType: NotificationType.POST,
+                        targetType: NotificationTargetType.POST,
+                        targetId: post.id.toString(),
+                    },
+                    ctx
+                );
             }
-        }),
+
+            return {
+                url: `/${slug}`,
+            };
+        } catch {
+            throw new TRPCError({
+                message: 'Error saving post',
+                code: 'INTERNAL_SERVER_ERROR',
+            });
+        }
+    }),
     setPostLike: protectedProcedure
         .input(z.object({ postId: z.number(), liked: z.boolean() }))
-        .mutation(async ({ input, ctx: { session, db } }) => {
+        .mutation(async ({ input, ctx }) => {
+            const { session, db } = ctx;
+            const userId = session.user.id;
+
             try {
-                const userId = session.user.id;
+                const [res] = await db
+                    .select({
+                        existingLike: postLikes.userId,
+                        authorId: posts.createdById,
+                    })
+                    .from(posts)
+                    .leftJoin(
+                        postLikes,
+                        and(eq(postLikes.postId, input.postId), eq(postLikes.userId, userId))
+                    )
+                    .where(eq(posts.id, input.postId))
+                    .limit(1);
 
-                // Check if a like entry exists for the user and post
-                const existingLike = await db
-                    .select()
-                    .from(postLikes)
-                    .where(and(eq(postLikes.post_id, input.postId), eq(postLikes.user_id, userId)))
-                    .limit(1)
-                    .execute();
+                if (res && res.existingLike && res.authorId && !input.liked) {
+                    // remove like and notification + decrease moreCount
+                    await db.transaction(async trx => {
+                        await trx
+                            .delete(postLikes)
+                            .where(
+                                and(
+                                    eq(postLikes.postId, input.postId),
+                                    eq(postLikes.userId, userId)
+                                )
+                            );
 
-                if (existingLike.length > 0 && !input.liked) {
-                    await db
-                        .delete(postLikes)
-                        .where(
-                            and(eq(postLikes.post_id, input.postId), eq(postLikes.user_id, userId))
-                        )
-                        .execute();
-                } else if (existingLike.length === 0 && input.liked) {
-                    await db
-                        .insert(postLikes)
-                        .values({
-                            post_id: input.postId,
-                            user_id: userId,
-                        })
-                        .execute();
+                        const [mainNotification] = await trx
+                            .select({ id: notifications.id, moreCount: notifications.moreCount })
+                            .from(notifications)
+                            .where(
+                                and(
+                                    eq(notifications.toId, res.authorId),
+                                    eq(notifications.targetId, input.postId.toString()),
+                                    eq(notifications.type, NotificationType.LIKE),
+                                    eq(notifications.isMain, true)
+                                )
+                            )
+                            .limit(1);
+
+                        await trx
+                            .delete(notifications)
+                            .where(
+                                and(
+                                    eq(notifications.toId, res.authorId),
+                                    eq(notifications.targetId, input.postId.toString()),
+                                    eq(notifications.type, NotificationType.LIKE),
+                                    eq(notifications.fromId, userId),
+                                    eq(notifications.isMain, false)
+                                )
+                            );
+
+                        if (mainNotification) {
+                            if (mainNotification.moreCount && mainNotification.moreCount > 0) {
+                                await trx
+                                    .update(notifications)
+                                    .set({ moreCount: mainNotification.moreCount - 1 })
+                                    .where(eq(notifications.id, mainNotification.id));
+                            } else {
+                                await trx
+                                    .delete(notifications)
+                                    .where(eq(notifications.id, mainNotification.id));
+                            }
+                        }
+                    });
+                } else if (res && !res.existingLike && input.liked) {
+                    // add like and notification
+                    await db.insert(postLikes).values({ postId: input.postId, userId });
+
+                    if (res.authorId) {
+                        notify(
+                            userId,
+                            [res.authorId.toString()],
+                            {
+                                notificationType: NotificationType.LIKE,
+                                targetType: NotificationTargetType.POST,
+                                targetId: input.postId.toString(),
+                            },
+                            ctx
+                        );
+                    }
                 }
             } catch {
                 throw new TRPCError({

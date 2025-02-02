@@ -1,10 +1,10 @@
 import { procedure, router } from '@/trpc';
 import { type inferRouterOutputs } from '@trpc/server';
 
-import { XTRPCError } from '@/validation/xtrpc-error';
-import { users } from '@/server/db/schema';
-import { eq } from 'drizzle-orm';
 import { compareAsync } from '@/server/auth';
+import { users } from '@/server/db/schema';
+import { XTRPCError } from '@/validation/xtrpc-error';
+import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 
 export type SignInRouterOutput = inferRouterOutputs<typeof signInRouter>;
@@ -23,7 +23,7 @@ export const signInRouter = router({
                 const password = input.password;
                 const user = await db.query.users.findFirst({
                     with: {
-                        accounts: true,
+                        account: true,
                     },
                     where: eq(users.email, email),
                 });
@@ -32,20 +32,14 @@ export const signInRouter = router({
                     throw new Error();
                 }
 
-                const account = user.accounts[0];
+                const account = user.account[0];
 
                 if (!account) {
                     throw new Error();
                 }
 
-                if (
-                    'password' in account &&
-                    typeof account.password === 'string'
-                ) {
-                    const match = await compareAsync(
-                        password,
-                        account.password
-                    );
+                if ('password' in account && typeof account.password === 'string') {
+                    const match = await compareAsync(password, account.password);
 
                     if (!match) {
                         throw new Error();
