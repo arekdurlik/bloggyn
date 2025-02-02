@@ -2,7 +2,7 @@ import { SOCKET_EV } from '@/lib/constants';
 import { getServerSocket } from '@/sockets/server-socket';
 import { protectedProcedure, router } from '@/trpc';
 import { TRPCError, type inferRouterOutputs } from '@trpc/server';
-import { and, desc, eq, sql } from 'drizzle-orm';
+import { and, desc, eq, isNull, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import { notifications } from '../db/schema';
 
@@ -136,5 +136,17 @@ export const notificationsRouter = router({
             }));
 
         return enhancedNotifications;
+    }),
+    getUnreadCount: protectedProcedure.query(async ({ ctx: { db, session } }) => {
+        const userId = session.user.id;
+
+        const unreadCount = await db
+            .select({
+                count: sql<number>`COUNT(*)`,
+            })
+            .from(notifications)
+            .where(and(eq(notifications.toId, userId), isNull(notifications.readAt)));
+
+        return unreadCount[0]?.count ?? 0;
     }),
 });

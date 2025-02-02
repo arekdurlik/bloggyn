@@ -6,12 +6,21 @@
     }
 }
 
+@keyframes flash {
+    50% {
+        background-color: #f77;
+    }
+}
+
 @keyframes ring {
     25% {
         rotate: 10deg;
     }
     50% {
-        rotate: -10deg;
+        rotate: -20deg;
+    }
+    75% {
+        rotate: 20deg;
     }
 }
 
@@ -24,22 +33,28 @@
     border-radius: var(--rounded-full);
     height: 18px;
     min-width: 18px;
-    padding: 4px;
-    background: linear-gradient(45deg, rgb(212, 58, 58), rgb(228, 80, 129));
+    padding-inline: 4px;
+    background: var(--color-social);
 
     display: flex;
     justify-content: center;
     align-items: center;
-    color: white;
-    font-size: 12px;
+    text-align: center;
     font-weight: 400;
 
     transform: translateX(14px) translateY(-14px);
+    transition: translate var(--transition-default), scale var(--transition-default);
 
-    transition: transform var(--transition-slow);
     scale: 0;
     box-shadow: var(--shadow-default);
     user-select: none;
+
+    span {
+        line-height: 1;
+        font-size: 12px;
+
+        color: white;
+    }
 }
 
 .visible {
@@ -51,6 +66,7 @@
         animation: ring var(--transition-sloth) ease-in-out;
     }
     .counter {
-        animation: pop-up var(--transition-default) ease-out;
+        animation: pop-up var(--transition-default) ease-out,
+            flash var(--transition-sloth) ease-in-out;
     }
 }

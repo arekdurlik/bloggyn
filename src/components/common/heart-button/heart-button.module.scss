@@ -64,20 +64,20 @@
 
     &.set {
         svg {
-            fill: red;
-            stroke: red;
+            fill: var(--color-social);
+            stroke: var(--color-social);
         }
     }
 
     &.toggled {
         .heart-wrapper {
-            animation: rotate 1s, scale 1s;
+            animation: rotate var(--transition-sloth), scale var(--transition-sloth);
         }
 
         svg {
             animation-name: flash;
             animation-timing-function: ease-out;
-            animation-duration: 1s;
+            animation-duration: var(--transition-sloth);
             animation-fill-mode: forwards;
         }
     }
