@@ -1,5 +1,6 @@
 export declare const bell: string;
 export declare const button: string;
+export declare const content: string;
 export declare const counter: string;
 export declare const flash: string;
 export declare const newNotification: string;

@@ -9,14 +9,18 @@
 
 .wrapper {
     position: relative;
-    top: 100%;
-    padding: var(--spacing-xxl);
     margin: 0 auto;
+    top: 100%;
+    margin-top: var(--spacing-xxl);
     display: flex;
     flex-direction: column;
     align-items: center;
     max-width: 800px;
     width: 100%;
+
+    @include responsive('lg') {
+        margin-top: var(--spacing-large);
+    }
 
     &:before {
         content: '';
@@ -51,6 +55,7 @@
         width: 100%;
         max-width: 350px;
         margin-inline: var(--spacing-large);
+        width: calc(100vw - 2 * var(--spacing-xxl));
     }
 }
 
@@ -74,8 +79,15 @@
 .content {
     width: calc(100% - (2 * var(--spacing-xxl)));
     max-width: 550px;
+    max-height: calc(100vh - var(--headerHeight) - 2 * var(--spacing-xl)) !important;
 
     @include responsive('lg') {
-        top: 90px;
+        max-height: calc(100vh - var(--headerHeight) - 2 * var(--spacing-xxxl)) !important;
+
+        top: calc(var(--headerHeight));
     }
+}
+
+.divider {
+    margin-top: var(--spacing-large) !important;
 }

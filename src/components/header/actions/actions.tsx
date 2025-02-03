@@ -1,16 +1,16 @@
+import { ButtonLink } from '@/components/common/inputs/button';
+import { cn } from '@/lib/helpers';
+import { Pencil } from 'lucide-react';
 import { useSession } from 'next-auth/react';
-import User from './user/user';
 import { usePathname } from 'next/navigation';
 import { Fragment } from 'react';
-import { ButtonLink } from '@/components/common/inputs/button';
-import { Pencil } from 'lucide-react';
 import CenterAction from './center-action/center-action';
-import { cn } from '@/lib/helpers';
+import User from './user/user';
 
-import styles from './actions.module.scss';
 import shared from '@/styles/shared.module.scss';
+import styles from './actions.module.scss';
 
-export default function Actions() {
+export default function Actions({ unreadNotifications }: { unreadNotifications: number }) {
     const { data: session } = useSession();
     const pathname = usePathname();
 
@@ -25,12 +25,14 @@ export default function Actions() {
                             <span>New post</span>
                         </ButtonLink>
                     )}
-                    <User session={session} />
+                    <User session={session} unreadNotifications={unreadNotifications} />
                 </Fragment>
             ) : (
                 <div className={shared.buttonGroup}>
                     <ButtonLink href="/sign-in">Sign in</ButtonLink>
-                    <ButtonLink href="/sign-up" inverted>Join</ButtonLink>
+                    <ButtonLink href="/sign-up" inverted>
+                        Join
+                    </ButtonLink>
                 </div>
             )}
         </div>

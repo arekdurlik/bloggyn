@@ -27,7 +27,13 @@ export default function SearchResults() {
     const debouncedQuery = useDebounce(query, 250);
     const results = trpc.search.useQuery(
         { query: debouncedQuery },
-        { refetchOnMount: false, enabled: debouncedQuery.length > 1, suspense: true }
+        {
+            refetchOnMount: false,
+            enabled: active && debouncedQuery.length > 1,
+            suspense: true,
+            throwOnError: false,
+            placeholderData: debouncedQuery.length < 2 ? { posts: [], users: [] } : undefined,
+        }
     );
     const [previousResults, setPreviousResults] = useState<NonNullable<typeof results.data>>({
         posts: [],
@@ -66,7 +72,7 @@ export default function SearchResults() {
                                     <Users users={displayedResults.users} />
                                 ) : null}
                                 {displayedResults.users.length && displayedResults.posts.length ? (
-                                    <DropdownMenuDivider />
+                                    <DropdownMenuDivider className={styles.divider} />
                                 ) : null}
                                 {displayedResults.posts.length ? (
                                     <Posts posts={displayedResults.posts ?? []} />

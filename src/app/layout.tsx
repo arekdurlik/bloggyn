@@ -15,11 +15,10 @@ export const metadata: Metadata = {
     icons: [{ rel: 'icon', url: '/favicon.ico' }],
 };
 
-export default async function RootLayout({
-    children,
-}: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
     const session = await getServerAuthSession();
     const theme = cookies().get('theme')?.value ?? 'light';
+    const unreadNotifications = Number(cookies().get('unread-notifications')?.value ?? '0');
 
     return (
         <html lang="en" data-theme={theme} suppressHydrationWarning>
@@ -28,12 +27,10 @@ export default async function RootLayout({
                 <Providers>
                     <div className={styles.wrapper}>
                         <SessionProvider session={session}>
-                            <Header theme={theme} />
+                            <Header theme={theme} unreadNotifications={unreadNotifications} />
                             <div className={styles.container}>
                                 <main className={styles.main}>
-                                    <div className={styles.content}>
-                                        {children}
-                                    </div>
+                                    <div className={styles.content}>{children}</div>
                                 </main>
                             </div>
                         </SessionProvider>

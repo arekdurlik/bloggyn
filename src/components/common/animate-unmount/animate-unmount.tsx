@@ -1,28 +1,31 @@
+import { cn } from '@/lib/helpers';
 import { cloneElement, useEffect, useState } from 'react';
+import styles from './animate-unmont.module.scss';
 
 type Props = {
     mounted: boolean;
     children: JSX.Element;
-    time?: number;
     onRender?: () => void;
+    onBeforeRender?: () => void;
 };
 
-export default function AnimatedUnmount({ mounted, children, time = 200, onRender }: Props) {
+export default function AnimatedUnmount({ mounted, children, onRender, onBeforeRender }: Props) {
     const [shouldRender, setShouldRender] = useState(mounted);
-    const unmountedStyle = {
-        opacity: 0,
-        transition: `opacity ${time}ms`,
-    };
+    const [fadeIn, setFadeIn] = useState(shouldRender);
 
     useEffect(() => {
-        shouldRender && onRender?.();
+        if (shouldRender) {
+            setFadeIn(true);
+            onRender?.();
+        }
     }, [shouldRender]);
 
     useEffect(() => {
         if (mounted && !shouldRender) {
+            onBeforeRender?.();
             setShouldRender(true);
         }
-    }, [mounted, time, shouldRender]);
+    }, [mounted, shouldRender]);
 
     const cloned = cloneElement(children, {
         onTransitionEnd: () => {
@@ -30,7 +33,9 @@ export default function AnimatedUnmount({ mounted, children, time = 200, onRende
                 setShouldRender(false);
             }
         },
-        style: mounted ? children.props.style : unmountedStyle,
+        className: mounted
+            ? cn(children.props.className, fadeIn && styles.mounted)
+            : cn(children.props.className, styles.unmounted),
     });
 
     return shouldRender && cloned;

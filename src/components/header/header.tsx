@@ -10,7 +10,13 @@ import Link from 'next/link';
 import Actions from './actions/actions';
 import styles from './header.module.scss';
 
-export default function Header({ theme }: { theme?: string }) {
+export default function Header({
+    theme,
+    unreadNotifications,
+}: {
+    theme?: string;
+    unreadNotifications: number;
+}) {
     const ref = useRef<HTMLDivElement>(null);
     useHideOnScroll(ref);
     const api = useSearchState(state => state.api);
@@ -25,7 +31,7 @@ export default function Header({ theme }: { theme?: string }) {
                         </Link>
                         <ThemeSwitcher theme={theme} />
                     </div>
-                    <Actions />
+                    <Actions unreadNotifications={unreadNotifications} />
                 </div>
             </header>
         </Fragment>

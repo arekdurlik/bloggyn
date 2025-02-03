@@ -3,14 +3,40 @@
     position: absolute;
     background-color: var(--bgColor-default);
     z-index: 99;
+    max-width: calc(100vw - var(--spacing-xxxl));
     border: 1px solid var(--border);
     border-radius: var(--rounded-large);
     padding: var(--spacing-default);
     box-shadow: var(--shadow-large);
     pointer-events: all;
 
+    max-height: calc(100vh - var(--headerHeight) - var(--spacing-large));
+    overflow-y: auto;
+    scrollbar-gutter: stable both-edges;
     display: flex;
     flex-direction: column;
+
+    &::-webkit-scrollbar {
+        width: 20px;
+    }
+
+    /* Track */
+    &::-webkit-scrollbar-track {
+        background: transparent;
+        border-radius: var(--rounded-full);
+    }
+
+    /* Handle */
+    &::-webkit-scrollbar-thumb {
+        background-color: #ddd;
+        border: 5px solid var(--bgColor-default);
+        border-radius: var(--rounded-full);
+    }
+
+    /* Handle on hover */
+    &::-webkit-scrollbar-thumb:hover {
+        background: #bbb;
+    }
 
     svg {
         width: 16px;
