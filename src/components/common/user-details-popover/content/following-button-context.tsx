@@ -3,7 +3,7 @@
 import { useDebounce } from '@/lib/hooks/use-debounce';
 import { useUpdateEffect } from '@/lib/hooks/use-update-effect';
 import { trpc } from '@/trpc/client';
-import { createContext, ReactNode, useContext, useEffect, useRef, useState } from 'react';
+import { createContext, type ReactNode, useContext, useEffect, useRef, useState } from 'react';
 
 type FollowingButtonContextType = {
     followed: boolean;
@@ -38,7 +38,11 @@ export const FollowingButtonProvider = ({
     const pending = useRef(false);
     const debouncedFollow = useDebounce(followed, 2000, { skipFirst: true });
 
-    const followMutation = trpc.follow.useMutation();
+    const followMutation = trpc.follow.useMutation({
+        onMutate: () => {
+            pending.current = false;
+        },
+    });
     const unfollowMutation = trpc.unfollow.useMutation();
     const utils = trpc.useUtils();
 
@@ -53,7 +57,6 @@ export const FollowingButtonProvider = ({
             } else {
                 unfollowMutation.mutate({ username });
             }
-            pending.current = false;
             utils.getUserDetails.invalidate({ username });
         }
 

@@ -1,10 +1,10 @@
+import { NotificationTargetType, NotificationType } from '@/lib/constants';
 import { procedure, protectedProcedure, router } from '@/trpc';
 import { TRPCError, type inferRouterOutputs } from '@trpc/server';
-import { and, desc, eq, ilike, lt, lte, or, sql } from 'drizzle-orm';
+import { and, countDistinct, desc, eq, ilike, lt, lte, or, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import { accounts, following, posts, users } from '../db/schema';
 import { notify } from '../utils';
-import { NotificationTargetType, NotificationType } from './notifications';
 
 export type UserRouterOutput = inferRouterOutputs<typeof userRouter>;
 
@@ -129,11 +129,14 @@ export const userRouter = router({
                         name: users.name,
                         bio: users.bio,
                         avatar: users.image,
-                        followersCount: sql<number>`(SELECT COUNT(${following.followerId}) FROM ${following} WHERE (${following.followedId} = ${users.id}))`,
-                        postsCount: sql<number>`(SELECT COUNT(${posts.id}) FROM ${posts} WHERE (${posts.createdById} = CAST(${users.id} AS TEXT)))`,
+                        followersCount: countDistinct(following.followedId),
+                        postsCount: countDistinct(posts.id),
                     })
                     .from(users)
-                    .where(eq(users.username, input.username));
+                    .leftJoin(following, eq(users.id, following.followedId))
+                    .leftJoin(posts, eq(users.id, posts.createdById))
+                    .where(eq(users.username, input.username))
+                    .groupBy(users.id);
 
                 let followed = false;
 
@@ -180,6 +183,10 @@ export const userRouter = router({
             const { db, session } = ctx;
 
             try {
+                if (session.user.username === input.username) {
+                    throw new Error();
+                }
+
                 const toFollow = await db.query.users.findFirst({
                     where: eq(users.username, input.username),
                 });

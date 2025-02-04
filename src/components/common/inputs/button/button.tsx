@@ -9,14 +9,7 @@ export type ButtonProps = {
 
 export default function Button({ inverted, className, ...props }: ButtonProps) {
     return (
-        <button
-            className={cn(
-                styles.button,
-                inverted && styles.inverted,
-                className
-            )}
-            {...props}
-        >
+        <button className={cn(styles.button, inverted && styles.inverted, className)} {...props}>
             <span className={styles.content}>{props.children}</span>
         </button>
     );
@@ -30,12 +23,7 @@ type ButtonLinkProps = {
     children?: React.ReactNode;
 } & LinkProps;
 
-export function ButtonLink({
-    inverted,
-    disabled,
-    className,
-    ...props
-}: ButtonLinkProps) {
+export function ButtonLink({ inverted, disabled, className, ...props }: ButtonLinkProps) {
     return (
         <Link
             aria-disabled={disabled}

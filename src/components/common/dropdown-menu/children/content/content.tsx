@@ -14,6 +14,9 @@ type Props = {
     className?: string;
     style?: CSSProperties;
     noAutofocus?: boolean;
+    stableScrollbarGutter?: boolean;
+    onUmnount?: () => void;
+    onClose?: () => void;
 };
 
 export default function DropdownMenuContent({
@@ -24,6 +27,9 @@ export default function DropdownMenuContent({
     className,
     style,
     noAutofocus = false,
+    stableScrollbarGutter = false,
+    onUmnount,
+    onClose,
 }: Props) {
     const [{ open, manualOpen, hoverMode, triggerRefs }, api] = useDropdownContext();
     const ref = useRef<HTMLUListElement | null>(null);
@@ -130,11 +136,16 @@ export default function DropdownMenuContent({
     }
 
     return (
-        <AnimatedUnmount mounted={finalOpen} onRender={calculatePosition}>
+        <AnimatedUnmount
+            mounted={finalOpen}
+            onRender={calculatePosition}
+            onUnmount={onUmnount}
+            onClose={onClose}
+        >
             <ul
                 ref={ref}
                 onAnimationStart={register}
-                className={cn(styles.container, className)}
+                className={cn(styles.container, stableScrollbarGutter && styles.stable, className)}
                 {...(hoverMode && {
                     onMouseEnter: () => open && api.handleMouseEnter(),
                     onMouseLeave: api.handleMouseLeave,

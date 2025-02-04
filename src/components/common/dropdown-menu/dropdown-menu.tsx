@@ -1,3 +1,5 @@
+import { useUpdateEffect } from '@/lib/hooks/use-update-effect';
+import { usePathname } from 'next/navigation';
 import {
     createContext,
     type Dispatch,
@@ -37,6 +39,8 @@ type Props = {
     hoverMode?: boolean;
     hoverOpenDelay?: number;
     hoverCloseDelay?: number;
+    onOpen?: () => void;
+    onClose?: () => void;
     onTriggerMouseEnter?: () => void;
     onTriggerMouseLeave?: () => void;
 };
@@ -47,6 +51,8 @@ export default function DropdownMenu({
     hoverMode,
     hoverOpenDelay = 300,
     hoverCloseDelay = hoverOpenDelay,
+    onOpen,
+    onClose,
     onTriggerMouseEnter,
     onTriggerMouseLeave,
 }: Props) {
@@ -61,10 +67,20 @@ export default function DropdownMenu({
     openRef.current = value.open;
     const openTimeout = useRef<NodeJS.Timeout>();
     const closeTimeout = useRef<NodeJS.Timeout>();
+    const path = usePathname();
 
     useEffect(() => {
         setValue(v => ({ ...v, manualOpen: open }));
     }, [open]);
+
+    useEffect(() => {
+        if (value.open) onOpen?.();
+        if (!value.open) onClose?.();
+    }, [value.open]);
+
+    useUpdateEffect(() => {
+        setValue(v => ({ ...v, open: false }));
+    }, [path]);
 
     useEffect(() => {
         if (!value.manualOpen && !value.open) return;

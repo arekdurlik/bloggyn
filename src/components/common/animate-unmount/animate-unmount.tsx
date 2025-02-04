@@ -7,15 +7,23 @@ type Props = {
     children: JSX.Element;
     onRender?: () => void;
     onBeforeRender?: () => void;
+    onUnmount?: () => void;
+    onClose?: () => void;
 };
 
-export default function AnimatedUnmount({ mounted, children, onRender, onBeforeRender }: Props) {
+export default function AnimatedUnmount({
+    mounted,
+    children,
+    onRender,
+    onBeforeRender,
+    onUnmount,
+    onClose,
+}: Props) {
     const [shouldRender, setShouldRender] = useState(mounted);
-    const [fadeIn, setFadeIn] = useState(shouldRender);
+    const [fullyShown, setFullyShown] = useState(false);
 
     useEffect(() => {
         if (shouldRender) {
-            setFadeIn(true);
             onRender?.();
         }
     }, [shouldRender]);
@@ -28,13 +36,24 @@ export default function AnimatedUnmount({ mounted, children, onRender, onBeforeR
     }, [mounted, shouldRender]);
 
     const cloned = cloneElement(children, {
-        onTransitionEnd: () => {
-            if (!mounted) {
+        onAnimationEnd: (event: AnimationEvent) => {
+            if (event.animationName === styles.fadeIn) {
+                setFullyShown(true);
+            }
+            if (event.animationName === styles.fadeOut && !mounted) {
+                onUnmount?.();
+
+                if (fullyShown) {
+                    onClose?.();
+                } else {
+                }
+
+                setFullyShown(false);
                 setShouldRender(false);
             }
         },
         className: mounted
-            ? cn(children.props.className, fadeIn && styles.mounted)
+            ? cn(children.props.className, styles.mounted)
             : cn(children.props.className, styles.unmounted),
     });
 

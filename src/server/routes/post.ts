@@ -1,14 +1,15 @@
+import { NotificationTargetType, NotificationType, SocketEvent } from '@/lib/constants';
 import { modifySingleCharWords } from '@/lib/helpers';
+import { getServerSocket } from '@/sockets/server-socket';
 import { procedure, protectedProcedure, router } from '@/trpc';
 import { postSchema } from '@/validation/user/post';
 import type { JSONContent } from '@tiptap/react';
 import { type inferRouterOutputs, TRPCError } from '@trpc/server';
-import { and, desc, eq, ilike, like, lt, lte, or, sql } from 'drizzle-orm';
+import { and, desc, eq, ilike, isNull, like, lt, lte, or, sql } from 'drizzle-orm';
 import slugify from 'slug';
 import { z } from 'zod';
 import { following, notifications, postImages, postLikes, posts, users } from '../db/schema';
 import { notify } from '../utils';
-import { NotificationTargetType, NotificationType } from './notifications';
 
 export type PostRouterOutput = inferRouterOutputs<typeof postRouter>;
 
@@ -274,7 +275,7 @@ export const postRouter = router({
                     .where(eq(posts.id, input.postId))
                     .limit(1);
 
-                if (res && res.existingLike && res.authorId && !input.liked) {
+                if (res?.existingLike && res.authorId && !input.liked) {
                     // remove like and notification + decrease moreCount
                     await db.transaction(async trx => {
                         await trx
@@ -307,6 +308,7 @@ export const postRouter = router({
                                     eq(notifications.targetId, input.postId.toString()),
                                     eq(notifications.type, NotificationType.LIKE),
                                     eq(notifications.fromId, userId),
+                                    isNull(notifications.readAt),
                                     eq(notifications.isMain, false)
                                 )
                             );
@@ -323,6 +325,8 @@ export const postRouter = router({
                                     .where(eq(notifications.id, mainNotification.id));
                             }
                         }
+
+                        getServerSocket().emit(SocketEvent.NOTIFY, res.authorId);
                     });
                 } else if (res && !res.existingLike && input.liked) {
                     // add like and notification

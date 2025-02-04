@@ -78,6 +78,7 @@
     --color-base-40: hsl(0, 0%, 40%);
     --color-base-50: hsl(0, 0%, 50%);
     --color-base-60: hsl(0, 0%, 60%);
+    --color-base-65: hsl(0, 0%, 65%);
     --color-base-70: hsl(0, 0%, 70%);
     --color-base-75: hsl(0, 0%, 75%);
     --color-base-80: hsl(0, 0%, 80%);
@@ -94,7 +95,7 @@
     --fgColor-default: var(--color-base-20);
     --fgColor-quote: var(--color-base-40);
     --fgColor-subtle: var(--color-base-50);
-    --fgColor-barely-visible: var(--color-base-70);
+    --fgColor-barely-visible: var(--color-base-65);
 
     --header-bgColor: var(--bgColor-default);
     --border: var(--color-base-85);

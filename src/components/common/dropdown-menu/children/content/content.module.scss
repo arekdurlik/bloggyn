@@ -1,20 +1,21 @@
 .container {
     overflow: hidden;
     position: absolute;
+    display: flex;
+    flex-direction: column;
     background-color: var(--bgColor-default);
     z-index: 99;
     max-width: calc(100vw - var(--spacing-xxxl));
+    max-height: calc(100vh - var(--headerHeight) - var(--spacing-large));
     border: 1px solid var(--border);
     border-radius: var(--rounded-large);
     padding: var(--spacing-default);
     box-shadow: var(--shadow-large);
     pointer-events: all;
+    opacity: 0;
 
-    max-height: calc(100vh - var(--headerHeight) - var(--spacing-large));
     overflow-y: auto;
-    scrollbar-gutter: stable both-edges;
-    display: flex;
-    flex-direction: column;
+    overscroll-behavior: contain;
 
     &::-webkit-scrollbar {
         width: 20px;
@@ -42,4 +43,8 @@
         width: 16px;
         height: 16px;
     }
+}
+
+.stable {
+    scrollbar-gutter: stable;
 }

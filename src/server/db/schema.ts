@@ -61,7 +61,9 @@ export const following = createTable(
             .notNull(),
     },
     table => ({
-        pk: primaryKey({ columns: [table.followerId, table.followedId] }),
+        primaryKey: primaryKey({
+            columns: [table.followerId, table.followedId],
+        }),
     })
 );
 
@@ -238,6 +240,7 @@ export const notifications = createTable(
             withTimezone: true,
         })
             .default(sql`CURRENT_TIMESTAMP`)
+            .$onUpdate(() => sql`CURRENT_TIMESTAMP`)
             .notNull(),
     },
     table => ({

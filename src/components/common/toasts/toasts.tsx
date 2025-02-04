@@ -88,7 +88,7 @@ export function Toasts() {
                     onAnimationEnd={handleFadeOut(item.id)}
                 >
                     <div className={styles.content}>
-                        <div>{getIcon(item.type)}</div>
+                        <div className={styles.icon}>{getIcon(item.type)}</div>
                         <span>{item.message}</span>
                         {item.type !== ToastType.PENDING && (
                             <>

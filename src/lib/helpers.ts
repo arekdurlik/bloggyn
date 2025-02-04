@@ -71,3 +71,20 @@ export function capitalize(str: string) {
     if (!str) return str;
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
+
+export function formatTimeAgo(date: string): string {
+    const now = new Date();
+    const targetDate = new Date(date);
+    const diffInMs = now.getTime() - targetDate.getTime();
+
+    const minute = 60 * 1000;
+    const hour = 60 * minute;
+    const day = 24 * hour;
+    const year = 365 * day;
+
+    if (diffInMs < minute) return `${Math.floor(diffInMs / 1000)}s`;
+    if (diffInMs < hour) return `${Math.floor(diffInMs / minute)}m`;
+    if (diffInMs < day) return `${Math.floor(diffInMs / hour)}h`;
+    if (diffInMs < year) return `${Math.floor(diffInMs / day)}d`;
+    return `${Math.floor(diffInMs / year)}y`;
+}

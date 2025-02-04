@@ -1,12 +1,7 @@
 import { trpc } from '@/trpc/client';
 import { usePathname } from 'next/navigation';
 import { useRef, useState, type ReactNode } from 'react';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuTrigger,
-    Portal,
-} from '../dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, Portal } from '../dropdown-menu';
 import { DropdownMenuTriggerLink } from '../dropdown-menu/trigger';
 import UserDetailsContent from './content/content';
 
@@ -49,12 +44,7 @@ export default function UserDetailsPopover({
         >
             <Portal>
                 <DropdownMenuContent>
-                    {details && (
-                        <UserDetailsContent
-                            details={details}
-                            username={username}
-                        />
-                    )}
+                    {details && <UserDetailsContent details={details} username={username} />}
                 </DropdownMenuContent>
             </Portal>
             {children}

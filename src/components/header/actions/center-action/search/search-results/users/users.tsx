@@ -8,7 +8,7 @@ import styles from './users.module.scss';
 export function Users({ users }: { users: SearchRouterOutput['search']['users'] }) {
     return (
         <>
-            <DropdownMenuTitle text="People" />
+            <DropdownMenuTitle>People</DropdownMenuTitle>
             {users?.map((user, i) => (
                 <DropdownMenuItemBase key={i}>
                     <Link href={`@${user.username}`} tabIndex={-1} className={styles.user}>

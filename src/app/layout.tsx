@@ -1,6 +1,6 @@
 import Providers from '@/components/common/providers';
 import { Toasts } from '@/components/common/toasts/toasts';
-import { IMAGE_OVERLAY_ID, OVERLAY_ID } from '@/lib/constants';
+import { Cookie, IMAGE_OVERLAY_ID, OVERLAY_ID } from '@/lib/constants';
 import { getServerAuthSession } from '@/server/auth';
 import '@/styles/main.scss';
 import { GeistSans } from 'geist/font/sans';
@@ -17,8 +17,8 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
     const session = await getServerAuthSession();
-    const theme = cookies().get('theme')?.value ?? 'light';
-    const unreadNotifications = Number(cookies().get('unread-notifications')?.value ?? '0');
+    const theme = cookies().get(Cookie.THEME)?.value ?? 'light';
+    const unreadNotifications = Number(cookies().get(Cookie.UNREAD_NOTIFICATIONS)?.value ?? '0');
 
     return (
         <html lang="en" data-theme={theme} suppressHydrationWarning>

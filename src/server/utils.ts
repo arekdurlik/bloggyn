@@ -1,5 +1,5 @@
 import { type Context, createCallerFactory } from '@/trpc';
-import { type Notification, notificationsRouter } from './routes/notifications';
+import { type Notification, notificationsRouter } from './routes/notification';
 
 type Data = Omit<Notification, 'fromId' | 'toId' | 'isMain'>;
 

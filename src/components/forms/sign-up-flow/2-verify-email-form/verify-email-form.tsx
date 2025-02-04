@@ -1,29 +1,24 @@
 'use client';
 
-import { redirect, usePathname, useSearchParams } from 'next/navigation';
-import formStyles from '../../forms.module.scss';
-import shared from '@/styles/shared.module.scss';
-import styles from './verify-email-form.module.scss';
-import { useRouter } from 'next/navigation';
-import { cn, sleep, withMinDuration } from '@/lib/helpers';
-import { trpc } from '@/trpc/client';
-import { config } from '@/lib/config';
-import { useEffect, useRef, useState } from 'react';
-import VerifyCodeInput from './verify-code-input/verify-code-input';
 import { useCrossfadeFormContext } from '@/components/common/crossfade-form';
+import { closeToast, openToast, resolveToast, ToastType } from '@/components/common/toasts/store';
+import { config } from '@/lib/config';
 import { SignUpStep } from '@/lib/constants';
-import FormButton from '../../form-button';
+import { cn, sleep, withMinDuration } from '@/lib/helpers';
+import shared from '@/styles/shared.module.scss';
+import { trpc } from '@/trpc/client';
 import { verificationCodeSchema } from '@/validation/user/verification-code';
-import { ZodError } from 'zod';
 import { TRPCClientError } from '@trpc/client';
 import { signIn } from 'next-auth/react';
+import { redirect, usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
+import { ZodError } from 'zod';
 import { Form } from '../../form';
-import {
-    closeToast,
-    openToast,
-    ToastType,
-} from '@/components/common/toasts/store';
+import FormButton from '../../form-button';
+import formStyles from '../../forms.module.scss';
 import { useAuthIntent } from '../../use-auth-intent';
+import VerifyCodeInput from './verify-code-input/verify-code-input';
+import styles from './verify-email-form.module.scss';
 
 export enum VerifyEmailState {
     SUCCESS = 'success',
@@ -62,10 +57,7 @@ export default function VerifyEmailForm() {
 
     useEffect(() => {
         if (getCode.error) {
-            const id = openToast(
-                ToastType.ERROR,
-                'Failed to retrieve verification code 😥'
-            );
+            const id = openToast(ToastType.ERROR, 'Failed to retrieve verification code 😥');
             setDisabled(true);
             return () => {
                 closeToast(id);
@@ -107,10 +99,7 @@ export default function VerifyEmailForm() {
         setState(VerifyEmailState.PENDING);
         verificationCodeSchema.parse(code);
 
-        await withMinDuration(
-            utils.checkVerificationCode.fetch({ code, token: token ?? '' }),
-            600
-        );
+        await withMinDuration(utils.checkVerificationCode.fetch({ code, token: token ?? '' }), 600);
 
         setState(VerifyEmailState.SUCCESS);
     }
@@ -124,17 +113,14 @@ export default function VerifyEmailForm() {
         }
 
         // auto sign in if email and password are present
-        const toast = openToast(
-            ToastType.PENDING,
-            'Signing in, please wait...'
-        );
+        const toast = openToast(ToastType.PENDING, 'Signing in, please wait...');
         await signIn('credentials', {
             redirect: false,
             email: crossfadeFormState.email,
             password: crossfadeFormState.password,
         });
 
-        await closeToast(toast);
+        await resolveToast(toast, true, 'Signed in!');
         api.onNextStep?.(SignUpStep.ONBOARDING, { replace: true });
     }
 
@@ -165,15 +151,8 @@ export default function VerifyEmailForm() {
             >
                 <div className={styles.wrapper}>
                     <div>
-                        <h1 className={formStyles.header}>
-                            Verify your email address
-                        </h1>
-                        <p
-                            className={cn(
-                                formStyles.description,
-                                styles.description
-                            )}
-                        >
+                        <h1 className={formStyles.header}>Verify your email address</h1>
+                        <p className={cn(formStyles.description, styles.description)}>
                             We have sent a verification code
                             {emailRef.current ? (
                                 <>

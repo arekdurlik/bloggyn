@@ -1,5 +1,6 @@
 import { FollowingButtonProvider } from '@/components/common/user-details-popover/content/following-button-context';
 import { type UserRouterOutput } from '@/server/routes/user';
+import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import styles from './content.module.scss';
@@ -12,6 +13,8 @@ export default function UserDetailsContent({
     details: UserRouterOutput['getUserDetails'];
     username: string;
 }) {
+    const session = useSession();
+
     return (
         details &&
         details.username && (
@@ -31,9 +34,11 @@ export default function UserDetailsContent({
                                 alt="Author's profile image"
                             />
                         </Link>
-                        <FollowingButton
-                            details={{ username: details.username, followed: details.followed }}
-                        />
+                        {session.data?.user.username !== details.username && (
+                            <FollowingButton
+                                details={{ username: details.username, followed: details.followed }}
+                            />
+                        )}
                     </div>
                     <div className={styles.bottom}>
                         <div className={styles.nameDetails}>

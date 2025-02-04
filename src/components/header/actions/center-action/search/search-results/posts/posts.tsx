@@ -6,7 +6,7 @@ import styles from './posts.module.scss';
 export function Posts({ posts }: { posts: SearchRouterOutput['search']['posts'] }) {
     return (
         <>
-            <DropdownMenuTitle text="Posts" />
+            <DropdownMenuTitle>Posts</DropdownMenuTitle>
             {posts?.map((post, i) => (
                 <DropdownMenuItemBase key={i}>
                     <Link href={post.slug} className={styles.post} tabIndex={-1}>
