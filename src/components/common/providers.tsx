@@ -1,13 +1,13 @@
 import { TRPCProvider } from '@/trpc/client';
-import { type ReactNode } from 'react';
 import { NavigationGuardProvider } from 'next-navigation-guard';
-import ProgressBar from '../progressbar';
+import { type ReactNode } from 'react';
+import ProgressBar from '../../app/_components/progressbar';
 
 export default function Providers({ children }: { children: ReactNode }) {
     return (
         <TRPCProvider>
             <NavigationGuardProvider>
-            <ProgressBar/>
+                <ProgressBar />
                 {children}
             </NavigationGuardProvider>
         </TRPCProvider>

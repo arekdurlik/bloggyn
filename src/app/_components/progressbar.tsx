@@ -1,7 +1,6 @@
 'use client';
 
 import { AppProgressBar } from 'next-nprogress-bar';
-import { useEffect } from 'react';
 
 export default function ProgressBar() {
     return (

@@ -6,9 +6,9 @@ import '@/styles/main.scss';
 import { GeistSans } from 'geist/font/sans';
 import { type Metadata } from 'next';
 import { cookies } from 'next/headers';
-import Header from '../components/header';
+import Header from './_components/header';
+import SessionProvider from './_components/session-provider';
 import styles from './app.module.scss';
-import SessionProvider from './session-provider';
 
 export const metadata: Metadata = {
     title: 'bloggyn',

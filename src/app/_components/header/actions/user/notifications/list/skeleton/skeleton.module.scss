@@ -1,0 +1,55 @@
+.container {
+    --_placeholder-color: #ddd;
+    padding-top: 10px;
+    filter: blur(5px);
+}
+
+.item {
+    height: 60px;
+}
+
+.title {
+    background-color: var(--_placeholder-color);
+    color: transparent !important;
+    width: 70px;
+    height: 15px;
+}
+
+.image {
+    width: 45px;
+    height: 45px;
+    border-radius: var(--rounded-full);
+    background-color: var(--_placeholder-color);
+}
+
+.text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    span {
+        background-color: var(--_placeholder-color);
+        color: transparent;
+
+        &:first-child {
+            width: 100%;
+        }
+
+        &:last-child {
+            width: 33%;
+        }
+    }
+}
+
+.line {
+    background-color: #777;
+    height: 1em;
+
+    &-1 {
+        width: 100px;
+    }
+
+    &-2 {
+        width: 50px;
+    }
+}

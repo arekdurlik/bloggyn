@@ -10,7 +10,7 @@ import { signOut } from 'next-auth/react';
 import Image from 'next/image';
 
 import { type Session } from 'next-auth';
-import actionStyles from './../../actions.module.scss';
+import actionStyles from '../../actions.module.scss';
 import styles from './account.module.scss';
 
 export default function Account({ session }: { session: Session }) {

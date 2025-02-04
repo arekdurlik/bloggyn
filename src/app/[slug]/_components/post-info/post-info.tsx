@@ -4,9 +4,10 @@ import HeartButton from '@/components/common/heart-button/heart-button';
 import { type PostRouterOutput } from '@/server/routes/post';
 import { MessageSquareMore } from 'lucide-react';
 import Image from 'next/image';
-import UserDetails, {
+
+import UserDetailsPopover, {
     UserDetailsPopoverTriggerLink,
-} from '../../common/user-details-popover/user-details-popover';
+} from '@/components/common/user-details-popover/user-details-popover';
 import styles from './post-info.module.scss';
 
 export type Post = Exclude<PostRouterOutput['getPost'], undefined>;
@@ -14,7 +15,7 @@ export type Post = Exclude<PostRouterOutput['getPost'], undefined>;
 export default function PostInfo({ post }: { post: Post }) {
     return (
         <div className={styles.postInfo}>
-            <UserDetails username={post.user?.username ?? ''}>
+            <UserDetailsPopover username={post.user?.username ?? ''}>
                 <div className={styles.popoverTrigger}>
                     <UserDetailsPopoverTriggerLink href={`@${post.user?.username}`}>
                         <Image
@@ -48,7 +49,7 @@ export default function PostInfo({ post }: { post: Post }) {
                         </div>
                     </div>
                 </div>
-            </UserDetails>
+            </UserDetailsPopover>
         </div>
     );
 }

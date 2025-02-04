@@ -1,0 +1,30 @@
+@keyframes wave {
+    0%,
+    100% {
+        scale: 0.7;
+        opacity: 0.5;
+    }
+    50%,
+    50% {
+        scale: 1;
+        opacity: 1;
+    }
+}
+
+.dot {
+    animation: wave 600ms infinite;
+    min-width: 4px;
+    min-height: 4px;
+    color: var(--fgColor-barely-visible);
+    stroke-width: 10px;
+
+    &-1 {
+        animation-delay: 0ms;
+    }
+    &-2 {
+        animation-delay: 100ms;
+    }
+    &-3 {
+        animation-delay: 200ms;
+    }
+}

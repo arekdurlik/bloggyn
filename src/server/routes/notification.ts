@@ -2,7 +2,7 @@ import { NotificationTargetType, NotificationType, SocketEvent } from '@/lib/con
 import { getServerSocket } from '@/sockets/server-socket';
 import { protectedProcedure, router } from '@/trpc';
 import { TRPCError, type inferRouterOutputs } from '@trpc/server';
-import { and, desc, eq, isNull, sql } from 'drizzle-orm';
+import { and, desc, eq, isNull, lt, lte, or, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import { notifications, posts, users } from '../db/schema';
 
@@ -125,6 +125,7 @@ export const notificationsRouter = router({
                 cursor: z
                     .object({
                         id: z.number(),
+                        createdAt: z.string(),
                         updatedAt: z.string(),
                     })
                     .nullish(),
@@ -133,7 +134,7 @@ export const notificationsRouter = router({
         .query(async ({ ctx: { db, session }, input }) => {
             const userId = session.user.id;
             const limit = input.limit ?? 10;
-
+            const { cursor } = input;
             try {
                 const query = db
                     .select({
@@ -158,8 +159,23 @@ export const notificationsRouter = router({
                             eq(notifications.targetType, NotificationTargetType.POST)
                         )
                     )
-                    .where(and(eq(notifications.toId, userId), eq(notifications.isMain, true)))
-                    .orderBy(desc(notifications.updatedAt))
+                    .where(
+                        and(
+                            eq(notifications.toId, userId),
+                            eq(notifications.isMain, true),
+                            cursor
+                                ? or(
+                                      lte(notifications.updatedAt, cursor.updatedAt),
+                                      lte(notifications.createdAt, cursor.createdAt),
+                                      and(
+                                          eq(notifications.createdAt, cursor.createdAt),
+                                          lt(notifications.id, cursor.id)
+                                      )
+                                  )
+                                : undefined
+                        )
+                    )
+                    .orderBy(desc(notifications.createdAt), desc(notifications.id))
                     .limit(limit + 1);
 
                 const mainNotifications = await query;
@@ -213,7 +229,11 @@ export const notificationsRouter = router({
                 let nextCursor = null;
                 if (notificationsWithUsers.length > limit) {
                     const nextItem = notificationsWithUsers.pop();
-                    nextCursor = { id: nextItem!.id, updatedAt: nextItem!.updatedAt };
+                    nextCursor = {
+                        id: nextItem!.id,
+                        createdAt: nextItem!.createdAt,
+                        updatedAt: nextItem!.updatedAt,
+                    };
                 }
 
                 return {

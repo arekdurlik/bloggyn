@@ -88,3 +88,29 @@ export function formatTimeAgo(date: string): string {
     if (diffInMs < year) return `${Math.floor(diffInMs / day)}d`;
     return `${Math.floor(diffInMs / year)}y`;
 }
+
+export function debounce<T extends (...args: any[]) => void>(
+    func: T,
+    delay: number,
+    opts = { skipFirst: false }
+): (...args: Parameters<T>) => void {
+    let timeout: NodeJS.Timeout | null = null;
+    let skip = true;
+
+    return (...args: Parameters<T>) => {
+        if (opts.skipFirst && skip) {
+            func(...args);
+            skip = false;
+            return;
+        }
+
+        if (timeout) {
+            clearTimeout(timeout);
+        }
+
+        timeout = setTimeout(() => {
+            func(...args);
+            skip = true;
+        }, delay);
+    };
+}

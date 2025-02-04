@@ -1,6 +1,6 @@
-import Posts from '@/components/results/posts/posts';
 import { config } from '@/lib/config';
 import { HydrateClient, trpc } from '@/trpc/server';
+import Posts from '../_components/results/posts/posts';
 
 export default async function PostsPage({ searchParams }: { searchParams?: { q?: string } }) {
     const query = searchParams?.q;

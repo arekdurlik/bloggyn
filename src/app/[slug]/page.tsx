@@ -1,4 +1,3 @@
-import PostInfo from '@/components/post/post-info/post-info';
 import { trpc } from '@/trpc/server';
 import type { JSONContent } from '@tiptap/react';
 import { Fragment } from 'react';
@@ -6,6 +5,7 @@ import { type ImageComponentAttributes } from '../new-post/_components/image/ext
 import imageStyles from '../new-post/_components/image/image.module.scss';
 import { HeartButtonProvider } from './_components/heart-button-context';
 import { Image } from './_components/image/image';
+import PostInfo from './_components/post-info/post-info';
 import Social from './_components/social/social';
 
 function isImageComponentAttributes(

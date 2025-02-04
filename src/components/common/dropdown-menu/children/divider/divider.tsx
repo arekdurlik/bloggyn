@@ -2,7 +2,7 @@ import { cn } from '@/lib/helpers';
 import { type CSSProperties } from 'react';
 import styles from './divider.module.scss';
 
-export default function DropdownMenuTitle({
+export default function DropdownMenuDivider({
     className,
     ...props
 }: {

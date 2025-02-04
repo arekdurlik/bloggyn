@@ -4,7 +4,7 @@ import { config } from '@/lib/config';
 import { useInView } from '@/lib/hooks/use-in-view';
 import { trpc } from '@/trpc/client';
 import { useRef } from 'react';
-import ShowMore from '../../../app/search/_components/show-more/show-more';
+import ShowMore from '../../show-more/show-more';
 import NoResults from '../no-results/no-results';
 import cardStyles from '../results.module.scss';
 import PostCard from './post-card';

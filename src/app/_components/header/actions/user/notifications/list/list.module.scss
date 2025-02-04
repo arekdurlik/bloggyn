@@ -24,3 +24,11 @@
     display: grid;
     place-content: center;
 }
+
+.loader-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-block: 10px;
+}
