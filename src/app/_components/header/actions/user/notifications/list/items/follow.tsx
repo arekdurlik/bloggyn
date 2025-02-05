@@ -9,10 +9,12 @@ import { useState } from 'react';
 import styles from './item.module.scss';
 
 export default function Follow({ notification }: { notification: NotificationReturnWithUsers }) {
-    const from = notification.from[0];
-    const followMutation = trpc.follow.useMutation({});
     const [followed, setFollowed] = useState(false);
+    const [time] = useState(formatTimeAgo(notification.updatedAt));
+    const followMutation = trpc.follow.useMutation({});
     const utils = trpc.useUtils();
+
+    const from = notification.from[0];
 
     async function handleFollow() {
         if (!from?.username) return;
@@ -37,7 +39,7 @@ export default function Follow({ notification }: { notification: NotificationRet
                 />
                 <div className={styles.text}>
                     <Link href={`@${from.username}`}>{from.name}</Link> followed you.{' '}
-                    <span className={styles.time}>{formatTimeAgo(notification.updatedAt)}</span>
+                    <span className={styles.time}>{time}</span>
                 </div>
                 {!from.isFollowedBack && !followed ? (
                     <Button onClick={handleFollow}>Follow back</Button>

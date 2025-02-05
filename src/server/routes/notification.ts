@@ -2,7 +2,7 @@ import { NotificationTargetType, NotificationType, SocketEvent } from '@/lib/con
 import { getServerSocket } from '@/sockets/server-socket';
 import { protectedProcedure, router } from '@/trpc';
 import { TRPCError, type inferRouterOutputs } from '@trpc/server';
-import { and, desc, eq, isNull, lt, lte, or, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, gte, lte, or, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import { notifications, posts, users } from '../db/schema';
 
@@ -37,6 +37,7 @@ export type NotificationReturn = {
     targetId: string;
     isMain: boolean;
     moreCount: number;
+    read: boolean;
     readAt: string | null;
     createdAt: string;
     updatedAt: string;
@@ -127,6 +128,7 @@ export const notificationsRouter = router({
                         id: z.number(),
                         createdAt: z.string(),
                         updatedAt: z.string(),
+                        read: z.boolean(),
                     })
                     .nullish(),
             })
@@ -135,6 +137,7 @@ export const notificationsRouter = router({
             const userId = session.user.id;
             const limit = input.limit ?? 10;
             const { cursor } = input;
+
             try {
                 const query = db
                     .select({
@@ -145,7 +148,7 @@ export const notificationsRouter = router({
                         targetId: notifications.targetId,
                         isMain: notifications.isMain,
                         moreCount: notifications.moreCount,
-                        readAt: notifications.readAt,
+                        read: notifications.read,
                         createdAt: notifications.createdAt,
                         updatedAt: notifications.updatedAt,
                         title: posts.title,
@@ -161,21 +164,27 @@ export const notificationsRouter = router({
                     )
                     .where(
                         and(
-                            eq(notifications.toId, userId),
                             eq(notifications.isMain, true),
+                            eq(notifications.toId, userId),
                             cursor
-                                ? or(
-                                      lte(notifications.updatedAt, cursor.updatedAt),
-                                      lte(notifications.createdAt, cursor.createdAt),
-                                      and(
-                                          eq(notifications.createdAt, cursor.createdAt),
-                                          lt(notifications.id, cursor.id)
-                                      )
+                                ? and(
+                                      or(
+                                          lte(notifications.createdAt, cursor.createdAt),
+                                          and(
+                                              eq(notifications.createdAt, cursor.createdAt),
+                                              lte(notifications.id, cursor.id)
+                                          )
+                                      ),
+                                      gte(notifications.read, cursor.read)
                                   )
                                 : undefined
                         )
                     )
-                    .orderBy(desc(notifications.createdAt), desc(notifications.id))
+                    .orderBy(
+                        asc(notifications.read),
+                        desc(notifications.createdAt),
+                        desc(notifications.id)
+                    )
                     .limit(limit + 1);
 
                 const mainNotifications = await query;
@@ -215,24 +224,26 @@ export const notificationsRouter = router({
                                     eq(notifications.toId, userId)
                                 )
                             )
-                            .orderBy(desc(notifications.createdAt))
+                            .orderBy(desc(notifications.updatedAt))
                             .limit(latestAmount);
 
                         return {
                             ...notif,
-                            from: fromUsers, // Always an array
+                            from: fromUsers,
                             moreCount: moreCount > 0 ? moreCount - fromUsers.length : 0,
                         };
                     })
                 );
 
                 let nextCursor = null;
-                if (notificationsWithUsers.length > limit) {
+
+                if (mainNotifications.length > limit) {
                     const nextItem = notificationsWithUsers.pop();
                     nextCursor = {
                         id: nextItem!.id,
                         createdAt: nextItem!.createdAt,
                         updatedAt: nextItem!.updatedAt,
+                        read: nextItem!.read!,
                     };
                 }
 
@@ -247,6 +258,18 @@ export const notificationsRouter = router({
                 });
             }
         }),
+    readAllNotifications: protectedProcedure.mutation(async ({ ctx: { db, session } }) => {
+        await db
+            .update(notifications)
+            .set({ read: true })
+            .where(and(eq(notifications.toId, session.user.id), eq(notifications.read, false)));
+    }),
+    unreadAll: protectedProcedure.mutation(async ({ ctx: { db, session } }) => {
+        await db
+            .update(notifications)
+            .set({ read: false })
+            .where(and(eq(notifications.toId, session.user.id)));
+    }),
     getUnreadCount: protectedProcedure.query(async ({ ctx: { db, session } }) => {
         const userId = session.user.id;
 
@@ -259,7 +282,7 @@ export const notificationsRouter = router({
                 and(
                     eq(notifications.toId, userId),
                     eq(notifications.isMain, true),
-                    isNull(notifications.readAt)
+                    eq(notifications.read, false)
                 )
             );
 

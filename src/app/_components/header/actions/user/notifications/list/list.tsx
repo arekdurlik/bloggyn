@@ -1,4 +1,5 @@
 import { trpc } from '@/trpc/client';
+import { NOTIFICATIONS_PAGE_LIMIT } from '../notifications';
 import Items from './items';
 import Skeleton from './skeleton/skeleton';
 
@@ -10,8 +11,8 @@ export default function NotificationsList({ newCount }: { newCount: number }) {
         isFetching,
         isFetchingNextPage,
     } = trpc.getNewestNotifications.useInfiniteQuery(
-        { limit: 10 },
-        { getNextPageParam: lastPage => lastPage.nextCursor, placeholderData: prev => prev }
+        { limit: NOTIFICATIONS_PAGE_LIMIT },
+        { getNextPageParam: lastPage => lastPage.nextCursor }
     );
     const notifications = notificationsRaw?.pages.flatMap(n => n.notifications) ?? [];
 

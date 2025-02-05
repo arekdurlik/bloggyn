@@ -2,13 +2,18 @@ import { DropdownMenuDivider, DropdownMenuTitle } from '@/components/common/drop
 import { NotificationType } from '@/lib/constants';
 import { cn, debounce } from '@/lib/helpers';
 import { useInView } from '@/lib/hooks/use-in-view';
-import { NotificationReturn, NotificationReturnWithUsers } from '@/server/routes/notification';
+import {
+    type NotificationReturn,
+    type NotificationReturnWithUsers,
+} from '@/server/routes/notification';
 import { Fragment, useRef } from 'react';
 import DotsLoader from '../../../../../../../components/common/loaders/dots/dots';
 import Follow from './items/follow';
 import LikeMultiple from './items/like-multiple';
 import LikeSingle from './items/like-single';
 import styles from './list.module.scss';
+
+const DEBOUNCE_TIME = 250;
 
 export default function Items({
     notifications,
@@ -22,12 +27,13 @@ export default function Items({
     onInView: () => void;
 }) {
     const trigger = useRef<HTMLDivElement>(null!);
-    useInView(trigger, debounce(onInView, 250), {
+    useInView(trigger, debounce(onInView, DEBOUNCE_TIME), {
         root: trigger.current,
     });
 
     const unreadStartIndex =
-        newCount === 0 ? 0 : notifications.findIndex(notification => notification.readAt === null);
+        newCount === 0 ? 0 : notifications.findIndex(notification => notification.read === true);
+
     const renderLoader = hasNextPage;
 
     return (
@@ -35,12 +41,12 @@ export default function Items({
             {notifications && (
                 <>
                     {notifications.map((notification, i) => {
-                        const isNew = i === 0 && notification.readAt === null && newCount > 0;
+                        const showNew = i === 0 && notification.read === false && newCount > 0;
                         const firstRead = i === unreadStartIndex;
 
                         return (
                             <Fragment key={i}>
-                                {isNew ? (
+                                {showNew ? (
                                     <DropdownMenuTitle>
                                         <div className={styles.recent}>
                                             New

@@ -227,8 +227,8 @@ export const notifications = createTable(
         targetType: varchar('target_type', { length: 50 }).notNull(),
         targetId: varchar('target_id', { length: 255 }).notNull(),
         isMain: boolean('is_main').default(false),
+        read: boolean('read').default(false),
         moreCount: integer('more_count').default(0),
-        readAt: timestamp('read_at'),
         createdAt: timestamp('created_at', {
             mode: 'string',
             withTimezone: true,

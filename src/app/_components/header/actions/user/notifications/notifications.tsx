@@ -1,7 +1,7 @@
 'use client';
 import { cn } from '@/lib/helpers';
 import { Bell } from 'lucide-react';
-import { type AnimationEvent, TransitionEvent, useEffect, useRef, useState } from 'react';
+import { type AnimationEvent, useEffect, useRef, useState } from 'react';
 
 import {
     DropdownMenu,
@@ -20,6 +20,7 @@ import styles from './notifications.module.scss';
 
 const UPDATE_FREQUENCY = 2 * 1000;
 const REFETCH_FREQUENCY = 60 * 1000;
+export const NOTIFICATIONS_PAGE_LIMIT = 10;
 
 export default function Notifications({ unreadNotifications }: { unreadNotifications: number }) {
     const [triggerFetch, setTriggerFetch] = useState(false);
@@ -27,13 +28,14 @@ export default function Notifications({ unreadNotifications }: { unreadNotificat
     const [count, setCount] = useState(unreadNotifications);
     const [read, setRead] = useState(false);
 
+    const lastCount = useRef(unreadNotifications);
     const countRef = useRef<HTMLDivElement | null>(null);
     const refetchInterval = useRef<ReturnType<typeof setInterval>>();
 
+    const readAllNotifications = trpc.readAllNotifications.useMutation();
     const getUnreadCount = trpc.getUnreadCount.useQuery(undefined, { enabled: false });
     const debouncedTriggerFetch = useDebounce(triggerFetch, UPDATE_FREQUENCY, { skipFirst: true });
     const utils = trpc.useUtils();
-    const finalCount = read ? 0 : count;
 
     useClientSocket({
         onConnectionError: startPolling,
@@ -52,6 +54,13 @@ export default function Notifications({ unreadNotifications }: { unreadNotificat
     }, []);
 
     useEffect(() => {
+        if (!active) return;
+
+        window.addEventListener('beforeunload', tryReadAll);
+        return () => window.removeEventListener('beforeunload', tryReadAll);
+    }, [active]);
+
+    useEffect(() => {
         setCookie(Cookie.UNREAD_NOTIFICATIONS, count);
     }, [count]);
 
@@ -66,10 +75,12 @@ export default function Notifications({ unreadNotifications }: { unreadNotificat
             try {
                 const { data: newCount } = await getUnreadCount.refetch();
 
-                if (newCount && newCount > finalCount) {
-                    setCount(newCount);
-                    setRead(false);
-                    countRef.current?.classList?.add(styles.newNotification);
+                if (newCount) {
+                    if (newCount > count || (read && newCount > 0)) {
+                        countRef.current?.classList?.add(styles.newNotification);
+                        setRead(false);
+                        setCount(newCount);
+                    }
                 } else {
                     countRef.current?.classList?.remove(styles.newNotification);
                 }
@@ -98,17 +109,26 @@ export default function Notifications({ unreadNotifications }: { unreadNotificat
         }
     }
 
-    function handleTransitionEnd(event: TransitionEvent) {
-        const target = event.target as HTMLElement;
-        const opacity = target.computedStyleMap().get('opacity')?.toString();
+    function handleMount() {
+        setActive(true);
+        setRead(true);
+        setCookie(Cookie.UNREAD_NOTIFICATIONS, 0);
+        lastCount.current = count;
+    }
 
-        if (opacity && +opacity === 0 && active) {
-            setRead(true);
+    function handleUnmount() {
+        setActive(false);
+    }
+
+    function tryReadAll() {
+        if (lastCount.current > 0) {
+            readAllNotifications.mutate();
+            setCount(0);
         }
     }
 
     return (
-        <DropdownMenu onOpen={() => setActive(true)} onClose={() => setActive(false)}>
+        <DropdownMenu onMount={handleMount} onUnmount={handleUnmount}>
             <DropdownMenuTrigger
                 className={cn(actionStyles.actionIcon, styles.button, active && styles.active)}
             >
@@ -118,9 +138,8 @@ export default function Notifications({ unreadNotifications }: { unreadNotificat
                             styles.counter,
                             (active || read || count < 1) && styles.hideAlert
                         )}
-                        onTransitionEndCapture={handleTransitionEnd}
                     >
-                        <span>{finalCount}</span>
+                        <span>{count}</span>
                     </div>
                     <Bell className={styles.bell} />
                 </div>
@@ -128,13 +147,11 @@ export default function Notifications({ unreadNotifications }: { unreadNotificat
             <DropdownMenuContent
                 className={styles.content}
                 stableScrollbarGutter
+                onUmnount={tryReadAll}
                 align="left"
                 offsetTop={7}
-                onClose={() => {
-                    setCount(0);
-                }}
             >
-                <NotificationsList newCount={count} />
+                <NotificationsList newCount={lastCount.current} />
             </DropdownMenuContent>
         </DropdownMenu>
     );

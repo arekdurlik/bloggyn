@@ -2,7 +2,7 @@ import { formatTimeAgo } from '@/lib/helpers';
 import { type NotificationReturnWithUsers } from '@/server/routes/notification';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Fragment } from 'react';
+import { Fragment, useState } from 'react';
 import styles from './item.module.scss';
 
 export default function LikeSingle({
@@ -10,6 +10,8 @@ export default function LikeSingle({
 }: {
     notification: NotificationReturnWithUsers;
 }) {
+    const [time] = useState(formatTimeAgo(notification.updatedAt));
+
     return (
         <div className={styles.item}>
             {notification.from?.map((user, i) => (
@@ -46,7 +48,7 @@ export default function LikeSingle({
                             “{notification.title}”
                         </Link>
                     )}
-                    . <span className={styles.time}>{formatTimeAgo(notification.updatedAt)}</span>
+                    . <span className={styles.time}>{time}</span>
                 </span>
             </div>
         </div>
