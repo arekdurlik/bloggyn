@@ -4,7 +4,8 @@ import { TRPCError, type inferRouterOutputs } from '@trpc/server';
 import { and, countDistinct, desc, eq, ilike, lt, lte, or, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import { accounts, following, notifications, posts, users } from '../db/schema';
-import { handleError, notify } from '../utils';
+import { handleError } from '../utils';
+import { storeNotifications } from './notification';
 
 export type UserRouterOutput = inferRouterOutputs<typeof userRouter>;
 
@@ -210,16 +211,15 @@ export const userRouter = router({
                     followedId: toFollow.id,
                 });
 
-                notify(
-                    session.user.id,
-                    [toFollow.id.toString()],
+                await storeNotifications([
                     {
-                        notificationType: NotificationType.FOLLOW,
+                        fromId: session.user.id,
+                        toId: toFollow.id,
+                        type: NotificationType.FOLLOW,
                         targetType: NotificationTargetType.USER,
-                        targetId: toFollow.id.toString(),
+                        targetId: toFollow.id,
                     },
-                    ctx
-                );
+                ]);
 
                 return 'ok';
             } catch (e) {

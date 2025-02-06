@@ -213,6 +213,7 @@ export const postLikesRelations = relations(postLikes, ({ one }) => ({
     user: one(users, { fields: [postLikes.userId], references: [users.id] }),
 }));
 
+export type NotificationSchema = typeof notifications.$inferSelect;
 export const notifications = createTable(
     'notifications',
     {

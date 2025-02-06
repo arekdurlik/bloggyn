@@ -1,6 +1,5 @@
-import { NotificationTargetType, NotificationType, SocketEvent } from '@/lib/constants';
+import { NotificationTargetType, NotificationType } from '@/lib/constants';
 import { modifySingleCharWords } from '@/lib/helpers';
-import { getServerSocket } from '@/sockets/server-socket';
 import { procedure, protectedProcedure, router } from '@/trpc';
 import { postSchema } from '@/validation/user/post';
 import type { JSONContent } from '@tiptap/react';
@@ -8,8 +7,9 @@ import { type inferRouterOutputs, TRPCError } from '@trpc/server';
 import { and, desc, eq, ilike, like, lt, lte, or, sql } from 'drizzle-orm';
 import slugify from 'slug';
 import { z } from 'zod';
-import { following, notifications, postImages, postLikes, posts, users } from '../db/schema';
-import { handleError, notify } from '../utils';
+import { following, postImages, postLikes, posts, users } from '../db/schema';
+import { handleError } from '../utils';
+import { deleteNotifications, storeNotifications } from './notification';
 
 export type PostRouterOutput = inferRouterOutputs<typeof postRouter>;
 
@@ -236,15 +236,14 @@ export const postRouter = router({
                     .from(following)
                     .where(eq(following.followedId, session.user.id));
 
-                notify(
-                    session.user.id,
-                    followers.map(follower => follower.id.toString()),
-                    {
-                        notificationType: NotificationType.POST,
+                await storeNotifications(
+                    followers.map(follower => ({
+                        fromId: session.user.id,
+                        toId: follower.id,
+                        type: NotificationType.POST,
                         targetType: NotificationTargetType.POST,
                         targetId: post.id.toString(),
-                    },
-                    ctx
+                    }))
                 );
             }
 
@@ -278,7 +277,6 @@ export const postRouter = router({
                     .limit(1);
 
                 if (res?.existingLike && res.authorId && !input.liked) {
-                    // remove like and notification + decrease moreCount
                     await db.transaction(async trx => {
                         await trx
                             .delete(postLikes)
@@ -289,62 +287,31 @@ export const postRouter = router({
                                 )
                             );
 
-                        const [mainNotification] = await trx
-                            .select({ id: notifications.id, moreCount: notifications.moreCount })
-                            .from(notifications)
-                            .where(
-                                and(
-                                    eq(notifications.toId, res.authorId),
-                                    eq(notifications.targetId, input.postId.toString()),
-                                    eq(notifications.type, NotificationType.LIKE),
-                                    eq(notifications.isMain, true)
-                                )
-                            )
-                            .limit(1);
-
-                        await trx
-                            .delete(notifications)
-                            .where(
-                                and(
-                                    eq(notifications.toId, res.authorId),
-                                    eq(notifications.targetId, input.postId.toString()),
-                                    eq(notifications.type, NotificationType.LIKE),
-                                    eq(notifications.fromId, userId),
-                                    eq(notifications.read, false),
-                                    eq(notifications.isMain, false)
-                                )
-                            );
-
-                        if (mainNotification) {
-                            if (mainNotification.moreCount && mainNotification.moreCount > 0) {
-                                await trx
-                                    .update(notifications)
-                                    .set({ moreCount: mainNotification.moreCount - 1 })
-                                    .where(eq(notifications.id, mainNotification.id));
-                            } else {
-                                await trx
-                                    .delete(notifications)
-                                    .where(eq(notifications.id, mainNotification.id));
-                            }
-                        }
-
-                        getServerSocket().emit(SocketEvent.NOTIFY, res.authorId);
+                        await deleteNotifications(
+                            {
+                                fromId: userId,
+                                toId: res.authorId,
+                                type: NotificationType.LIKE,
+                                targetType: NotificationTargetType.POST,
+                                targetId: input.postId.toString(),
+                            },
+                            trx
+                        );
                     });
                 } else if (res && !res.existingLike && input.liked) {
                     // add like and notification
                     await db.insert(postLikes).values({ postId: input.postId, userId });
 
                     if (res.authorId) {
-                        notify(
-                            userId,
-                            [res.authorId.toString()],
+                        await storeNotifications([
                             {
-                                notificationType: NotificationType.LIKE,
+                                fromId: userId,
+                                toId: res.authorId,
+                                type: NotificationType.LIKE,
                                 targetType: NotificationTargetType.POST,
                                 targetId: input.postId.toString(),
                             },
-                            ctx
-                        );
+                        ]);
                     }
                 }
             } catch (e) {

@@ -5,9 +5,9 @@ import { protectedProcedure, router } from '@/trpc';
 import { type inferRouterOutputs } from '@trpc/server';
 import { and, asc, desc, eq, gte, inArray, lte, or, sql } from 'drizzle-orm';
 import { z } from 'zod';
-import { notifications, posts, users } from '../db/schema';
+import { db } from '../db';
+import { notifications, NotificationSchema, posts, users } from '../db/schema';
 import { handleError } from '../utils';
-
 export type NotificationsRouterOutput = inferRouterOutputs<typeof notificationsRouter>;
 
 const notificationTypeEnum = z.nativeEnum(NotificationType);
@@ -53,74 +53,6 @@ export type NotificationReturnWithUsers = NotificationReturn & {
 };
 
 export const notificationsRouter = router({
-    storeNotifications: protectedProcedure
-        .input(z.array(notificationSchema))
-        .mutation(async ({ input, ctx: { db } }) => {
-            try {
-                const notificationsToInsert = [];
-                let isMain = false;
-
-                for (const notification of input) {
-                    if (notification.notificationType === NotificationType.LIKE) {
-                        try {
-                            // check if a main LIKE notification exists for the user/post combo
-                            const [existingNotification] = await db
-                                .select()
-                                .from(notifications)
-                                .where(
-                                    and(
-                                        eq(notifications.toId, notification.toId),
-                                        eq(notifications.type, NotificationType.LIKE),
-                                        eq(notifications.targetType, NotificationTargetType.POST),
-                                        eq(notifications.targetId, notification.targetId),
-                                        eq(notifications.isMain, true)
-                                    )
-                                )
-                                .limit(1);
-
-                            if (existingNotification) {
-                                // increment moreCount
-                                await db
-                                    .update(notifications)
-                                    .set({ moreCount: (existingNotification.moreCount || 0) + 1 })
-                                    .where(eq(notifications.id, existingNotification.id));
-                            } else {
-                                isMain = true;
-                            }
-                            // accurate moreCount less important than storing a new notification
-                        } catch {}
-                    } else {
-                        isMain = true;
-                    }
-
-                    notificationsToInsert.push({
-                        fromId: notification.fromId,
-                        toId: notification.toId,
-                        type: notification.notificationType,
-                        targetType: notification.targetType,
-                        targetId: notification.targetId,
-                        isMain: isMain,
-                    });
-                }
-
-                const newNotifications = await db
-                    .insert(notifications)
-                    .values(notificationsToInsert)
-                    .returning();
-
-                // notify users
-                input.forEach(notification => {
-                    getServerSocket().emit(SocketEvent.NOTIFY, notification.toId);
-                });
-
-                return newNotifications;
-            } catch (e) {
-                handleError(e, {
-                    message: 'Error storing notifications',
-                    moreInfo: input,
-                });
-            }
-        }),
     getNewestNotifications: protectedProcedure
         .input(
             z.object({
@@ -326,3 +258,132 @@ export const notificationsRouter = router({
         }
     }),
 });
+
+type PartialNotificationData = Partial<
+    Omit<NotificationSchema, 'updatedAt' | 'createdAt' | 'isMain' | 'moreCount'>
+>;
+
+type StoreNotificationData = PartialNotificationData &
+    Required<Pick<NotificationSchema, 'fromId' | 'toId' | 'type' | 'targetId' | 'targetType'>>;
+
+export async function storeNotifications(data: StoreNotificationData[], executor?: typeof db) {
+    const exec = executor ? executor : db;
+
+    try {
+        await exec.transaction(async trx => {
+            const notificationsToInsert = [];
+            let isMain = false;
+
+            for (const notification of data) {
+                if (notification.type === NotificationType.LIKE) {
+                    // check if a main notification of this type already exists
+                    const [existingNotification] = await trx
+                        .select()
+                        .from(notifications)
+                        .where(
+                            and(
+                                eq(notifications.toId, notification.toId),
+                                eq(notifications.targetId, notification.targetId),
+                                eq(notifications.type, NotificationType.LIKE),
+                                eq(notifications.targetType, NotificationTargetType.POST),
+                                eq(notifications.isMain, true)
+                            )
+                        )
+                        .limit(1);
+
+                    // if exists, increment moreCount
+                    if (existingNotification) {
+                        await trx
+                            .update(notifications)
+                            .set({
+                                moreCount: (existingNotification.moreCount || 0) + 1,
+                                read: false,
+                            })
+                            .where(
+                                and(
+                                    eq(notifications.id, existingNotification.id),
+                                    eq(notifications.isMain, true)
+                                )
+                            );
+                    } else {
+                        isMain = true;
+                    }
+                    // accurate moreCount less important than storing a new notification
+                } else {
+                    isMain = true;
+                }
+
+                notificationsToInsert.push({
+                    fromId: notification.fromId,
+                    toId: notification.toId,
+                    type: notification.type,
+                    targetType: notification.targetType,
+                    targetId: notification.targetId,
+                    isMain: isMain,
+                });
+
+                await trx.insert(notifications).values(notificationsToInsert);
+
+                // notify users
+                data.forEach(notification => {
+                    getServerSocket().emit(SocketEvent.NOTIFY, notification.toId);
+                });
+            }
+        });
+    } catch (e) {
+        handleError(e, {
+            message: 'Error storing notifications',
+            moreInfo: data,
+        });
+    }
+}
+
+export async function deleteNotifications(where: PartialNotificationData, executor?: typeof db) {
+    const exec = executor ? executor : db;
+
+    const notificationWhere = and(
+        where.toId ? eq(notifications.toId, where.toId) : undefined,
+        where.type ? eq(notifications.type, where.type) : undefined,
+        where.targetType ? eq(notifications.targetType, where.targetType) : undefined,
+        where.targetId ? eq(notifications.targetId, where.targetId) : undefined,
+        where.read ? eq(notifications.read, where.read) : undefined
+    );
+
+    try {
+        // delete the specified notification
+        await exec.transaction(async trx => {
+            await trx
+                .delete(notifications)
+                .where(
+                    and(
+                        notificationWhere,
+                        where.fromId ? eq(notifications.fromId, where.fromId) : undefined,
+                        where.id ? eq(notifications.id, where.id) : undefined,
+                        lte(notifications.moreCount, 0)
+                    )
+                );
+
+            // check if a main notification still exists
+            const [mainNotification] = await trx
+                .select({ id: notifications.id, moreCount: notifications.moreCount })
+                .from(notifications)
+                .where(and(notificationWhere, eq(notifications.isMain, true)))
+                .limit(1);
+
+            // if exists, decrement moreCount
+            if (mainNotification) {
+                if (mainNotification.moreCount && mainNotification.moreCount > 0) {
+                    await trx
+                        .update(notifications)
+                        .set({ moreCount: mainNotification.moreCount - 1 })
+                        .where(eq(notifications.id, mainNotification.id));
+                }
+            }
+        });
+    } catch (e) {
+        handleError(e, {
+            message: 'Error removing notifications',
+            moreInfo: where,
+        });
+    }
+}
