@@ -5,11 +5,11 @@ import { procedure, protectedProcedure, router } from '@/trpc';
 import { postSchema } from '@/validation/user/post';
 import type { JSONContent } from '@tiptap/react';
 import { type inferRouterOutputs, TRPCError } from '@trpc/server';
-import { and, desc, eq, ilike, isNull, like, lt, lte, or, sql } from 'drizzle-orm';
+import { and, desc, eq, ilike, like, lt, lte, or, sql } from 'drizzle-orm';
 import slugify from 'slug';
 import { z } from 'zod';
 import { following, notifications, postImages, postLikes, posts, users } from '../db/schema';
-import { notify } from '../utils';
+import { handleError, notify } from '../utils';
 
 export type PostRouterOutput = inferRouterOutputs<typeof postRouter>;
 
@@ -26,6 +26,8 @@ export const postRouter = router({
             })
         )
         .query(async ({ input, ctx: { db, session } }) => {
+            const user = session?.user.id ?? '';
+
             try {
                 const post = await db
                     .select({
@@ -43,12 +45,13 @@ export const postRouter = router({
                         },
                         isLiked: sql<boolean>`(
                             SELECT CASE 
+                              WHEN CAST(${user} AS TEXT) IS NULL THEN false
                               WHEN COUNT(${postLikes.postId}) > 0 THEN true 
                               ELSE false 
                             END 
                             FROM ${postLikes} 
                             WHERE ${postLikes.postId} = ${posts.id} 
-                              AND ${postLikes.userId} = ${session?.user.id}
+                              AND ${postLikes.userId} = ${user}
                           )`,
                         likesCount: sql<number>`(SELECT COUNT(${postLikes.postId}) FROM ${postLikes} WHERE (${postLikes.postId} = ${posts.id}))`,
                     })
@@ -59,8 +62,8 @@ export const postRouter = router({
 
                 if (post.length === 0) {
                     throw new TRPCError({
-                        message: 'Post not found',
                         code: 'NOT_FOUND',
+                        message: 'Post not found',
                     });
                 } else if (post[0]) {
                     return {
@@ -68,10 +71,10 @@ export const postRouter = router({
                         content: JSON.parse(post[0].content) as JSONContent,
                     };
                 }
-            } catch {
-                throw new TRPCError({
+            } catch (e) {
+                handleError(e, {
                     message: 'Error retrieving post',
-                    code: 'INTERNAL_SERVER_ERROR',
+                    moreInfo: input,
                 });
             }
         }),
@@ -170,10 +173,10 @@ export const postRouter = router({
                     items,
                     nextCursor,
                 };
-            } catch {
-                throw new TRPCError({
+            } catch (e) {
+                handleError(e, {
                     message: 'Error retrieving posts',
-                    code: 'INTERNAL_SERVER_ERROR',
+                    moreInfo: input,
                 });
             }
         }),
@@ -248,10 +251,9 @@ export const postRouter = router({
             return {
                 url: `/${slug}`,
             };
-        } catch {
-            throw new TRPCError({
-                message: 'Error saving post',
-                code: 'INTERNAL_SERVER_ERROR',
+        } catch (e) {
+            handleError(e, {
+                message: 'Error submitting post',
             });
         }
     }),
@@ -308,7 +310,7 @@ export const postRouter = router({
                                     eq(notifications.targetId, input.postId.toString()),
                                     eq(notifications.type, NotificationType.LIKE),
                                     eq(notifications.fromId, userId),
-                                    isNull(notifications.readAt),
+                                    eq(notifications.read, false),
                                     eq(notifications.isMain, false)
                                 )
                             );
@@ -345,10 +347,10 @@ export const postRouter = router({
                         );
                     }
                 }
-            } catch {
-                throw new TRPCError({
+            } catch (e) {
+                handleError(e, {
                     message: 'Error changing like on post',
-                    code: 'INTERNAL_SERVER_ERROR',
+                    moreInfo: input,
                 });
             }
         }),

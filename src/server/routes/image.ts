@@ -2,6 +2,7 @@ import { protectedProcedure, router } from '@/trpc';
 import { type inferRouterOutputs } from '@trpc/server';
 import { v2 as cloudinary } from 'cloudinary';
 import { z } from 'zod';
+import { handleError } from '../utils';
 
 export type ImageRouterOutput = inferRouterOutputs<typeof imageRouter>;
 
@@ -26,22 +27,29 @@ export const imageRouter = router({
                 height: 0,
             };
 
-            await cloudinary.uploader.unsigned_upload(
-                input.src,
-                process.env.CLOUDINARY_POST_IMAGES_PRESET!,
-                (err, res) => {
-                    if (res) {
-                        result = {
-                            url: res.secure_url,
-                            id: res.public_id,
-                            width: res.width,
-                            height: res.height,
-                        };
+            try {
+                await cloudinary.uploader.unsigned_upload(
+                    input.src,
+                    process.env.CLOUDINARY_POST_IMAGES_PRESET!,
+                    (err, res) => {
+                        if (res) {
+                            result = {
+                                url: res.secure_url,
+                                id: res.public_id,
+                                width: res.width,
+                                height: res.height,
+                            };
+                        }
                     }
-                }
-            );
+                );
 
-            return result;
+                return result;
+            } catch (e) {
+                handleError(e, {
+                    message: 'Error uploading image',
+                    moreInfo: input,
+                });
+            }
         }),
     deleteImage: protectedProcedure
         .input(
@@ -50,6 +58,13 @@ export const imageRouter = router({
             })
         )
         .mutation(async ({ input }) => {
-            await cloudinary.uploader.destroy(input.id);
+            try {
+                await cloudinary.uploader.destroy(input.id);
+            } catch (e) {
+                handleError(e, {
+                    message: 'Error deleting image',
+                    moreInfo: input,
+                });
+            }
         }),
 });

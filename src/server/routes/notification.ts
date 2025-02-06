@@ -1,10 +1,12 @@
 import { NotificationTargetType, NotificationType, SocketEvent } from '@/lib/constants';
+import { ServerLogger } from '@/lib/log';
 import { getServerSocket } from '@/sockets/server-socket';
 import { protectedProcedure, router } from '@/trpc';
-import { TRPCError, type inferRouterOutputs } from '@trpc/server';
-import { and, asc, desc, eq, gte, lte, or, sql } from 'drizzle-orm';
+import { type inferRouterOutputs } from '@trpc/server';
+import { and, asc, desc, eq, gte, inArray, lte, or, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import { notifications, posts, users } from '../db/schema';
+import { handleError } from '../utils';
 
 export type NotificationsRouterOutput = inferRouterOutputs<typeof notificationsRouter>;
 
@@ -112,10 +114,10 @@ export const notificationsRouter = router({
                 });
 
                 return newNotifications;
-            } catch {
-                throw new TRPCError({
+            } catch (e) {
+                handleError(e, {
                     message: 'Error storing notifications',
-                    code: 'INTERNAL_SERVER_ERROR',
+                    moreInfo: input,
                 });
             }
         }),
@@ -251,18 +253,25 @@ export const notificationsRouter = router({
                     notifications: notificationsWithUsers as NotificationReturn[],
                     nextCursor,
                 };
-            } catch {
-                throw new TRPCError({
+            } catch (e) {
+                handleError(e, {
                     message: 'Error retrieving notifications',
-                    code: 'INTERNAL_SERVER_ERROR',
+                    moreInfo: input,
                 });
             }
         }),
     readAllNotifications: protectedProcedure.mutation(async ({ ctx: { db, session } }) => {
-        await db
-            .update(notifications)
-            .set({ read: true })
-            .where(and(eq(notifications.toId, session.user.id), eq(notifications.read, false)));
+        try {
+            await db
+                .update(notifications)
+                .set({ read: true })
+                .where(and(eq(notifications.toId, session.user.id), eq(notifications.read, false)));
+        } catch (e) {
+            handleError(e, {
+                message: 'Error reading all notifications',
+                moreInfo: session,
+            });
+        }
     }),
     unreadAll: protectedProcedure.mutation(async ({ ctx: { db, session } }) => {
         await db
@@ -270,22 +279,50 @@ export const notificationsRouter = router({
             .set({ read: false })
             .where(and(eq(notifications.toId, session.user.id)));
     }),
+    unreadLess: protectedProcedure.mutation(async ({ ctx: { db, session } }) => {
+        const userId = session.user.id;
+        await db
+            .update(notifications)
+            .set({ read: false })
+            .where(and(eq(notifications.toId, userId)));
+
+        const notificationsToUpdate = await db
+            .select()
+            .from(notifications)
+            .where(and(eq(notifications.toId, userId), eq(notifications.read, false)))
+            .limit(6);
+
+        await db
+            .update(notifications)
+            .set({ read: true })
+            .where(
+                inArray(
+                    notifications.id,
+                    notificationsToUpdate.map(n => n.id)
+                )
+            );
+    }),
     getUnreadCount: protectedProcedure.query(async ({ ctx: { db, session } }) => {
         const userId = session.user.id;
 
-        const unreadCount = await db
-            .select({
-                count: sql<number>`COUNT(*)`,
-            })
-            .from(notifications)
-            .where(
-                and(
-                    eq(notifications.toId, userId),
-                    eq(notifications.isMain, true),
-                    eq(notifications.read, false)
-                )
-            );
+        try {
+            const unreadCount = await db
+                .select({
+                    count: sql<number>`COUNT(*)`,
+                })
+                .from(notifications)
+                .where(
+                    and(
+                        eq(notifications.toId, userId),
+                        eq(notifications.isMain, true),
+                        eq(notifications.read, false)
+                    )
+                );
 
-        return unreadCount[0]?.count ?? 0;
+            return unreadCount[0]?.count ?? 0;
+        } catch (e) {
+            ServerLogger.error(e);
+            return 0;
+        }
     }),
 });

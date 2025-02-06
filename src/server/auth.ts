@@ -58,10 +58,7 @@ export const authOptions: NextAuthOptions = {
         jwt: async ({ token }) => {
             if (token.username === undefined) {
                 const res = await db.query.users.findFirst({
-                    where: and(
-                        isNotNull(users.username),
-                        eq(users.id, token.sub ?? '')
-                    ),
+                    where: and(isNotNull(users.username), eq(users.id, token.sub ?? '')),
                 });
 
                 if (res) {
@@ -101,10 +98,7 @@ export const authOptions: NextAuthOptions = {
                         typeof credentials.password === 'string'
                     ) {
                         const user = await db.query.users.findFirst({
-                            where: eq(
-                                users.email,
-                                credentials.email.toLowerCase()
-                            ),
+                            where: eq(users.email, credentials.email.toLowerCase()),
                             with: {
                                 account: true,
                             },
@@ -116,10 +110,7 @@ export const authOptions: NextAuthOptions = {
 
                         if (!account) return null;
 
-                        if (
-                            'password' in account &&
-                            typeof account.password === 'string'
-                        ) {
+                        if ('password' in account && typeof account.password === 'string') {
                             const match = await compareAsync(
                                 credentials.password,
                                 account.password

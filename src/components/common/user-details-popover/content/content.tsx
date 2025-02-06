@@ -16,8 +16,7 @@ export default function UserDetailsContent({
     const session = useSession();
 
     return (
-        details &&
-        details.username && (
+        details?.username && (
             <div className={styles.details} onClick={e => e.stopPropagation()}>
                 <FollowingButtonProvider
                     initialFollowed={details.followed}

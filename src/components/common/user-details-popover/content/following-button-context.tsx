@@ -4,6 +4,7 @@ import { useDebounce } from '@/lib/hooks/use-debounce';
 import { useUpdateEffect } from '@/lib/hooks/use-update-effect';
 import { trpc } from '@/trpc/client';
 import { createContext, type ReactNode, useContext, useEffect, useRef, useState } from 'react';
+import { openToast, ToastType } from '../../toasts/store';
 
 type FollowingButtonContextType = {
     followed: boolean;
@@ -70,9 +71,17 @@ export const FollowingButtonProvider = ({
     useUpdateEffect(() => {
         (async () => {
             if (debouncedFollow) {
-                await followMutation.mutateAsync({ username });
+                try {
+                    await followMutation.mutateAsync({ username });
+                } catch {
+                    openToast(ToastType.ERROR, 'Failed to follow user');
+                }
             } else {
-                await unfollowMutation.mutateAsync({ username });
+                try {
+                    await unfollowMutation.mutateAsync({ username });
+                } catch {
+                    openToast(ToastType.ERROR, 'Failed to unfollow user');
+                }
             }
             pending.current = false;
             utils.getUserDetails.invalidate({ username });

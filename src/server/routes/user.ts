@@ -3,8 +3,8 @@ import { procedure, protectedProcedure, router } from '@/trpc';
 import { TRPCError, type inferRouterOutputs } from '@trpc/server';
 import { and, countDistinct, desc, eq, ilike, lt, lte, or, sql } from 'drizzle-orm';
 import { z } from 'zod';
-import { accounts, following, posts, users } from '../db/schema';
-import { notify } from '../utils';
+import { accounts, following, notifications, posts, users } from '../db/schema';
+import { handleError, notify } from '../utils';
 
 export type UserRouterOutput = inferRouterOutputs<typeof userRouter>;
 
@@ -106,10 +106,10 @@ export const userRouter = router({
                     items,
                     nextCursor,
                 };
-            } catch {
-                throw new TRPCError({
-                    message: 'Error retrieving posts',
-                    code: 'INTERNAL_SERVER_ERROR',
+            } catch (e) {
+                return handleError(e, {
+                    message: 'Error retrieving users',
+                    moreInfo: input,
                 });
             }
         }),
@@ -117,12 +117,11 @@ export const userRouter = router({
         .input(
             z.object({
                 username: z.string(),
-                path: z.string(),
             })
         )
         .query(async ({ input, ctx: { db, session } }) => {
             try {
-                const user = await db
+                const [user] = await db
                     .select({
                         id: users.id,
                         username: users.username,
@@ -140,8 +139,11 @@ export const userRouter = router({
 
                 let followed = false;
 
-                if (!user[0]) {
-                    throw new Error();
+                if (!user) {
+                    throw new TRPCError({
+                        code: 'NOT_FOUND',
+                        message: 'User not found',
+                    });
                 }
 
                 if (session) {
@@ -149,7 +151,7 @@ export const userRouter = router({
                         const found = await db.query.following.findFirst({
                             where: and(
                                 eq(following.followerId, session.user.id),
-                                eq(following.followedId, user[0].id)
+                                eq(following.followedId, user.id)
                             ),
                         });
 
@@ -160,16 +162,18 @@ export const userRouter = router({
                 }
 
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                const { id, ...noId } = user[0];
+                const { id, ...noId } = user;
 
                 return {
                     ...noId,
                     followed,
                 };
-            } catch {
-                throw new TRPCError({
-                    message: 'Error retrieving user data',
-                    code: 'INTERNAL_SERVER_ERROR',
+            } catch (e) {
+                return handleError(e, {
+                    message: 'Error retrieving user details',
+                    moreInfo: {
+                        username: input.username,
+                    },
                 });
             }
         }),
@@ -184,7 +188,10 @@ export const userRouter = router({
 
             try {
                 if (session.user.username === input.username) {
-                    throw new Error();
+                    throw new TRPCError({
+                        code: 'BAD_REQUEST',
+                        message: 'Cannot follow self',
+                    });
                 }
 
                 const toFollow = await db.query.users.findFirst({
@@ -192,7 +199,10 @@ export const userRouter = router({
                 });
 
                 if (!toFollow) {
-                    throw new Error();
+                    throw new TRPCError({
+                        code: 'NOT_FOUND',
+                        message: 'User not found',
+                    });
                 }
 
                 await db.insert(following).values({
@@ -212,10 +222,13 @@ export const userRouter = router({
                 );
 
                 return 'ok';
-            } catch {
-                throw new TRPCError({
+            } catch (e) {
+                return handleError(e, {
                     message: 'Error following user',
-                    code: 'INTERNAL_SERVER_ERROR',
+                    moreInfo: {
+                        from: session.user.username,
+                        to: input.username,
+                    },
                 });
             }
         }),
@@ -232,7 +245,10 @@ export const userRouter = router({
                 });
 
                 if (!toUnfollow) {
-                    throw new Error();
+                    throw new TRPCError({
+                        code: 'NOT_FOUND',
+                        message: 'User not found',
+                    });
                 }
 
                 await db
@@ -244,11 +260,25 @@ export const userRouter = router({
                         )
                     );
 
+                await db
+                    .delete(notifications)
+                    .where(
+                        and(
+                            eq(notifications.toId, session.user.id),
+                            eq(notifications.targetId, toUnfollow.id.toString()),
+                            eq(notifications.type, NotificationType.FOLLOW),
+                            eq(notifications.fromId, toUnfollow.id)
+                        )
+                    );
+
                 return 'ok';
-            } catch {
-                throw new TRPCError({
+            } catch (e) {
+                return handleError(e, {
                     message: 'Error unfollowing user',
-                    code: 'INTERNAL_SERVER_ERROR',
+                    moreInfo: {
+                        from: session.user.username,
+                        to: input.username,
+                    },
                 });
             }
         }),

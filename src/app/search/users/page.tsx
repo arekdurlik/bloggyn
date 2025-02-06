@@ -1,5 +1,5 @@
-import Users from '@/components/results/users/users';
 import { HydrateClient, trpc } from '@/trpc/server';
+import Users from '../_components/results/users/users';
 
 const LIMIT = 6;
 

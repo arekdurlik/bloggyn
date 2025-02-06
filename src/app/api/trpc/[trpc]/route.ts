@@ -1,3 +1,4 @@
+import { purple } from '@/lib/log';
 import { appRouter } from '@/server';
 import { createTRPCContext } from '@/trpc';
 import { fetchRequestHandler } from '@trpc/server/adapters/fetch';
@@ -16,7 +17,10 @@ function handler(req: NextRequest) {
         req,
         createContext: () => createContext(req),
         onError: opts => {
-            console.error(opts.error);
+            console.error(
+                purple(' Thrown: '),
+                ...[opts.error.name, opts.error.code, opts.error.message].map(purple)
+            );
         },
     });
 }

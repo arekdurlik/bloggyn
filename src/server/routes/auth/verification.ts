@@ -1,15 +1,13 @@
-import { procedure, router } from '@/trpc';
-import { type inferRouterOutputs } from '@trpc/server';
-import { and, eq, sql } from 'drizzle-orm';
-import { string, z } from 'zod';
-import jwt, { type JwtPayload } from 'jsonwebtoken';
 import { config } from '@/lib/config';
-import { XTRPCError } from '@/validation/xtrpc-error';
 import { users, verificationCodes } from '@/server/db/schema';
+import { handleError } from '@/server/utils';
+import { procedure, router } from '@/trpc';
+import { TRPCError, type inferRouterOutputs } from '@trpc/server';
+import { and, eq, sql } from 'drizzle-orm';
+import jwt, { type JwtPayload } from 'jsonwebtoken';
+import { string, z } from 'zod';
 
-export type VerificationRouterOutput = inferRouterOutputs<
-    typeof verificationRouter
->;
+export type VerificationRouterOutput = inferRouterOutputs<typeof verificationRouter>;
 
 export const verificationRouter = router({
     getVerificationCode: procedure
@@ -21,7 +19,7 @@ export const verificationRouter = router({
         .query(async ({ input, ctx: { db } }) => {
             try {
                 if (config.EMAIL_ENABLED) {
-                    throw new Error();
+                    throw new Error('Email verification is enabled, has to check email');
                 }
 
                 const secret = process.env.VERIFICATION_SECRET ?? '';
@@ -36,7 +34,10 @@ export const verificationRouter = router({
                     });
 
                     if (!result) {
-                        throw new Error();
+                        throw new TRPCError({
+                            code: 'NOT_FOUND',
+                            message: 'Verification code not found',
+                        });
                     }
 
                     const expiresIn = config.VERIFICATION_CODE_EXPIRES_IN;
@@ -44,17 +45,24 @@ export const verificationRouter = router({
                     const codeLifetime = Date.now() - createdAt;
 
                     if (codeLifetime > expiresIn) {
-                        throw new Error();
+                        throw new TRPCError({
+                            code: 'BAD_REQUEST',
+                            message: 'Verification code has expired',
+                        });
                     }
 
                     return {
                         code: result.code,
                     };
+                } else {
+                    throw new TRPCError({
+                        code: 'UNAUTHORIZED',
+                        message: 'Invalid token',
+                    });
                 }
-            } catch {
-                throw new XTRPCError({
-                    code: 'BAD_REQUEST',
-                    message: 'Invalid verification code',
+            } catch (e) {
+                handleError(e, {
+                    message: 'Error getting verification code',
                 });
             }
         }),
@@ -73,16 +81,16 @@ export const verificationRouter = router({
                 if ('email' in decoded) {
                     const result = await db.query.verificationCodes.findFirst({
                         where: and(
-                            eq(
-                                sql`lower(${verificationCodes.email})`,
-                                decoded.email.toLowerCase()
-                            ),
+                            eq(sql`lower(${verificationCodes.email})`, decoded.email.toLowerCase()),
                             eq(verificationCodes.code, input.code)
                         ),
                     });
 
                     if (!result) {
-                        throw new Error();
+                        throw new TRPCError({
+                            code: 'NOT_FOUND',
+                            message: 'Verification code not found',
+                        });
                     }
 
                     const expiresIn = config.VERIFICATION_CODE_EXPIRES_IN;
@@ -90,7 +98,10 @@ export const verificationRouter = router({
                     const codeLifetime = Date.now() - createdAt;
 
                     if (codeLifetime > expiresIn) {
-                        throw new Error();
+                        throw new TRPCError({
+                            code: 'BAD_REQUEST',
+                            message: 'Verification code has expired',
+                        });
                     }
 
                     await db.transaction(async tx => {
@@ -99,12 +110,7 @@ export const verificationRouter = router({
                             .set({
                                 emailVerified: sql`NOW()`,
                             })
-                            .where(
-                                eq(
-                                    sql`lower(${users.email})`,
-                                    decoded.email.toLowerCase()
-                                )
-                            );
+                            .where(eq(sql`lower(${users.email})`, decoded.email.toLowerCase()));
 
                         await tx
                             .delete(verificationCodes)
@@ -118,13 +124,17 @@ export const verificationRouter = router({
                                 )
                             );
                     });
+                } else {
+                    throw new TRPCError({
+                        code: 'UNAUTHORIZED',
+                        message: 'Invalid token',
+                    });
                 }
 
                 return 'ok';
-            } catch {
-                throw new XTRPCError({
-                    code: 'BAD_REQUEST',
-                    message: 'Invalid verification code',
+            } catch (e) {
+                handleError(e, {
+                    message: 'Error checking verification code',
                 });
             }
         }),
