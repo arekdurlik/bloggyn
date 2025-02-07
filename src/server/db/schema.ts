@@ -218,18 +218,15 @@ export const notifications = createTable(
     'notifications',
     {
         id: serial('id').primaryKey(),
-        fromId: varchar('from_id', { length: 255 })
-            .references(() => users.id)
-            .notNull(),
+        fromIds: varchar('from_ids', { length: 255 }).array().notNull(),
         toId: varchar('to_id', { length: 255 })
             .references(() => users.id)
             .notNull(),
         type: varchar('type', { length: 50 }).notNull(),
         targetType: varchar('target_type', { length: 50 }).notNull(),
         targetId: varchar('target_id', { length: 255 }).notNull(),
-        isMain: boolean('is_main').default(false),
-        read: boolean('read').default(false),
-        moreCount: integer('more_count').default(0),
+        read: boolean('read').default(false).notNull(),
+        totalCount: integer('total_count').default(1),
         createdAt: timestamp('created_at', {
             mode: 'string',
             withTimezone: true,

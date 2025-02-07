@@ -3,6 +3,8 @@ export const IMAGE_OVERLAY_ID = 'img-overlay';
 
 export const HEADER_ID = 'header';
 
+export const LATEST_ACTORS_MAX_AMOUNT = 2;
+
 export enum SocketEvent {
     CONNECT = 'connect',
     DISCONNECT = 'disconnect',

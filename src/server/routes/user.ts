@@ -3,9 +3,9 @@ import { procedure, protectedProcedure, router } from '@/trpc';
 import { TRPCError, type inferRouterOutputs } from '@trpc/server';
 import { and, countDistinct, desc, eq, ilike, lt, lte, or, sql } from 'drizzle-orm';
 import { z } from 'zod';
-import { accounts, following, notifications, posts, users } from '../db/schema';
+import { accounts, following, posts, users } from '../db/schema';
 import { handleError } from '../utils';
-import { storeNotifications } from './notification';
+import { deleteNotifications, storeNotifications } from './notification';
 
 export type UserRouterOutput = inferRouterOutputs<typeof userRouter>;
 
@@ -206,20 +206,36 @@ export const userRouter = router({
                     });
                 }
 
-                await db.insert(following).values({
-                    followerId: session.user.id,
-                    followedId: toFollow.id,
+                const alreadyFollowing = await db.query.following.findFirst({
+                    where: and(
+                        eq(following.followerId, session.user.id),
+                        eq(following.followedId, toFollow.id)
+                    ),
                 });
 
-                await storeNotifications([
-                    {
-                        fromId: session.user.id,
-                        toId: toFollow.id,
-                        type: NotificationType.FOLLOW,
-                        targetType: NotificationTargetType.USER,
-                        targetId: toFollow.id,
-                    },
-                ]);
+                if (alreadyFollowing) {
+                    throw new TRPCError({
+                        code: 'BAD_REQUEST',
+                        message: 'Already following this user',
+                    });
+                }
+
+                await db.transaction(async trx => {
+                    await trx.insert(following).values({
+                        followerId: session.user.id,
+                        followedId: toFollow.id,
+                    });
+
+                    await storeNotifications([
+                        {
+                            fromId: session.user.id,
+                            toId: toFollow.id,
+                            type: NotificationType.FOLLOW,
+                            targetType: NotificationTargetType.USER,
+                            targetId: toFollow.id,
+                        },
+                    ]);
+                });
 
                 return 'ok';
             } catch (e) {
@@ -260,16 +276,21 @@ export const userRouter = router({
                         )
                     );
 
-                await db
-                    .delete(notifications)
-                    .where(
-                        and(
-                            eq(notifications.toId, session.user.id),
-                            eq(notifications.targetId, toUnfollow.id.toString()),
-                            eq(notifications.type, NotificationType.FOLLOW),
-                            eq(notifications.fromId, toUnfollow.id)
-                        )
-                    );
+                try {
+                    await deleteNotifications({
+                        fromId: session.user.id,
+                        toId: toUnfollow.id,
+                        type: NotificationType.FOLLOW,
+                        targetType: NotificationTargetType.USER,
+                        targetId: toUnfollow.id,
+                    });
+                } catch (e) {
+                    if (e instanceof TRPCError) {
+                        if (e.code !== 'NOT_FOUND') {
+                            throw e;
+                        }
+                    }
+                }
 
                 return 'ok';
             } catch (e) {

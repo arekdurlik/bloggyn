@@ -277,27 +277,27 @@ export const postRouter = router({
                     .limit(1);
 
                 if (res?.existingLike && res.authorId && !input.liked) {
-                    await db.transaction(async trx => {
-                        await trx
-                            .delete(postLikes)
-                            .where(
-                                and(
-                                    eq(postLikes.postId, input.postId),
-                                    eq(postLikes.userId, userId)
-                                )
-                            );
-
-                        await deleteNotifications(
-                            {
-                                fromId: userId,
-                                toId: res.authorId,
-                                type: NotificationType.LIKE,
-                                targetType: NotificationTargetType.POST,
-                                targetId: input.postId.toString(),
-                            },
-                            trx
+                    await db
+                        .delete(postLikes)
+                        .where(
+                            and(eq(postLikes.postId, input.postId), eq(postLikes.userId, userId))
                         );
-                    });
+
+                    try {
+                        await deleteNotifications({
+                            fromId: userId,
+                            toId: res.authorId,
+                            type: NotificationType.LIKE,
+                            targetType: NotificationTargetType.POST,
+                            targetId: input.postId.toString(),
+                        });
+                    } catch (e) {
+                        if (e instanceof TRPCError) {
+                            if (e.code !== 'NOT_FOUND') {
+                                throw e;
+                            }
+                        }
+                    }
                 } else if (res && !res.existingLike && input.liked) {
                     // add like and notification
                     await db.insert(postLikes).values({ postId: input.postId, userId });

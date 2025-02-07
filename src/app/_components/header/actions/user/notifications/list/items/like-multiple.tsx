@@ -30,16 +30,16 @@ export default function LikeMultiple({
                 {notification.from.slice(0, 2).map((user, i) => (
                     <Fragment key={i}>
                         <Link href={`@${user.username}`}>{user.name}</Link>
-                        {notification.moreCount > 0
+                        {notification.totalCount > 2
                             ? i < notification.from.length - 1 && ', '
                             : i === 0 && <span> and </span>}
                     </Fragment>
                 ))}
-                {notification.moreCount > 0 && (
+                {notification.totalCount > 1 && (
                     <span>
                         {' '}
-                        and {notification.moreCount}{' '}
-                        {notification.moreCount === 1 ? 'other' : 'others'}
+                        and {notification.totalCount}{' '}
+                        {notification.totalCount === 2 ? 'other' : 'others'}
                     </span>
                 )}
                 <span>

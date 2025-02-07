@@ -30,6 +30,16 @@ if (SILENCE_HTTP && process.env.NODE_ENV === 'development' && process.stdout) {
 }
 
 export class ServerLogger {
+    #action: string | undefined = undefined;
+
+    constructor(action?: string) {
+        this.#action = action;
+    }
+
+    setAction(action?: string) {
+        this.#action = action;
+    }
+
     static log(...args: any[]) {
         if (LOG_ENABLED && typeof window === 'undefined') {
             console.log(...args.map(green));
@@ -40,6 +50,14 @@ export class ServerLogger {
         if (LOG_ENABLED && typeof window === 'undefined') {
             console.log(red(' ✘'), ...args.map(red));
             printStackTrace(1);
+        }
+    }
+
+    logAction() {
+        if (LOG_ENABLED && typeof window === 'undefined') {
+            if (this.#action) {
+                console.log(purple('\n Action: ' + this.#action));
+            }
         }
     }
 
@@ -71,7 +89,7 @@ export class BrowserLogger {
     }
 }
 
-function printStackTrace(depth?: number) {
+function printStackTrace(depth?: number, action?: string) {
     const regex = /\((?:webpack-internal:\/\/\/)?([^:]+):\d+:\d+\)/;
 
     const trace = Error()
@@ -99,7 +117,13 @@ function printStackTrace(depth?: number) {
 
     if (relevantTrace) {
         relevantTrace.length > 0 && console.log();
-        relevantTrace.forEach(l => console.log(red(l)));
+        relevantTrace.forEach((l, i) => {
+            if (i === 0 && action) {
+                console.log(red(l.replace('at', 'at ' + action)));
+            } else {
+                console.log(red(l));
+            }
+        });
     }
 }
 

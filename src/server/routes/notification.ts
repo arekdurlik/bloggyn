@@ -1,18 +1,25 @@
-import { NotificationTargetType, NotificationType, SocketEvent } from '@/lib/constants';
+import {
+    LATEST_ACTORS_MAX_AMOUNT,
+    NotificationTargetType,
+    NotificationType,
+    SocketEvent,
+} from '@/lib/constants';
 import { ServerLogger } from '@/lib/log';
 import { getServerSocket } from '@/sockets/server-socket';
 import { protectedProcedure, router } from '@/trpc';
-import { type inferRouterOutputs } from '@trpc/server';
+import { TRPCError, type inferRouterOutputs } from '@trpc/server';
 import { and, asc, desc, eq, gte, inArray, lte, or, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '../db';
-import { notifications, NotificationSchema, posts, users } from '../db/schema';
+import { following, notifications, posts, users, type NotificationSchema } from '../db/schema';
 import { handleError } from '../utils';
-export type NotificationsRouterOutput = inferRouterOutputs<typeof notificationsRouter>;
 
+export type Notification = z.infer<typeof notificationSchema>;
+export type NotificationsRouterOutput = inferRouterOutputs<typeof notificationsRouter>;
 const notificationTypeEnum = z.nativeEnum(NotificationType);
 const notificationTargetTypeEnum = z.nativeEnum(NotificationTargetType);
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const notificationSchema = z.object({
     fromId: z.string().min(1),
     toId: z.string().min(1),
@@ -21,8 +28,6 @@ const notificationSchema = z.object({
     targetId: z.string().min(1),
 });
 
-export type Notification = z.infer<typeof notificationSchema>;
-
 type LatestUsers = {
     userId: string;
     name: string | null;
@@ -30,17 +35,16 @@ type LatestUsers = {
     image: string | null;
     isFollowedBack?: boolean | null;
 }[];
+
 export type NotificationReturn = {
     id: number;
-    fromId: string;
+    fromIds: string[];
     toId: string;
     type: string;
     targetType: string;
     targetId: string;
-    isMain: boolean;
-    moreCount: number;
+    totalCount: number;
     read: boolean;
-    readAt: string | null;
     createdAt: string;
     updatedAt: string;
     title: string | null;
@@ -76,12 +80,12 @@ export const notificationsRouter = router({
                 const query = db
                     .select({
                         id: notifications.id,
+                        fromIds: notifications.fromIds,
                         toId: notifications.toId,
                         type: notifications.type,
                         targetType: notifications.targetType,
                         targetId: notifications.targetId,
-                        isMain: notifications.isMain,
-                        moreCount: notifications.moreCount,
+                        totalCount: notifications.totalCount,
                         read: notifications.read,
                         createdAt: notifications.createdAt,
                         updatedAt: notifications.updatedAt,
@@ -98,7 +102,7 @@ export const notificationsRouter = router({
                     )
                     .where(
                         and(
-                            eq(notifications.isMain, true),
+                            sql`array_length(${notifications.fromIds}, 1) IS NOT NULL`,
                             eq(notifications.toId, userId),
                             cursor
                                 ? and(
@@ -123,11 +127,20 @@ export const notificationsRouter = router({
 
                 const mainNotifications = await query;
 
-                // fetch latest users involved in each notification
+                // for each notification grab the details of the latest one or two users
                 const notificationsWithUsers = await Promise.all(
                     mainNotifications.map(async notif => {
-                        const moreCount = notif.moreCount || 0;
-                        const latestAmount = moreCount > 0 ? 2 : 1;
+                        const totalCount = notif.totalCount || 0;
+
+                        if (totalCount === 0) {
+                            return {
+                                ...notif,
+                                from: [],
+                                totalCount: 0,
+                            };
+                        }
+                        const latestAmount = totalCount > 1 ? LATEST_ACTORS_MAX_AMOUNT : 1;
+                        const latestUserIds = notif.fromIds.slice(0, latestAmount);
 
                         const fromUsers = await db
                             .select({
@@ -135,58 +148,54 @@ export const notificationsRouter = router({
                                 name: users.name,
                                 username: users.username,
                                 image: users.image,
-                                isFollowedBack: sql`
+                                isFollowedBack: sql<boolean | null>`
                                     CASE 
-                                        WHEN ${notifications.type} = ${NotificationType.FOLLOW} THEN 
-                                            EXISTS (
-                                                SELECT 1 
-                                                FROM ${notifications} AS followBackNotification
-                                                WHERE followBackNotification.type = ${NotificationType.FOLLOW}
-                                                AND followBackNotification.from_id = ${notifications.toId}
-                                                AND followBackNotification.to_id = ${notifications.fromId}
-                                            )
-                                        ELSE null
+                                    WHEN ${notif.type} = ${NotificationType.FOLLOW} THEN 
+                                        EXISTS (
+                                        SELECT 1 FROM ${following}
+                                        WHERE ${following.followerId} = ${notif.toId}
+                                            AND ${following.followedId} = ${users.id}
+                                        )
+                                    ELSE null
                                     END
                                 `,
                             })
-                            .from(notifications)
-                            .innerJoin(users, eq(notifications.fromId, users.id))
-                            .where(
-                                and(
-                                    eq(notifications.targetId, notif.targetId),
-                                    eq(notifications.targetType, notif.targetType),
-                                    eq(notifications.toId, userId)
-                                )
-                            )
-                            .orderBy(desc(notifications.updatedAt))
-                            .limit(latestAmount);
+                            .from(users)
+                            .where(inArray(users.id, latestUserIds));
+
+                        const sortedFromUsers = latestUserIds.map(id =>
+                            fromUsers.find(user => user.userId === id)
+                        ) as LatestUsers;
 
                         return {
                             ...notif,
-                            from: fromUsers,
-                            moreCount: moreCount > 0 ? moreCount - fromUsers.length : 0,
+                            from: sortedFromUsers,
+                            totalCount: totalCount > 0 ? totalCount - sortedFromUsers.length : 0,
                         };
                     })
                 );
 
+                const onlyWithUsers = notificationsWithUsers.filter(notif => notif.from.length);
+
                 let nextCursor = null;
 
                 if (mainNotifications.length > limit) {
-                    const nextItem = notificationsWithUsers.pop();
+                    const nextItem = onlyWithUsers.pop();
                     nextCursor = {
                         id: nextItem!.id,
                         createdAt: nextItem!.createdAt,
                         updatedAt: nextItem!.updatedAt,
-                        read: nextItem!.read!,
+                        read: nextItem!.read,
                     };
                 }
 
                 return {
-                    notifications: notificationsWithUsers as NotificationReturn[],
+                    notifications: onlyWithUsers satisfies NotificationReturn[],
                     nextCursor,
                 };
             } catch (e) {
                 handleError(e, {
+                    action: 'getNewestNotifications',
                     message: 'Error retrieving notifications',
                     moreInfo: input,
                 });
@@ -200,6 +209,7 @@ export const notificationsRouter = router({
                 .where(and(eq(notifications.toId, session.user.id), eq(notifications.read, false)));
         } catch (e) {
             handleError(e, {
+                action: 'readAllNotifications',
                 message: 'Error reading all notifications',
                 moreInfo: session,
             });
@@ -243,13 +253,7 @@ export const notificationsRouter = router({
                     count: sql<number>`COUNT(*)`,
                 })
                 .from(notifications)
-                .where(
-                    and(
-                        eq(notifications.toId, userId),
-                        eq(notifications.isMain, true),
-                        eq(notifications.read, false)
-                    )
-                );
+                .where(and(eq(notifications.toId, userId), eq(notifications.read, false)));
 
             return unreadCount[0]?.count ?? 0;
         } catch (e) {
@@ -260,87 +264,106 @@ export const notificationsRouter = router({
 });
 
 type PartialNotificationData = Partial<
-    Omit<NotificationSchema, 'updatedAt' | 'createdAt' | 'isMain' | 'moreCount'>
+    Omit<NotificationSchema, 'updatedAt' | 'createdAt' | 'moreCount' | 'fromIds'>
 >;
 
 type StoreNotificationData = PartialNotificationData &
-    Required<Pick<NotificationSchema, 'fromId' | 'toId' | 'type' | 'targetId' | 'targetType'>>;
+    Required<Pick<NotificationSchema, 'toId' | 'targetId' | 'targetType'>> & {
+        fromId: string;
+        type: NotificationType;
+    };
 
-export async function storeNotifications(data: StoreNotificationData[], executor?: typeof db) {
-    const exec = executor ? executor : db;
+export async function storeNotifications(data: StoreNotificationData[]) {
+    const logger = new ServerLogger();
 
     try {
-        await exec.transaction(async trx => {
+        await db.transaction(async trx => {
             const notificationsToInsert = [];
-            let isMain = false;
 
             for (const notification of data) {
                 if (notification.type === NotificationType.LIKE) {
-                    // check if a main notification of this type already exists
-                    const [existingNotification] = await trx
-                        .select()
-                        .from(notifications)
-                        .where(
-                            and(
-                                eq(notifications.toId, notification.toId),
-                                eq(notifications.targetId, notification.targetId),
-                                eq(notifications.type, NotificationType.LIKE),
-                                eq(notifications.targetType, NotificationTargetType.POST),
-                                eq(notifications.isMain, true)
-                            )
-                        )
-                        .limit(1);
-
-                    // if exists, increment moreCount
-                    if (existingNotification) {
-                        await trx
-                            .update(notifications)
-                            .set({
-                                moreCount: (existingNotification.moreCount || 0) + 1,
-                                read: false,
-                            })
-                            .where(
-                                and(
-                                    eq(notifications.id, existingNotification.id),
-                                    eq(notifications.isMain, true)
-                                )
-                            );
-                    } else {
-                        isMain = true;
+                    // skip notification about liking your own post
+                    if (notification.fromId === notification.toId) {
+                        continue;
                     }
-                    // accurate moreCount less important than storing a new notification
-                } else {
-                    isMain = true;
                 }
 
-                notificationsToInsert.push({
-                    fromId: notification.fromId,
-                    toId: notification.toId,
-                    type: notification.type,
-                    targetType: notification.targetType,
-                    targetId: notification.targetId,
-                    isMain: isMain,
-                });
+                logger.setAction('get existing');
 
-                await trx.insert(notifications).values(notificationsToInsert);
+                const [existingNotification] = await trx
+                    .select()
+                    .from(notifications)
+                    .where(
+                        and(
+                            eq(notifications.toId, notification.toId),
+                            eq(notifications.targetId, notification.targetId),
+                            eq(notifications.type, NotificationType.LIKE),
+                            eq(notifications.targetType, NotificationTargetType.POST),
+                            eq(notifications.read, false)
+                        )
+                    )
+                    .limit(1);
 
-                // notify users
-                data.forEach(notification => {
-                    getServerSocket().emit(SocketEvent.NOTIFY, notification.toId);
-                });
+                // if exists, increment totalCount and mark as unread
+                if (existingNotification) {
+                    const newFromIds = [...existingNotification.fromIds];
+
+                    // extra in case someone undos an action,
+                    // otherwise will have to select from relevant table
+                    const safeTotal = LATEST_ACTORS_MAX_AMOUNT + 2;
+
+                    if (newFromIds.length < safeTotal) {
+                        newFromIds.unshift(notification.fromId);
+                    } else {
+                        newFromIds.pop();
+                        newFromIds.unshift(notification.fromId);
+                    }
+
+                    logger.setAction('update existing');
+
+                    await trx
+                        .update(notifications)
+                        .set({
+                            fromIds: newFromIds,
+                            totalCount: (existingNotification.totalCount || 0) + 1,
+                            read: false,
+                        })
+                        .where(and(eq(notifications.id, existingNotification.id)));
+                } else {
+                    notificationsToInsert.push({
+                        fromIds: [notification.fromId],
+                        toId: notification.toId,
+                        type: notification.type,
+                        targetType: notification.targetType,
+                        targetId: notification.targetId,
+                    });
+                }
             }
+
+            logger.setAction('insert all');
+
+            if (notificationsToInsert.length > 0) {
+                await trx.insert(notifications).values(notificationsToInsert);
+            }
+
+            // notify users
+            data.forEach(notification => {
+                getServerSocket().emit(SocketEvent.NOTIFY, notification.toId);
+            });
         });
     } catch (e) {
-        handleError(e, {
-            message: 'Error storing notifications',
-            moreInfo: data,
-        });
+        handleError(
+            e,
+            {
+                message: 'Error storing notifications',
+                moreInfo: data,
+            },
+            logger
+        );
     }
 }
 
-export async function deleteNotifications(where: PartialNotificationData, executor?: typeof db) {
-    const exec = executor ? executor : db;
-
+export async function deleteNotifications(where: StoreNotificationData) {
     const notificationWhere = and(
         where.toId ? eq(notifications.toId, where.toId) : undefined,
         where.type ? eq(notifications.type, where.type) : undefined,
@@ -351,35 +374,29 @@ export async function deleteNotifications(where: PartialNotificationData, execut
 
     try {
         // delete the specified notification
-        await exec.transaction(async trx => {
-            await trx
-                .delete(notifications)
-                .where(
-                    and(
-                        notificationWhere,
-                        where.fromId ? eq(notifications.fromId, where.fromId) : undefined,
-                        where.id ? eq(notifications.id, where.id) : undefined,
-                        lte(notifications.moreCount, 0)
-                    )
-                );
+        const [existing] = await db.select().from(notifications).where(notificationWhere).limit(1);
 
-            // check if a main notification still exists
-            const [mainNotification] = await trx
-                .select({ id: notifications.id, moreCount: notifications.moreCount })
-                .from(notifications)
-                .where(and(notificationWhere, eq(notifications.isMain, true)))
-                .limit(1);
+        if (existing) {
+            if (existing.totalCount && existing.totalCount > 1) {
+                let fromIds = existing.fromIds;
 
-            // if exists, decrement moreCount
-            if (mainNotification) {
-                if (mainNotification.moreCount && mainNotification.moreCount > 0) {
-                    await trx
-                        .update(notifications)
-                        .set({ moreCount: mainNotification.moreCount - 1 })
-                        .where(eq(notifications.id, mainNotification.id));
+                if (fromIds.includes(where.fromId)) {
+                    fromIds = fromIds.filter(id => id !== where.fromId);
                 }
+
+                await db
+                    .update(notifications)
+                    .set({ fromIds, totalCount: (existing.totalCount || 2) - 1 })
+                    .where(and(eq(notifications.id, existing.id)));
+            } else {
+                await db.delete(notifications).where(and(eq(notifications.id, existing.id)));
             }
-        });
+        } else {
+            throw new TRPCError({
+                code: 'NOT_FOUND',
+                message: 'Notification not found',
+            });
+        }
     } catch (e) {
         handleError(e, {
             message: 'Error removing notifications',
