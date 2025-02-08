@@ -3,6 +3,7 @@ import { usePathname } from 'next/navigation';
 import {
     createContext,
     type Dispatch,
+    type EffectCallback,
     type RefObject,
     type SetStateAction,
     useContext,
@@ -27,6 +28,10 @@ export type DropdownContextValueType = [
         set: Dispatch<SetStateAction<DropdownContextType>>;
         handleMouseEnter: () => void;
         handleMouseLeave: () => void;
+        triggerOnMount: () => void;
+        triggerOnUnmount: (fullyShown: boolean) => void;
+        onUnmount: (callback: (fullyShown: boolean) => void) => void;
+        onMount: (callback: () => void) => void;
     }
 ];
 
@@ -39,8 +44,8 @@ type Props = {
     hoverMode?: boolean;
     hoverOpenDelay?: number;
     hoverCloseDelay?: number;
-    onOpen?: () => void;
-    onClose?: () => void;
+    onMount?: () => void;
+    onUnmount?: (fullyShown: boolean) => void;
     onTriggerMouseEnter?: () => void;
     onTriggerMouseLeave?: () => void;
 };
@@ -51,8 +56,8 @@ export default function DropdownMenu({
     hoverMode,
     hoverOpenDelay = 300,
     hoverCloseDelay = hoverOpenDelay,
-    onOpen,
-    onClose,
+    onMount,
+    onUnmount,
     onTriggerMouseEnter,
     onTriggerMouseLeave,
 }: Props) {
@@ -62,6 +67,13 @@ export default function DropdownMenu({
         open: false,
         triggerRefs: [],
         items: [],
+    });
+    const callbacks = useRef<{
+        onUnmount: Set<(fullyShown: boolean) => void>;
+        onMount: Set<() => void>;
+    }>({
+        onUnmount: new Set(),
+        onMount: new Set(),
     });
     const openRef = useRef(value.open);
     openRef.current = value.open;
@@ -73,9 +85,9 @@ export default function DropdownMenu({
         setValue(v => ({ ...v, manualOpen: open }));
     }, [open]);
 
-    useEffect(() => {
-        if (value.open) onOpen?.();
-        if (!value.open) onClose?.();
+    useUpdateEffect(() => {
+        if (value.open) onMount?.();
+        if (!value.open) onUnmount?.();
     }, [value.open]);
 
     useUpdateEffect(() => {
@@ -117,9 +129,40 @@ export default function DropdownMenu({
         }, hoverCloseDelay);
     }
 
+    function registerOnUnmount(callback: (fullyShown: boolean) => void): EffectCallback {
+        callbacks.current.onUnmount.add(callback);
+        return () => {
+            callbacks.current.onUnmount.delete(callback);
+        };
+    }
+
+    function registerOnMount(callback: () => void): () => void {
+        callbacks.current.onMount.add(callback);
+        return () => callbacks.current.onMount.delete(callback);
+    }
+
+    function triggerOnUnmount(fullyShown: boolean) {
+        callbacks.current.onUnmount.forEach(callback => callback(fullyShown));
+    }
+
+    function triggerOnMount() {
+        callbacks.current.onMount.forEach(callback => callback());
+    }
+
     return (
         <DropdownContext.Provider
-            value={[value, { set: setValue, handleMouseLeave, handleMouseEnter }]}
+            value={[
+                value,
+                {
+                    set: setValue,
+                    handleMouseLeave,
+                    handleMouseEnter,
+                    triggerOnMount,
+                    triggerOnUnmount,
+                    onUnmount: registerOnUnmount,
+                    onMount: registerOnMount,
+                },
+            ]}
         >
             {children}
         </DropdownContext.Provider>

@@ -15,8 +15,9 @@ type Props = {
     style?: CSSProperties;
     noAutofocus?: boolean;
     stableScrollbarGutter?: boolean;
-    onUmnount?: () => void;
-    onClose?: () => void;
+    onBeforeRender?: () => void;
+    onMount?: () => void;
+    onUmnount?: (fullyShown: boolean) => void;
 };
 
 export default function DropdownMenuContent({
@@ -28,8 +29,9 @@ export default function DropdownMenuContent({
     style,
     noAutofocus = false,
     stableScrollbarGutter = false,
+    onBeforeRender,
+    onMount,
     onUmnount,
-    onClose,
 }: Props) {
     const [{ open, manualOpen, hoverMode, triggerRefs }, api] = useDropdownContext();
     const ref = useRef<HTMLUListElement | null>(null);
@@ -135,12 +137,23 @@ export default function DropdownMenuContent({
         window.addEventListener('resize', calculatePosition);
     }
 
+    function handleOnUnmount(fullyShown: boolean) {
+        api.triggerOnUnmount(fullyShown);
+        onUmnount?.(fullyShown);
+    }
+
+    function handleOnMount() {
+        api.triggerOnMount();
+        onMount?.();
+        calculatePosition();
+    }
+
     return (
         <AnimatedUnmount
             mounted={finalOpen}
-            onRender={calculatePosition}
-            onUnmount={onUmnount}
-            onClose={onClose}
+            onMount={handleOnMount}
+            onUnmount={handleOnUnmount}
+            onBeforeMount={onBeforeRender}
         >
             <ul
                 ref={ref}

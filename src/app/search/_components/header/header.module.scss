@@ -20,16 +20,6 @@
     gap: var(--spacing-xl);
     transition: box-shadow var(--transition-theme) !important;
 
-    &:before {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 1px;
-        background: linear-gradient(to right, var(--border), transparent);
-    }
-
     li {
         position: relative;
     }

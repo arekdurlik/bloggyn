@@ -3,6 +3,7 @@ export const IMAGE_OVERLAY_ID = 'img-overlay';
 
 export const HEADER_ID = 'header';
 
+export const CALLBACK_PARAM = 'cb';
 export const LATEST_ACTORS_MAX_AMOUNT = 2;
 
 export enum SocketEvent {

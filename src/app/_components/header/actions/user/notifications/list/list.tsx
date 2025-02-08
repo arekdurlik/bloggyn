@@ -16,7 +16,7 @@ export default function NotificationsList({ newCount }: { newCount: number }) {
         isFetchingNextPage,
     } = trpc.getNewestNotifications.useInfiniteQuery(
         { limit: NOTIFICATIONS_PAGE_LIMIT },
-        { getNextPageParam: lastPage => lastPage?.nextCursor }
+        { getNextPageParam: lastPage => lastPage?.nextCursor, staleTime: Infinity }
     );
 
     const notifications = notificationsRaw?.pages.flatMap(n => n!.notifications) ?? [];

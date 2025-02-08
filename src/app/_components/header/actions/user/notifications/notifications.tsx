@@ -25,6 +25,8 @@ export const NOTIFICATIONS_PAGE_LIMIT = 10;
 export default function Notifications({ unreadNotifications }: { unreadNotifications: number }) {
     const [triggerFetch, setTriggerFetch] = useState(false);
     const [active, setActive] = useState(false);
+    const activeRef = useRef(false);
+    activeRef.current = active;
     const [count, setCount] = useState(unreadNotifications);
     const [read, setRead] = useState(false);
 
@@ -66,7 +68,7 @@ export default function Notifications({ unreadNotifications }: { unreadNotificat
 
     useUpdateEffect(() => {
         utils.getNewestNotifications.invalidate();
-    }, [triggerFetch]);
+    }, [triggerFetch, active]);
 
     // socket events can only fit the recipient id (probably some vercel thing),
     // so the new notification count is fetched clientside when triggered
@@ -78,8 +80,11 @@ export default function Notifications({ unreadNotifications }: { unreadNotificat
                 if (newCount) {
                     if (newCount > count || (read && newCount > 0)) {
                         countRef.current?.classList?.add(styles.newNotification);
-                        setRead(false);
                         setCount(newCount);
+
+                        if (!activeRef.current) {
+                            setRead(false);
+                        }
                     }
                 } else {
                     countRef.current?.classList?.remove(styles.newNotification);
@@ -151,7 +156,7 @@ export default function Notifications({ unreadNotifications }: { unreadNotificat
                 align="left"
                 offsetTop={7}
             >
-                <NotificationsList newCount={lastCount.current} />
+                <NotificationsList newCount={count} />
             </DropdownMenuContent>
         </DropdownMenu>
     );

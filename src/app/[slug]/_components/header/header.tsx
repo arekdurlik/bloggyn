@@ -8,18 +8,18 @@ import Image from 'next/image';
 import UserDetailsPopover, {
     UserDetailsPopoverTriggerLink,
 } from '@/components/common/user-details-popover/user-details-popover';
-import styles from './post-info.module.scss';
+import styles from './header.module.scss';
 
 export type Post = Exclude<PostRouterOutput['getPost'], undefined>;
 
-export default function PostInfo({ post }: { post: Post }) {
+export default function Header({ post }: { post: Post }) {
     return (
-        <div className={styles.postInfo}>
+        <div className={styles.header}>
             <UserDetailsPopover username={post.user?.username ?? ''}>
                 <div className={styles.popoverTrigger}>
                     <UserDetailsPopoverTriggerLink href={`@${post.user?.username}`}>
                         <Image
-                            className={styles.postInfoImage}
+                            className={styles.headerImage}
                             src={post.user?.avatar ?? '/default-avatar.jpg'}
                             alt="Author's profile image"
                             width={50}
@@ -27,7 +27,7 @@ export default function PostInfo({ post }: { post: Post }) {
                         />
                     </UserDetailsPopoverTriggerLink>
                 </div>
-                <div className={styles.postInfoText}>
+                <div className={styles.headerText}>
                     <div className={styles.author}>
                         <UserDetailsPopoverTriggerLink href={`@${post.user?.username}`}>
                             <span className={styles.name}>{post.user?.name}</span>
@@ -36,7 +36,7 @@ export default function PostInfo({ post }: { post: Post }) {
                             <span className={styles.username}>@{post.user?.username}</span>
                         </div>
                     </div>
-                    <div className={styles.postInfoExtra}>
+                    <div className={styles.headerExtra}>
                         <span>{post.createdAtFormatted}</span>
                         <span className={styles.dot}>•</span>
                         <div className={styles.reactions}>

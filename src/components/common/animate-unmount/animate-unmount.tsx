@@ -5,32 +5,30 @@ import styles from './animate-unmont.module.scss';
 type Props = {
     mounted: boolean;
     children: JSX.Element;
-    onRender?: () => void;
-    onBeforeRender?: () => void;
-    onUnmount?: () => void;
-    onClose?: () => void;
+    onBeforeMount?: () => void;
+    onUnmount?: (fullyShown: boolean) => void;
+    onMount?: () => void;
 };
 
 export default function AnimatedUnmount({
     mounted,
     children,
-    onRender,
-    onBeforeRender,
+    onBeforeMount,
     onUnmount,
-    onClose,
+    onMount,
 }: Props) {
     const [shouldRender, setShouldRender] = useState(mounted);
     const [fullyShown, setFullyShown] = useState(false);
 
     useEffect(() => {
         if (shouldRender) {
-            onRender?.();
+            onMount?.();
         }
     }, [shouldRender]);
 
     useEffect(() => {
         if (mounted && !shouldRender) {
-            onBeforeRender?.();
+            onBeforeMount?.();
             setShouldRender(true);
         }
     }, [mounted, shouldRender]);
@@ -41,12 +39,7 @@ export default function AnimatedUnmount({
                 setFullyShown(true);
             }
             if (event.animationName === styles.fadeOut && !mounted) {
-                onUnmount?.();
-
-                if (fullyShown) {
-                    onClose?.();
-                } else {
-                }
+                onUnmount?.(fullyShown);
 
                 setFullyShown(false);
                 setShouldRender(false);

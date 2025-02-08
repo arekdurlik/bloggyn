@@ -5,12 +5,13 @@ import Google from '@/components/common/icons/google';
 import { openToast, resolveToast, ToastType } from '@/components/common/toasts/store';
 import { handleErrorWithToast } from '@/components/common/toasts/utils';
 import { Form } from '@/components/forms/form';
+import { CALLBACK_PARAM } from '@/lib/constants';
 import { cn, sleep, withMinDuration } from '@/lib/helpers';
 import { trpc } from '@/trpc/client';
 import { ArrowRight } from 'lucide-react';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import FormButton from '../form-button';
 import formStyles from '../forms.module.scss';
@@ -27,6 +28,7 @@ export default function SignInForm() {
     });
     const utils = trpc.useUtils();
     const router = useRouter();
+    const params = useSearchParams();
 
     useAuthIntent({
         intent: 'sign-in',
@@ -54,7 +56,7 @@ export default function SignInForm() {
         });
 
         await resolveToast(toast, true, 'Signed in!');
-        router.push('/');
+        router.push('/' + (params.get(CALLBACK_PARAM) ?? ''));
     }
 
     return (

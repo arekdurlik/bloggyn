@@ -1,21 +1,25 @@
 'use client';
 
 import { useHeartButton } from '@/app/[slug]/_components/heart-button-context';
+import { CALLBACK_PARAM } from '@/lib/constants';
 import { cn } from '@/lib/helpers';
 import { useUpdateEffect } from '@/lib/hooks/use-update-effect';
 import { Heart } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useSession } from 'next-auth/react';
+import { usePathname, useRouter } from 'next/navigation';
+import { useRef } from 'react';
 import styles from './heart-button.module.scss';
 
 export default function HeartButton({ small }: { small?: boolean }) {
-    const { optimisticState, localCount, setOptimisticState } = useHeartButton();
     const pending = useRef(false);
     const ref = useRef<HTMLButtonElement>(null!);
-    const [toggled, setToggled] = useState(false);
+
+    const { optimisticState, localCount, setOptimisticState } = useHeartButton();
+    const session = useSession();
+    const router = useRouter();
+    const path = usePathname();
 
     useUpdateEffect(() => {
-        setToggled(optimisticState);
-
         if (optimisticState) {
             const randomNumber =
                 Math.random() < 0.5
@@ -27,6 +31,10 @@ export default function HeartButton({ small }: { small?: boolean }) {
     }, [optimisticState]);
 
     async function handleClick() {
+        if (!session.data?.user) {
+            return router.push(`/sign-in?${CALLBACK_PARAM}=` + path.slice(1));
+        }
+
         pending.current = true;
         const newState = !optimisticState;
         setOptimisticState(newState);
@@ -53,20 +61,17 @@ export default function HeartButton({ small }: { small?: boolean }) {
     }
 
     return (
-        <button
-            ref={ref}
-            className={cn(
-                styles.wrapper,
-                optimisticState && styles.set,
-                toggled && styles.toggled,
-                small && styles.small
-            )}
-            onClick={handleClick}
-        >
-            <div className={styles.heartWrapper}>
-                <Heart />
-            </div>
+        <>
+            <button
+                ref={ref}
+                className={cn(styles.wrapper, optimisticState && styles.set, small && styles.small)}
+                onClick={handleClick}
+            >
+                <div className={styles.heartWrapper}>
+                    <Heart />
+                </div>
+            </button>
             <span style={{ minWidth: calculateWidth(localCount) }}>{localCount}</span>
-        </button>
+        </>
     );
 }
