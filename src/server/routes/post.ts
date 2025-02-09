@@ -19,7 +19,7 @@ const SUMMARY_NO_IMAGE_LENGTH = 190;
 const READ_TIME = 225;
 
 export const postRouter = router({
-    getPost: procedure
+    get: procedure
         .input(
             z.object({
                 slug: z.string(),
@@ -78,7 +78,7 @@ export const postRouter = router({
                 });
             }
         }),
-    getPosts: procedure
+    getAll: procedure
         .input(
             z.object({
                 query: z.string().nullish(),
@@ -181,7 +181,7 @@ export const postRouter = router({
             }
         }),
 
-    submitPost: protectedProcedure.input(postSchema).mutation(async ({ input, ctx }) => {
+    submit: protectedProcedure.input(postSchema).mutation(async ({ input, ctx }) => {
         try {
             const { session, db } = ctx;
 
@@ -256,7 +256,7 @@ export const postRouter = router({
             });
         }
     }),
-    setPostLike: protectedProcedure
+    setLike: protectedProcedure
         .input(z.object({ postId: z.number(), liked: z.boolean() }))
         .mutation(async ({ input, ctx }) => {
             const { session, db } = ctx;

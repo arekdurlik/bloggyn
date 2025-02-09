@@ -10,7 +10,7 @@ import { z } from 'zod';
 export type SignInRouterOutput = inferRouterOutputs<typeof signInRouter>;
 
 export const signInRouter = router({
-    checkSignInCredentials: procedure
+    checkCredentials: procedure
         .input(
             z.object({
                 email: z.string(),

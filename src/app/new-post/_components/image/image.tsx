@@ -1,8 +1,9 @@
+import { openToast, ToastType } from '@/components/common/toasts/store';
 import { cn, selectElementContents } from '@/lib/helpers';
 import { useOutsideClick } from '@/lib/hooks/use-outside-click';
 import { trpc } from '@/trpc/client';
-import { Transaction } from '@tiptap/pm/state';
-import { Editor, NodeViewWrapper, type NodeViewProps } from '@tiptap/react';
+import { type Transaction } from '@tiptap/pm/state';
+import { NodeViewWrapper, type Editor, type NodeViewProps } from '@tiptap/react';
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import { useEditorStore } from '../store';
 import styles from './image.module.scss';
@@ -16,7 +17,7 @@ export function Image(props: NodeViewProps) {
     const ref = useRef<HTMLImageElement>(null!);
     const uploading = useRef(false);
 
-    const uploadImage = trpc.uploadImage.useMutation();
+    const uploadImage = trpc.image.upload.useMutation();
     const { api, data, editor } = useEditorStore();
 
     useOutsideClick(ref, () => setActive(false), { onMouseDown: true });
@@ -31,15 +32,19 @@ export function Image(props: NodeViewProps) {
             { src },
             {
                 onSuccess: res => {
-                    setSrc(res.url);
-                    api.setImages([...data.images, res]);
-                    props.updateAttributes({
-                        publicId: res.id,
-                        src: res.url,
-                        uploaded: true,
-                        uploadedWidth: res.width,
-                        uploadedHeight: res.height,
-                    });
+                    if (res) {
+                        setSrc(res.url);
+                        api.setImages([...data.images, res]);
+                        props.updateAttributes({
+                            publicId: res.id,
+                            src: res.url,
+                            uploaded: true,
+                            uploadedWidth: res.width,
+                            uploadedHeight: res.height,
+                        });
+                    } else {
+                        openToast(ToastType.ERROR, 'Failed to load image');
+                    }
                 },
             }
         );
@@ -55,10 +60,7 @@ export function Image(props: NodeViewProps) {
     useEffect(() => {
         if (!editor?.isFocused) return;
 
-        function checkIfLeftSelection(p: {
-            editor: Editor;
-            transaction: Transaction;
-        }) {
+        function checkIfLeftSelection(p: { editor: Editor; transaction: Transaction }) {
             const { from, to } = p.transaction.selection;
             const pos = props.getPos();
 
@@ -110,9 +112,7 @@ export function Image(props: NodeViewProps) {
                             suppressContentEditableWarning
                             contentEditable
                             tabIndex={-1}
-                            data-placeholder={
-                                active ? 'Add a caption... (optional)' : ''
-                            }
+                            data-placeholder={active ? 'Add a caption... (optional)' : ''}
                             onKeyDown={handleKey}
                             onInput={event => {
                                 setCaption(event.currentTarget.textContent);

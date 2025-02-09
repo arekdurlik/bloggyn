@@ -5,7 +5,7 @@ import Posts from '../_components/results/posts/posts';
 export default async function PostsPage({ searchParams }: { searchParams?: { q?: string } }) {
     const query = searchParams?.q;
 
-    await trpc.getPosts.prefetchInfinite({
+    await trpc.post.getAll.prefetchInfinite({
         query,
         limit: config.FEED_INFINITE_SCROLL_LIMIT,
     });

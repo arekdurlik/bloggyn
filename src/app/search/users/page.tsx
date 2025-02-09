@@ -6,7 +6,7 @@ const LIMIT = 6;
 export default async function UsersPage({ searchParams }: { searchParams?: { q?: string } }) {
     const query = searchParams?.q;
 
-    await trpc.getUsers.prefetchInfinite({
+    await trpc.user.getAll.prefetchInfinite({
         query,
         limit: LIMIT,
     });

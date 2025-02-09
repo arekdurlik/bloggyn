@@ -10,7 +10,7 @@ import UserDetailsPopover, {
 } from '@/components/common/user-details-popover/user-details-popover';
 import styles from './header.module.scss';
 
-export type Post = Exclude<PostRouterOutput['getPost'], undefined>;
+export type Post = Exclude<PostRouterOutput['get'], undefined>;
 
 export default function Header({ post }: { post: Post }) {
     return (

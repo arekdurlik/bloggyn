@@ -205,7 +205,7 @@ export const signUpRouter = router({
                 });
             }
         }),
-    completeSignUp: protectedProcedure
+    complete: protectedProcedure
         .input(onboardSchema)
         .mutation(async ({ input, ctx: { session, db } }) => {
             try {

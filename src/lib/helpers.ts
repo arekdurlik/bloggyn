@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export function difference(a: number, b: number) {
     return Math.abs(a - b);
 }

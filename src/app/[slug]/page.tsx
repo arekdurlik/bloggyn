@@ -64,7 +64,7 @@ const renderContent = (jsonContent: JSONContent): React.ReactNode => {
 };
 
 export default async function Page({ params }: { params: { slug: string } }) {
-    const post = await trpc.getPost({ slug: params.slug });
+    const post = await trpc.post.get({ slug: params.slug });
 
     if (!post) {
         return <p>no post</p>;

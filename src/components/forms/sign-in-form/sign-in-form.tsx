@@ -6,7 +6,7 @@ import { openToast, resolveToast, ToastType } from '@/components/common/toasts/s
 import { handleErrorWithToast } from '@/components/common/toasts/utils';
 import { Form } from '@/components/forms/form';
 import { CALLBACK_PARAM } from '@/lib/constants';
-import { cn, sleep, withMinDuration } from '@/lib/helpers';
+import { sleep, withMinDuration } from '@/lib/helpers';
 import { trpc } from '@/trpc/client';
 import { ArrowRight } from 'lucide-react';
 import { signIn } from 'next-auth/react';
@@ -61,7 +61,7 @@ export default function SignInForm() {
 
     return (
         <Template>
-            <div className={cn(formStyles.content, formStyles.contentCenter)}>
+            <div className={formStyles.content}>
                 <Form
                     disabled={oAuthLoading}
                     validate={[
@@ -69,7 +69,7 @@ export default function SignInForm() {
                             try {
                                 if (!email || !password) throw new Error();
 
-                                await utils.checkSignInCredentials.fetch({
+                                await utils.signIn.checkCredentials.fetch({
                                     email: email?.value,
                                     password: password?.value,
                                 });

@@ -1,17 +1,13 @@
+import { useFormContext } from '@/components/forms/context';
+import FormInput from '@/components/forms/form-input';
+import { trpc } from '@/trpc/client';
+import { UserError } from '@/validation/errors';
+import { USERNAME_MAX, usernameErrors, usernameSchema } from '@/validation/user/username';
+import { getResponse } from '@/validation/utils';
+import { TRPCClientError } from '@trpc/client';
+import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 import slug from 'slug';
-import { useSession } from 'next-auth/react';
-import { TRPCClientError } from '@trpc/client';
-import { trpc } from '@/trpc/client';
-import { getResponse } from '@/validation/utils';
-import {
-    USERNAME_MAX,
-    usernameErrors,
-    usernameSchema,
-} from '@/validation/user/username';
-import { UserError } from '@/validation/errors';
-import FormInput from '@/components/forms/form-input';
-import { useFormContext } from '@/components/forms/context';
 
 type Props = {
     value: string;
@@ -23,7 +19,7 @@ export default function Username({ value: username, onChange }: Props) {
     const { errors, api } = useFormContext();
 
     const { data: session } = useSession();
-    const checkAvailability = trpc.checkUsernameAvailability.useQuery(
+    const checkAvailability = trpc.signUp.checkUsernameAvailability.useQuery(
         { username: username.toLowerCase() },
         { enabled: false, retry: false }
     );
@@ -34,10 +30,7 @@ export default function Username({ value: username, onChange }: Props) {
     const validations = [
         (value: string) => {
             if (takenUsernames.includes(value.toLowerCase())) {
-                api.setError(
-                    inputName,
-                    getResponse(usernameErrors, UserError.USERNAME_TAKEN)
-                );
+                api.setError(inputName, getResponse(usernameErrors, UserError.USERNAME_TAKEN));
                 return false;
             } else return true;
         },
@@ -50,16 +43,10 @@ export default function Username({ value: username, onChange }: Props) {
                     if (error.data.key === UserError.USERNAME_TAKEN) {
                         api.setError(
                             inputName,
-                            getResponse(
-                                usernameErrors,
-                                UserError.USERNAME_TAKEN
-                            )
+                            getResponse(usernameErrors, UserError.USERNAME_TAKEN)
                         );
 
-                        setTakenUsernames(v => [
-                            ...v,
-                            username.toLowerCase(),
-                        ]);
+                        setTakenUsernames(v => [...v, username.toLowerCase()]);
                     }
                 }
 

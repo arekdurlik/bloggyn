@@ -34,8 +34,8 @@ export default function Notifications({ unreadNotifications }: { unreadNotificat
     const countRef = useRef<HTMLDivElement | null>(null);
     const refetchInterval = useRef<ReturnType<typeof setInterval>>();
 
-    const readAllNotifications = trpc.readAllNotifications.useMutation();
-    const getUnreadCount = trpc.getUnreadCount.useQuery(undefined, { enabled: false });
+    const readAllNotifications = trpc.notification.readAll.useMutation();
+    const getUnreadCount = trpc.notification.getUnreadCount.useQuery(undefined, { enabled: false });
     const debouncedTriggerFetch = useDebounce(triggerFetch, UPDATE_FREQUENCY, { skipFirst: true });
     const utils = trpc.useUtils();
 
@@ -67,7 +67,7 @@ export default function Notifications({ unreadNotifications }: { unreadNotificat
     }, [count]);
 
     useUpdateEffect(() => {
-        utils.getNewestNotifications.invalidate();
+        utils.notification.getNewest.invalidate();
     }, [triggerFetch, active]);
 
     // socket events can only fit the recipient id (probably some vercel thing),

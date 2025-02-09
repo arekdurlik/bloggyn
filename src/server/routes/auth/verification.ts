@@ -10,7 +10,7 @@ import { string, z } from 'zod';
 export type VerificationRouterOutput = inferRouterOutputs<typeof verificationRouter>;
 
 export const verificationRouter = router({
-    getVerificationCode: procedure
+    getCode: procedure
         .input(
             z.object({
                 token: string(),
@@ -66,7 +66,7 @@ export const verificationRouter = router({
                 });
             }
         }),
-    checkVerificationCode: procedure
+    checkCode: procedure
         .input(
             z.object({
                 code: z.string(),

@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import styles from './users.module.scss';
 
-export function Users({ users }: { users: SearchRouterOutput['search']['users'] }) {
+export function Users({ users }: { users: NonNullable<SearchRouterOutput['search']>['users'] }) {
     return (
         <>
             <DropdownMenuTitle>People</DropdownMenuTitle>

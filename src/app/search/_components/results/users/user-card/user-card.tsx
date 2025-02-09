@@ -4,11 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import styles from './user-card.module.scss';
 
-export default function UserCard({
-    user,
-}: {
-    user: UserRouterOutput['getUsers']['items'][number];
-}) {
+export default function UserCard({ user }: { user: UserRouterOutput['getAll']['items'][number] }) {
     return (
         <Link href={`/${user.username!}`} className={styles.container}>
             <Image

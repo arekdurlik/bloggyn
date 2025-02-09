@@ -40,7 +40,7 @@ export default function VerifyEmailForm() {
     const { state: crossfadeFormState, api } = useCrossfadeFormContext();
     const token = params.get('token');
     const utils = trpc.useUtils();
-    const getCode = trpc.getVerificationCode.useQuery(
+    const getCode = trpc.verification.getCode.useQuery(
         { token: token ?? '' },
         {
             enabled: !config.EMAIL_ENABLED && state === VerifyEmailState.NONE,
@@ -99,7 +99,10 @@ export default function VerifyEmailForm() {
         setState(VerifyEmailState.PENDING);
         verificationCodeSchema.parse(code);
 
-        await withMinDuration(utils.checkVerificationCode.fetch({ code, token: token ?? '' }), 600);
+        await withMinDuration(
+            utils.verification.checkCode.fetch({ code, token: token ?? '' }),
+            600
+        );
 
         setState(VerifyEmailState.SUCCESS);
     }

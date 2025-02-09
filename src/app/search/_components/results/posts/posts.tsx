@@ -23,19 +23,19 @@ export default function Posts({
         fetchNextPage,
         hasNextPage,
         isFetchingNextPage,
-    } = trpc.getPosts.useInfiniteQuery(
+    } = trpc.post.getAll.useInfiniteQuery(
         { query, limit },
         {
-            getNextPageParam: lastPage => lastPage.nextCursor,
+            getNextPageParam: lastPage => lastPage?.nextCursor,
             refetchOnMount: false,
         }
     );
 
-    const posts = postsRaw?.pages.flatMap(page => page.items) ?? [];
     const trigger = useRef<HTMLHRElement>(null!);
     useInView(trigger, fetchNextPage, { rootMargin: '200px' }, infinite);
+    const posts = postsRaw?.pages.flatMap(page => page!.items) ?? [];
 
-    if (!posts.length) return <NoResults resultsText="posts" />;
+    if (!posts) return <NoResults resultsText="posts" />;
 
     return (
         <div className={cardStyles.container}>

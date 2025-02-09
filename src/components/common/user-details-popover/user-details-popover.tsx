@@ -1,5 +1,4 @@
 import { trpc } from '@/trpc/client';
-import { usePathname } from 'next/navigation';
 import { useRef, useState, type ReactNode } from 'react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, Portal } from '../dropdown-menu';
 import { DropdownMenuTriggerLink } from '../dropdown-menu/trigger';
@@ -15,10 +14,9 @@ export default function UserDetailsPopover({
     children: ReactNode;
 }) {
     const [enabled, setEnabled] = useState(false);
-    const { data: details } = trpc.getUserDetails.useQuery(
+    const { data: details } = trpc.user.getDetails.useQuery(
         {
             username: username,
-            path: usePathname(),
         },
         { enabled, queryHash: username, staleTime: 1000 * 60 }
     );

@@ -39,12 +39,12 @@ export const FollowingButtonProvider = ({
     const pending = useRef(false);
     const debouncedFollow = useDebounce(followed, 2000, { skipFirst: true });
 
-    const followMutation = trpc.follow.useMutation({
+    const followMutation = trpc.user.unfollow.useMutation({
         onMutate: () => {
             pending.current = false;
         },
     });
-    const unfollowMutation = trpc.unfollow.useMutation();
+    const unfollowMutation = trpc.user.unfollow.useMutation();
     const utils = trpc.useUtils();
 
     followedRef.current = followed;
@@ -58,7 +58,7 @@ export const FollowingButtonProvider = ({
             } else {
                 unfollowMutation.mutate({ username });
             }
-            utils.getUserDetails.invalidate({ username });
+            utils.user.getDetails.invalidate({ username });
         }
 
         window.addEventListener('beforeunload', set);
@@ -84,7 +84,7 @@ export const FollowingButtonProvider = ({
                 }
             }
             pending.current = false;
-            utils.getUserDetails.invalidate({ username });
+            utils.user.getDetails.invalidate({ username });
         })();
     }, [debouncedFollow]);
 

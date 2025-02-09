@@ -3,7 +3,7 @@ import { type SearchRouterOutput } from '@/server/routes/search';
 import Link from 'next/link';
 import styles from './posts.module.scss';
 
-export function Posts({ posts }: { posts: SearchRouterOutput['search']['posts'] }) {
+export function Posts({ posts }: { posts: NonNullable<SearchRouterOutput['search']>['posts'] }) {
     return (
         <>
             <DropdownMenuTitle>Posts</DropdownMenuTitle>

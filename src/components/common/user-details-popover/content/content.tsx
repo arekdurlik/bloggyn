@@ -10,7 +10,7 @@ import FollowingButton from './following-button/following-button';
 export default function UserDetailsContent({
     details,
 }: {
-    details: UserRouterOutput['getUserDetails'];
+    details: UserRouterOutput['getDetails'];
     username: string;
 }) {
     const session = useSession();

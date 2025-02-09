@@ -4,7 +4,7 @@ import { useEditorStore } from '../_components/store';
 
 export function useImages() {
     const editor = useEditorStore(state => state.editor);
-    const deleteImage = trpc.deleteImage.useMutation();
+    const deleteImage = trpc.image.delete.useMutation();
 
     useEffect(() => {
         if (!editor) return;

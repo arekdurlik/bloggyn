@@ -3,7 +3,7 @@ import { HydrateClient, trpc } from '@/trpc/server';
 import Posts from './search/_components/results/posts/posts';
 
 export default async function Home() {
-    await trpc.getPosts.prefetchInfinite({
+    await trpc.post.getAll.prefetchInfinite({
         limit: config.FEED_INFINITE_SCROLL_LIMIT,
     });
 

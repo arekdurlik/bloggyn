@@ -23,7 +23,7 @@ export default function Users({
         fetchNextPage,
         hasNextPage,
         isFetchingNextPage,
-    } = trpc.getUsers.useInfiniteQuery(
+    } = trpc.user.getAll.useInfiniteQuery(
         { query, limit },
         {
             getNextPageParam: lastPage => lastPage.nextCursor,

@@ -1,14 +1,10 @@
 import revalidate from '@/app/actions';
 import { useEditorStore } from '@/app/new-post/_components/store';
 import Button from '@/components/common/inputs/button';
-import {
-    openToast,
-    resolveToast,
-    ToastType,
-} from '@/components/common/toasts/store';
+import { openToast, resolveToast, ToastType } from '@/components/common/toasts/store';
 import { cn, sleep, withMinDuration } from '@/lib/helpers';
 import { trpc } from '@/trpc/client';
-import { Content, postSchema, TITLE_MIN_LENGTH } from '@/validation/user/post';
+import { type Content, postSchema, TITLE_MIN_LENGTH } from '@/validation/user/post';
 import { BookCheck } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { Fragment } from 'react';
@@ -20,7 +16,7 @@ export default function CenterAction() {
     const pathname = usePathname();
     const editorState = useEditorStore();
     const router = useRouter();
-    const submitPost = trpc.submitPost.useMutation();
+    const submitPost = trpc.post.submit.useMutation();
 
     async function handlePublish() {
         const toast = openToast(ToastType.PENDING, 'Publishing...');
@@ -36,10 +32,7 @@ export default function CenterAction() {
             postSchema.parse(postData);
             editorState.api.setSubmitting(true);
 
-            const res = await withMinDuration(
-                submitPost.mutateAsync(postData),
-                450
-            );
+            const res = await withMinDuration(submitPost.mutateAsync(postData), 450);
 
             await sleep(500);
             revalidate('/');
@@ -72,12 +65,7 @@ export default function CenterAction() {
 
     return (
         <Fragment>
-            <div
-                className={cn(
-                    styles.wrapper,
-                    pathname === '/new-post' && styles.newPost
-                )}
-            >
+            <div className={cn(styles.wrapper, pathname === '/new-post' && styles.newPost)}>
                 {pathname === '/new-post' ? (
                     <div className={styles.container}>
                         <Button onClick={handlePublish}>

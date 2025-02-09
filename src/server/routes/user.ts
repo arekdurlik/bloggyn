@@ -10,7 +10,7 @@ import { deleteNotifications, storeNotifications } from './notification';
 export type UserRouterOutput = inferRouterOutputs<typeof userRouter>;
 
 export const userRouter = router({
-    getUsers: procedure
+    getAll: procedure
         .input(
             z.object({
                 query: z.string().nullish(),
@@ -114,7 +114,7 @@ export const userRouter = router({
                 });
             }
         }),
-    getUserDetails: procedure
+    getDetails: procedure
         .input(
             z.object({
                 username: z.string(),

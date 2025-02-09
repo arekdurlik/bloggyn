@@ -1,22 +1,22 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
 import { trpc } from '@/trpc/client';
-import { useEffect, useState } from 'react';
+import { useSession } from 'next-auth/react';
 import { redirect, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
-import styles from './onboard-form.module.scss';
-import formStyles from '../../forms.module.scss';
-import Username from './inputs/username';
-import DisplayName from './inputs/display-name';
+import { useCrossfadeFormContext } from '@/components/common/crossfade-form';
+import { handleErrorWithToast } from '@/components/common/toasts/utils';
+import { SignUpStep } from '@/lib/constants';
+import { sleep, withMinDuration } from '@/lib/helpers';
+import { onboardSchema } from '@/validation/user';
 import { Form } from '../../form';
 import FormButton from '../../form-button';
-import { onboardSchema } from '@/validation/user';
-import { sleep, withMinDuration } from '@/lib/helpers';
-import { handleErrorWithToast } from '@/components/common/toasts/utils';
-import { useCrossfadeFormContext } from '@/components/common/crossfade-form';
-import { SignUpStep } from '@/lib/constants';
+import formStyles from '../../forms.module.scss';
 import Bio from './inputs/bio';
+import DisplayName from './inputs/display-name';
+import Username from './inputs/username';
+import styles from './onboard-form.module.scss';
 
 export default function OnboardForm() {
     const [formData, setFormData] = useState({
@@ -27,7 +27,7 @@ export default function OnboardForm() {
     const { api } = useCrossfadeFormContext();
     const { update } = useSession();
     const router = useRouter();
-    const completeSignUp = trpc.completeSignUp.useMutation();
+    const completeSignUp = trpc.signUp.complete.useMutation();
 
     const { data: session } = useSession();
 
@@ -57,15 +57,13 @@ export default function OnboardForm() {
             <div className={styles.wrapper}>
                 <div className={styles.container}>
                     <div className={styles.header}>
-                        <h1 className={formStyles.header}>
-                            Almost there! Just a final touch
-                        </h1>
+                        <h1 className={formStyles.header}>Almost there! Just a final touch</h1>
                         <p className={formStyles.description}>
                             Let's finish setting up your account.
                         </p>
                         <p className={formStyles.description}>
-                            Everything except the username can later be changed
-                            through profile settings.
+                            Everything except the username can later be changed through profile
+                            settings.
                         </p>
                     </div>
                     <Form

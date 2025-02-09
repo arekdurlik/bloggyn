@@ -11,7 +11,7 @@ import styles from './post-card.module.scss';
 export default function PostCard({
     post,
 }: {
-    post: PostRouterOutput['getPosts']['items'][number];
+    post: NonNullable<PostRouterOutput['getAll']>['items'][number];
 }) {
     const width = 222;
     const height = 125;

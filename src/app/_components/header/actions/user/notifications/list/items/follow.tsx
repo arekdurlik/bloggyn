@@ -11,7 +11,7 @@ import styles from './item.module.scss';
 export default function Follow({ notification }: { notification: NotificationReturnWithUsers }) {
     const [followed, setFollowed] = useState(false);
     const [time] = useState(formatTimeAgo(notification.updatedAt));
-    const followMutation = trpc.follow.useMutation({});
+    const followMutation = trpc.user.follow.useMutation({});
     const utils = trpc.useUtils();
 
     const from = notification.from[0];
@@ -21,7 +21,7 @@ export default function Follow({ notification }: { notification: NotificationRet
 
         try {
             await followMutation.mutateAsync({ username: from.username });
-            utils.getNewestNotifications.invalidate();
+            utils.notification.getNewest.invalidate();
             setFollowed(true);
         } catch {
             openToast(ToastType.ERROR, 'Failed to follow user');

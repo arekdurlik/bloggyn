@@ -13,7 +13,7 @@ cloudinary.config({
 });
 
 export const imageRouter = router({
-    uploadImage: protectedProcedure
+    upload: protectedProcedure
         .input(
             z.object({
                 src: z.string().min(1),
@@ -51,7 +51,7 @@ export const imageRouter = router({
                 });
             }
         }),
-    deleteImage: protectedProcedure
+    delete: protectedProcedure
         .input(
             z.object({
                 id: z.string().min(1),

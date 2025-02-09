@@ -57,7 +57,7 @@ export type NotificationReturnWithUsers = NotificationReturn & {
 };
 
 export const notificationsRouter = router({
-    getNewestNotifications: protectedProcedure
+    getNewest: protectedProcedure
         .input(
             z.object({
                 limit: z.number().min(1).max(50).nullish(),
@@ -201,7 +201,7 @@ export const notificationsRouter = router({
                 });
             }
         }),
-    readAllNotifications: protectedProcedure.mutation(async ({ ctx: { db, session } }) => {
+    readAll: protectedProcedure.mutation(async ({ ctx: { db, session } }) => {
         try {
             await db
                 .update(notifications)

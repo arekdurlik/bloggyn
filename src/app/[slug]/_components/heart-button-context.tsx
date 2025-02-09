@@ -39,7 +39,7 @@ export const HeartButtonProvider = ({
     const [optimisticState, setOptimisticState] = useState(initialState ?? false);
     const optimisticStateRef = useRef(optimisticState);
     const pending = useRef(false);
-    const setLike = trpc.setPostLike.useMutation();
+    const setLike = trpc.post.setLike.useMutation();
 
     const optimisticDebounced = useDebounce(optimisticState, 1000, { skipFirst: true });
 
