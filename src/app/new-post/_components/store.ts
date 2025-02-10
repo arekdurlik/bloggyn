@@ -1,5 +1,5 @@
 import { trpcVanilla } from '@/trpc/client';
-import { Content } from '@/validation/user/post';
+import { type Content } from '@/validation/user/post';
 import { type Editor } from '@tiptap/react';
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
@@ -15,16 +15,16 @@ type EditorStore = {
     data: {
         title: string;
         tags: string[];
-        images: { id: string; url: string }[];
+        images: string[];
     };
     api: {
-        publish: () => Promise<{ url: string }>;
+        publish: () => Promise<{ url: string } | undefined>;
         reset: () => void;
         setEditor: (editor: Editor) => void;
         setState: (state: EditorStore['data']) => void;
         setTitle: (title: string) => void;
         setTags: (tags: string[]) => void;
-        setImages: (images: { id: string; url: string }[]) => void;
+        setImages: (images: string[]) => void;
         setSubmitting: (submitting: boolean) => void;
     };
 };
@@ -43,7 +43,7 @@ export const useEditorStore = create<EditorStore>()(
                     throw new Error();
                 }
 
-                const submitPost = trpcVanilla.submitPost;
+                const submitPost = trpcVanilla.post.submit;
 
                 const res = await submitPost.mutate({ ...get().data, content });
 
@@ -52,15 +52,10 @@ export const useEditorStore = create<EditorStore>()(
             reset: () => set({ data: initialData, submitting: false }),
             setEditor: editor => set({ editor }),
             setState: data => set({ data }),
-            setTitle: title =>
-                set(state => ({ ...state, data: { ...state.data, title } })),
-            setTags: tags =>
-                set(state => ({ ...state, data: { ...state.data, tags } })),
-            setImages: images => {
-                set(state => ({ ...state, data: { ...state.data, images } }));
-            },
-            setSubmitting: submitting =>
-                set(state => ({ ...state, submitting })),
+            setTitle: title => set(state => ({ ...state, data: { ...state.data, title } })),
+            setTags: tags => set(state => ({ ...state, data: { ...state.data, tags } })),
+            setImages: images => set(state => ({ ...state, data: { ...state.data, images } })),
+            setSubmitting: submitting => set(state => ({ ...state, submitting })),
         },
     }))
 );

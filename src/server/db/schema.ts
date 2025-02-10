@@ -163,25 +163,18 @@ export const postsRelations = relations(posts, ({ one, many }) => ({
     likes: many(postLikes),
 }));
 
-export const postImages = createTable(
-    'post_image',
-    {
-        imageId: varchar('image_id', { length: 255 }).notNull(),
-        postId: integer('post_id').notNull(),
+export const postImages = createTable('post_image', {
+    id: serial('id').primaryKey(),
+    imageId: varchar('image_id', { length: 255 }).notNull(),
+    postId: integer('post_id').references(() => posts.id, { onDelete: 'set null' }),
 
-        createdAt: timestamp('created_at', {
-            mode: 'string',
-            withTimezone: true,
-        })
-            .default(sql`CURRENT_TIMESTAMP`)
-            .notNull(),
-    },
-    postImage => ({
-        compoundKey: primaryKey({
-            columns: [postImage.imageId, postImage.postId],
-        }),
+    createdAt: timestamp('created_at', {
+        mode: 'string',
+        withTimezone: true,
     })
-);
+        .default(sql`CURRENT_TIMESTAMP`)
+        .notNull(),
+});
 
 export const postImagesRelations = relations(postImages, ({ one }) => ({
     post: one(posts, { fields: [postImages.postId], references: [posts.id] }),

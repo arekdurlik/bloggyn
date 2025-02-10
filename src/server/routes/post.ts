@@ -180,82 +180,81 @@ export const postRouter = router({
                 });
             }
         }),
+    submit: protectedProcedure
+        .input(postSchema)
+        .mutation(async ({ input, ctx: { session, db } }) => {
+            try {
+                let slug = slugify(input.title);
 
-    submit: protectedProcedure.input(postSchema).mutation(async ({ input, ctx }) => {
-        try {
-            const { session, db } = ctx;
+                const sameTitle = await db
+                    .select()
+                    .from(posts)
+                    .where(like(posts.slug, `%${slug}%`));
 
-            let slug = slugify(input.title);
+                if (sameTitle.length > 0) {
+                    const index = sameTitle.length + 1;
+                    slug += '-' + index;
+                }
 
-            const sameTitle = await db
-                .select()
-                .from(posts)
-                .where(like(posts.slug, `%${slug}%`));
+                const nonBreakingSingleCharTitle = modifySingleCharWords(input.title);
 
-            if (sameTitle.length > 0) {
-                const index = sameTitle.length + 1;
-                slug += '-' + index;
-            }
+                const cardImage = getCardImage(input.content);
+                const summary = createPostSummary(input.content);
+                const readTime = calculateReadTime(input.content);
 
-            const nonBreakingSingleCharTitle = modifySingleCharWords(input.title);
+                // store post
+                const [post] = await db
+                    .insert(posts)
+                    .values({
+                        title: nonBreakingSingleCharTitle,
+                        cardImage,
+                        slug,
+                        summary,
+                        readTime,
+                        content: JSON.stringify(input.content),
+                        createdById: session.user.id,
+                    })
+                    .returning();
 
-            const cardImage = getCardImage(input.content);
-            const summary = createPostSummary(input.content);
-            const readTime = calculateReadTime(input.content);
+                if (post) {
+                    // store image ids
+                    if (input.imageIds && input.imageIds.length > 0) {
+                        await db.insert(postImages).values(
+                            input.imageIds.map(id => ({
+                                postId: post.id,
+                                imageId: id,
+                            }))
+                        );
+                    }
 
-            // store post
-            const [post] = await db
-                .insert(posts)
-                .values({
-                    title: nonBreakingSingleCharTitle,
-                    cardImage,
-                    slug,
-                    summary,
-                    readTime,
-                    content: JSON.stringify(input.content),
-                    createdById: session.user.id,
-                })
-                .returning();
+                    // notify followers
+                    const followers = await db
+                        .select({
+                            id: following.followerId,
+                        })
+                        .from(following)
+                        .where(eq(following.followedId, session.user.id));
 
-            if (post) {
-                // store image ids
-                if (input.imageIds && input.imageIds.length > 0) {
-                    await db.insert(postImages).values(
-                        input.imageIds.map(id => ({
-                            postId: post.id,
-                            imageId: id,
+                    await storeNotifications(
+                        followers.map(follower => ({
+                            fromId: session.user.id,
+                            toId: follower.id,
+                            type: NotificationType.POST,
+                            targetType: NotificationTargetType.POST,
+                            targetId: post.id.toString(),
                         }))
                     );
                 }
 
-                // notify followers
-                const followers = await db
-                    .select({
-                        id: following.followerId,
-                    })
-                    .from(following)
-                    .where(eq(following.followedId, session.user.id));
-
-                await storeNotifications(
-                    followers.map(follower => ({
-                        fromId: session.user.id,
-                        toId: follower.id,
-                        type: NotificationType.POST,
-                        targetType: NotificationTargetType.POST,
-                        targetId: post.id.toString(),
-                    }))
-                );
+                return {
+                    url: `/${slug}`,
+                };
+            } catch (e) {
+                handleError(e, {
+                    message: 'Error submitting post',
+                });
             }
-
-            return {
-                url: `/${slug}`,
-            };
-        } catch (e) {
-            handleError(e, {
-                message: 'Error submitting post',
-            });
-        }
-    }),
+        }),
     setLike: protectedProcedure
         .input(z.object({ postId: z.number(), liked: z.boolean() }))
         .mutation(async ({ input, ctx }) => {
@@ -324,14 +323,15 @@ export const postRouter = router({
 });
 
 function extractFirstTextNode(content: JSONContent): string | undefined {
-    if (content.text !== undefined && content.text.length > 0) {
+    const MIN_LENGTH = 5;
+    if (content.text !== undefined && content.text.trim().length >= MIN_LENGTH) {
         return content.text;
     }
 
     if (content.content) {
         for (const child of content.content) {
             const text = extractFirstTextNode(child);
-            if (text !== undefined && text.length > 0) {
+            if (text !== undefined && text.trim().length >= MIN_LENGTH) {
                 return text;
             }
         }
@@ -344,7 +344,7 @@ function getCardImage(content: JSONContent): string | undefined {
     if (content.content) {
         for (const child of content.content) {
             if (child.type === 'imageComponent') {
-                return child.attrs?.src;
+                return child.attrs?.publicId ?? child.attrs?.src;
             }
         }
     }

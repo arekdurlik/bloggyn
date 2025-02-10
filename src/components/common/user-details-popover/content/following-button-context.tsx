@@ -39,7 +39,7 @@ export const FollowingButtonProvider = ({
     const pending = useRef(false);
     const debouncedFollow = useDebounce(followed, 2000, { skipFirst: true });
 
-    const followMutation = trpc.user.unfollow.useMutation({
+    const followMutation = trpc.user.follow.useMutation({
         onMutate: () => {
             pending.current = false;
         },

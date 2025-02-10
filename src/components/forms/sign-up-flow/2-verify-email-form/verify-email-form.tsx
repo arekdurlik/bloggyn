@@ -2,7 +2,7 @@
 
 import { useCrossfadeFormContext } from '@/components/common/crossfade-form';
 import { closeToast, openToast, resolveToast, ToastType } from '@/components/common/toasts/store';
-import { config } from '@/lib/config';
+import { CONFIG } from '@/lib/config';
 import { SignUpStep } from '@/lib/constants';
 import { cn, sleep, withMinDuration } from '@/lib/helpers';
 import shared from '@/styles/shared.module.scss';
@@ -43,7 +43,7 @@ export default function VerifyEmailForm() {
     const getCode = trpc.verification.getCode.useQuery(
         { token: token ?? '' },
         {
-            enabled: !config.EMAIL_ENABLED && state === VerifyEmailState.NONE,
+            enabled: !CONFIG.EMAIL_ENABLED && state === VerifyEmailState.NONE,
             refetchOnWindowFocus: false,
             retry: false,
         }

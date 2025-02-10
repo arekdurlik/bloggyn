@@ -196,9 +196,6 @@ export function Image(props: ImageComponentAttributes) {
                                     alt={props.caption || ''}
                                     width={document.documentElement.clientWidth}
                                     height={window.innerHeight}
-                                    onAnimationEnd={() => {
-                                        setFade(false);
-                                    }}
                                 />
                             )}
                             <CldImage

@@ -25,7 +25,6 @@ export default Node.create({
             uploadedWidth: 0,
             uploadedHeight: 0,
             caption: '',
-            uploaded: false,
             width: 0,
             height: 0,
         };

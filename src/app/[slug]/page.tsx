@@ -16,7 +16,6 @@ function isImageComponentAttributes(
         typeof attrs.src === 'string' &&
         typeof attrs.uploadedWidth === 'number' &&
         typeof attrs.uploadedHeight === 'number' &&
-        typeof attrs.uploaded === 'boolean' &&
         typeof attrs.width === 'number' &&
         typeof attrs.height === 'number'
     );

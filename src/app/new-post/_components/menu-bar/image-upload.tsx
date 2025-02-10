@@ -1,6 +1,8 @@
 'use client';
 
 import { openToast, ToastType } from '@/components/common/toasts/store';
+import { CONFIG } from '@/lib/config';
+import { readAndCompressImage } from 'browser-image-resizer';
 import { ImageIcon } from 'lucide-react';
 import { useEditorStore } from '../store';
 
@@ -9,10 +11,12 @@ export function ImageUpload() {
 
     async function handleUpload() {
         async function readFile(file: File) {
+            const resized = await readAndCompressImage(file, CONFIG.IMAGE_UPLOAD_CONFIG);
+
             return new Promise<void>(resolve => {
                 const fileReader = new FileReader();
 
-                fileReader.onload = function (e: ProgressEvent<FileReader>) {
+                fileReader.onload = async function (e: ProgressEvent<FileReader>) {
                     try {
                         if (!editor) {
                             throw new Error('Editor not found.');
@@ -48,13 +52,12 @@ export function ImageUpload() {
                             editor.commands.insertContent(
                                 `
                                 <image-component 
-                                    count="2" 
-                                    publicId=""
                                     caption=""
-                                    src="${result}" 
+                                    src="${result}"
+                                    uploadedWidth="${width}"
+                                    uploadedHeight="${height}" 
                                     width="${width}"
                                     height="${height}"
-                                    uploaded="false"
                                 ></image-component>`
                             );
                         };
@@ -66,7 +69,7 @@ export function ImageUpload() {
                         resolve();
                     }
                 };
-                fileReader.readAsDataURL(file);
+                fileReader.readAsDataURL(resized);
             });
         }
 

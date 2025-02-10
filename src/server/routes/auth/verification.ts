@@ -1,4 +1,4 @@
-import { config } from '@/lib/config';
+import { CONFIG } from '@/lib/config';
 import { users, verificationCodes } from '@/server/db/schema';
 import { handleError } from '@/server/utils';
 import { procedure, router } from '@/trpc';
@@ -18,7 +18,7 @@ export const verificationRouter = router({
         )
         .query(async ({ input, ctx: { db } }) => {
             try {
-                if (config.EMAIL_ENABLED) {
+                if (CONFIG.EMAIL_ENABLED) {
                     throw new Error('Email verification is enabled, has to check email');
                 }
 
@@ -40,7 +40,7 @@ export const verificationRouter = router({
                         });
                     }
 
-                    const expiresIn = config.VERIFICATION_CODE_EXPIRES_IN;
+                    const expiresIn = CONFIG.VERIFICATION_CODE_EXPIRES_IN;
                     const createdAt = new Date(result.createdAt).getTime();
                     const codeLifetime = Date.now() - createdAt;
 
@@ -93,7 +93,7 @@ export const verificationRouter = router({
                         });
                     }
 
-                    const expiresIn = config.VERIFICATION_CODE_EXPIRES_IN;
+                    const expiresIn = CONFIG.VERIFICATION_CODE_EXPIRES_IN;
                     const createdAt = new Date(result.createdAt).getTime();
                     const codeLifetime = Date.now() - createdAt;
 

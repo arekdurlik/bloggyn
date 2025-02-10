@@ -1,4 +1,4 @@
-import { config } from '@/lib/config';
+import { CONFIG } from '@/lib/config';
 import { accounts, users, verificationCodes, type User } from '@/server/db/schema';
 import { handleError } from '@/server/utils';
 import { procedure, protectedProcedure, router } from '@/trpc';
@@ -171,7 +171,7 @@ export const signUpRouter = router({
                         );
                     }
 
-                    if (config.EMAIL_ENABLED) {
+                    if (CONFIG.EMAIL_ENABLED) {
                         const resend = new Resend(process.env.RESEND_API_KEY);
 
                         const res = await resend.emails.send({

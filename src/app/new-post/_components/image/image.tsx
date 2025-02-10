@@ -1,7 +1,5 @@
-import { openToast, ToastType } from '@/components/common/toasts/store';
 import { cn, selectElementContents } from '@/lib/helpers';
 import { useOutsideClick } from '@/lib/hooks/use-outside-click';
-import { trpc } from '@/trpc/client';
 import { type Transaction } from '@tiptap/pm/state';
 import { NodeViewWrapper, type Editor, type NodeViewProps } from '@tiptap/react';
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
@@ -11,18 +9,21 @@ import styles from './image.module.scss';
 export function Image(props: NodeViewProps) {
     const [active, setActive] = useState(false);
     const [caption, setCaption] = useState(props.node.attrs.caption ?? '');
-    const [src, setSrc] = useState(props.node.attrs.src ?? '');
+    const [src] = useState(props.node.attrs.src ?? '');
     const captionRef = useRef<HTMLDivElement>(null!);
 
     const ref = useRef<HTMLImageElement>(null!);
-    const uploading = useRef(false);
 
-    const uploadImage = trpc.image.upload.useMutation();
     const { api, data, editor } = useEditorStore();
 
     useOutsideClick(ref, () => setActive(false), { onMouseDown: true });
 
     useEffect(() => {
+        api.setImages([...data.images, src]);
+        return () => api.setImages(data.images.filter(src => src !== src));
+    }, []);
+
+    /* useEffect(() => {
         if (!uploading.current || props.node.attrs.uploaded) {
             uploading.current = true;
             return;
@@ -48,7 +49,7 @@ export function Image(props: NodeViewProps) {
                 },
             }
         );
-    }, []);
+    }, []); */
 
     useEffect(() => {
         if (captionRef.current) {

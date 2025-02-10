@@ -1,6 +1,6 @@
 'use client';
 
-import { config } from '@/lib/config';
+import { CONFIG } from '@/lib/config';
 import { useInView } from '@/lib/hooks/use-in-view';
 import { trpc } from '@/trpc/client';
 import { useRef } from 'react';
@@ -11,7 +11,7 @@ import PostCard from './post-card';
 
 export default function Posts({
     query,
-    limit = config.FEED_INFINITE_SCROLL_LIMIT,
+    limit = CONFIG.FEED_INFINITE_SCROLL_LIMIT,
     infinite = false,
 }: {
     query?: string;
