@@ -4,6 +4,7 @@ export declare const header: string;
 export declare const headerExtra: string;
 export declare const headerImage: string;
 export declare const headerText: string;
+export declare const headerTop: string;
 export declare const name: string;
 export declare const popoverTrigger: string;
 export declare const reactions: string;

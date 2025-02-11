@@ -3,6 +3,7 @@ import type { JSONContent } from '@tiptap/react';
 import { Fragment } from 'react';
 import { type ImageComponentAttributes } from '../new-post/_components/image/extension';
 import imageStyles from '../new-post/_components/image/image.module.scss';
+import { BookmarkProvider } from './_components/bookmark-context';
 import Header from './_components/header/header';
 import { HeartButtonProvider } from './_components/heart-button-context';
 import { Image } from './_components/image/image';
@@ -39,7 +40,9 @@ const renderContent = (jsonContent: JSONContent): React.ReactNode => {
                             {isImageComponentAttributes(jsonContent.attrs) && (
                                 <Image {...jsonContent.attrs} />
                             )}
-                            <figcaption>{jsonContent.attrs.caption}</figcaption>
+                            {jsonContent.attrs.caption && (
+                                <figcaption>{jsonContent.attrs.caption}</figcaption>
+                            )}
                         </figure>
                     )}
                 </div>
@@ -69,17 +72,19 @@ export default async function Page({ params }: { params: { slug: string } }) {
         return <p>no post</p>;
     }
     return (
-        <HeartButtonProvider
-            initialCount={post.likesCount}
-            initialState={post.isLiked}
-            content={{ type: 'post', id: post.id, slug: post.slug }}
-        >
-            <Header post={post} />
-            <div className="post-content">
-                <h1>{post.title}</h1>
-                <div>{renderContent(post.content)}</div>
-            </div>
-            <Social post={post} />
-        </HeartButtonProvider>
+        <BookmarkProvider initialState={post.isBookmarked} post={{ id: post.id, slug: post.slug }}>
+            <HeartButtonProvider
+                initialCount={post.likesCount}
+                initialState={post.isLiked}
+                content={{ type: 'post', id: post.id, slug: post.slug }}
+            >
+                <Header post={post} />
+                <div className="post-content">
+                    <h1>{post.title}</h1>
+                    <div>{renderContent(post.content)}</div>
+                </div>
+                <Social post={post} />
+            </HeartButtonProvider>
+        </BookmarkProvider>
     );
 }

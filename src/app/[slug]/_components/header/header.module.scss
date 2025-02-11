@@ -1,7 +1,12 @@
 .header {
     display: flex;
-    gap: var(--spacing-large);
-    margin-bottom: var(--spacing-xxxl);
+    flex-direction: column;
+    margin-bottom: var(--spacing-xxl);
+
+    &-top {
+        gap: var(--spacing-large);
+        display: flex;
+    }
 
     &-image {
         border-radius: var(--rounded-full);
@@ -15,14 +20,14 @@
     &-text {
         display: flex;
         flex-direction: column;
-        justify-content: flex-end;
-        gap: var(--spacing-default);
+        justify-content: center;
+        gap: var(--spacing-small);
     }
 
     &-extra {
         display: flex;
         align-items: center;
-        gap: var(--spacing-large);
+        gap: var(--spacing-xl);
         color: var(--fgColor-subtle);
         margin-right: 5px;
         svg {

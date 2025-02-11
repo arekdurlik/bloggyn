@@ -90,28 +90,34 @@ export function formatTimeAgo(date: string): string {
     return `${Math.floor(diffInMs / year)}y`;
 }
 
-export function debounce<T extends (...args: any[]) => void>(
+export function debounce<T extends (...args: any[]) => void | Promise<void>>(
     func: T,
     delay: number,
     opts = { skipFirst: false }
 ): (...args: Parameters<T>) => void {
     let timeout: NodeJS.Timeout | null = null;
-    let skip = true;
+    let allowImmediate = true;
+    let pendingArgs: Parameters<T> | null = null;
 
     return (...args: Parameters<T>) => {
-        if (opts.skipFirst && skip) {
+        if (opts.skipFirst && allowImmediate) {
             func(...args);
-            skip = false;
+            allowImmediate = false; // Prevent immediate execution until cooldown resets
             return;
         }
+
+        pendingArgs = args; // Store latest args
 
         if (timeout) {
             clearTimeout(timeout);
         }
 
         timeout = setTimeout(() => {
-            func(...args);
-            skip = true;
+            if (pendingArgs) {
+                func(...pendingArgs);
+                pendingArgs = null;
+            }
+            allowImmediate = true; // Reset for next interaction
         }, delay);
     };
 }

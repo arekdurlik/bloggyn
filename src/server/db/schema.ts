@@ -161,6 +161,7 @@ export const postsRelations = relations(posts, ({ one, many }) => ({
     user: one(users, { fields: [posts.createdById], references: [users.id] }),
     images: many(postImages),
     likes: many(postLikes),
+    bookmarks: many(postBookmarks),
 }));
 
 export const postImages = createTable('post_image', {
@@ -204,6 +205,34 @@ export const postLikes = createTable(
 export const postLikesRelations = relations(postLikes, ({ one }) => ({
     post: one(posts, { fields: [postLikes.postId], references: [posts.id] }),
     user: one(users, { fields: [postLikes.userId], references: [users.id] }),
+}));
+
+export const postBookmarks = createTable(
+    'post_bookmark',
+    {
+        postId: integer('post_id')
+            .notNull()
+            .references(() => posts.id, { onDelete: 'cascade' }),
+        userId: varchar('user_id', { length: 255 })
+            .references(() => users.id)
+            .notNull(),
+        createdAt: timestamp('created_at', {
+            mode: 'string',
+            withTimezone: true,
+        })
+            .default(sql`CURRENT_TIMESTAMP`)
+            .notNull(),
+    },
+    postBookmark => ({
+        compoundKey: primaryKey({
+            columns: [postBookmark.postId, postBookmark.userId],
+        }),
+    })
+);
+
+export const postBookmarksRelations = relations(postBookmarks, ({ one }) => ({
+    post: one(posts, { fields: [postBookmarks.postId], references: [posts.id] }),
+    user: one(users, { fields: [postBookmarks.userId], references: [users.id] }),
 }));
 
 export type NotificationSchema = typeof notifications.$inferSelect;

@@ -1,3 +1,5 @@
+import { BookmarkProvider } from '@/app/[slug]/_components/bookmark-context';
+import BookmarkButton from '@/components/common/bookmark-button/bookmark-button';
 import { DropdownMenuTriggerLink } from '@/components/common/dropdown-menu/trigger';
 import UserDetails from '@/components/common/user-details-popover/user-details-popover';
 import { cn } from '@/lib/helpers';
@@ -76,7 +78,7 @@ export default function PostCard({
                 )}
             </div>
             <div className={styles.footer}>
-                <div className={styles.footerLeft}>
+                <div className={styles.footerButtons}>
                     <span>{post.createdAtFormatted}</span>
                     <span>{post.readTime} min read</span>
                     <div className={styles.withIcon}>
@@ -87,6 +89,14 @@ export default function PostCard({
                         <MessageSquareMore />
                         <span>20</span>
                     </div>
+                </div>
+                <div className={styles.footerButtons} style={{ zIndex: 2 }}>
+                    <BookmarkProvider
+                        post={{ id: post.id, slug: post.slug }}
+                        initialState={post.isBookmarked}
+                    >
+                        <BookmarkButton />
+                    </BookmarkProvider>
                 </div>
             </div>
         </div>

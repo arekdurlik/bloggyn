@@ -7,7 +7,7 @@ import { type inferRouterOutputs, TRPCError } from '@trpc/server';
 import { and, desc, eq, ilike, like, lt, lte, or, sql } from 'drizzle-orm';
 import slugify from 'slug';
 import { z } from 'zod';
-import { following, postImages, postLikes, posts, users } from '../db/schema';
+import { following, postBookmarks, postImages, postLikes, posts, users } from '../db/schema';
 import { handleError } from '../utils';
 import { deleteNotifications, storeNotifications } from './notification';
 
@@ -36,7 +36,7 @@ export const postRouter = router({
                         title: posts.title,
                         content: posts.content,
                         createdAt: posts.createdAt,
-                        createdAtFormatted: sql<string>`TO_CHAR(${posts.createdAt}, 'Mon DD')`,
+                        createdAtFormatted: sql<string>`TO_CHAR(${posts.createdAt}, 'Mon DD, YYYY')`,
                         readTime: posts.readTime,
                         user: {
                             username: users.username,
@@ -52,6 +52,16 @@ export const postRouter = router({
                             FROM ${postLikes} 
                             WHERE ${postLikes.postId} = ${posts.id} 
                               AND ${postLikes.userId} = ${user}
+                          )`,
+                        isBookmarked: sql<boolean>`(
+                            SELECT CASE
+                              WHEN CAST(${user} AS TEXT) IS NULL THEN false
+                              WHEN COUNT(${postBookmarks.postId}) > 0 THEN true
+                              ELSE false
+                            END
+                            FROM ${postBookmarks}
+                            WHERE ${postBookmarks.postId} = ${posts.id}
+                              AND ${postBookmarks.userId} = ${user}
                           )`,
                         likesCount: sql<number>`(SELECT COUNT(${postLikes.postId}) FROM ${postLikes} WHERE (${postLikes.postId} = ${posts.id}))`,
                     })
@@ -91,9 +101,10 @@ export const postRouter = router({
                     .nullish(),
             })
         )
-        .query(async ({ input, ctx: { db } }) => {
+        .query(async ({ input, ctx: { db, session } }) => {
             const limit = input.limit ?? 10;
             const { cursor, query } = input;
+            const userId = session?.user.id ?? '';
 
             try {
                 const items = await db
@@ -124,6 +135,17 @@ export const postRouter = router({
                         avatar: users.image,
                         name: users.name,
                         username: users.username,
+
+                        isBookmarked: sql<boolean>`(
+                            SELECT CASE
+                              WHEN CAST(${userId} AS TEXT) IS NULL THEN false
+                              WHEN COUNT(${postBookmarks.postId}) > 0 THEN true
+                              ELSE false
+                            END
+                            FROM ${postBookmarks}
+                            WHERE ${postBookmarks.postId} = ${posts.id}
+                              AND ${postBookmarks.userId} = ${userId}
+                          )`,
                     })
                     .from(posts)
                     .where(
@@ -313,9 +335,39 @@ export const postRouter = router({
                         ]);
                     }
                 }
+
+                return 'ok';
             } catch (e) {
                 handleError(e, {
                     message: 'Error changing like on post',
+                    moreInfo: input,
+                });
+            }
+        }),
+    setBookmark: protectedProcedure
+        .input(z.object({ postId: z.number(), bookmarked: z.boolean() }))
+        .mutation(async ({ input, ctx }) => {
+            const { session, db } = ctx;
+            const userId = session.user.id;
+
+            try {
+                if (input.bookmarked) {
+                    await db.insert(postBookmarks).values({ postId: input.postId, userId });
+                } else {
+                    await db
+                        .delete(postBookmarks)
+                        .where(
+                            and(
+                                eq(postBookmarks.postId, input.postId),
+                                eq(postBookmarks.userId, userId)
+                            )
+                        );
+                }
+
+                return 'ok';
+            } catch (e) {
+                handleError(e, {
+                    message: 'Error changing bookmark on post',
                     moreInfo: input,
                 });
             }
