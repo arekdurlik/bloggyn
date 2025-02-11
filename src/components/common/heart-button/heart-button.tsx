@@ -7,10 +7,12 @@ import { useUpdateEffect } from '@/lib/hooks/use-update-effect';
 import { Heart } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { usePathname, useRouter } from 'next/navigation';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import styles from './heart-button.module.scss';
 
 export default function HeartButton({ small }: { small?: boolean }) {
+    const [toggled, setToggled] = useState(false);
+
     const pending = useRef(false);
     const ref = useRef<HTMLButtonElement>(null!);
 
@@ -20,6 +22,8 @@ export default function HeartButton({ small }: { small?: boolean }) {
     const path = usePathname();
 
     useUpdateEffect(() => {
+        setToggled(optimisticState);
+
         if (optimisticState) {
             const randomNumber =
                 Math.random() < 0.5
@@ -61,10 +65,15 @@ export default function HeartButton({ small }: { small?: boolean }) {
     }
 
     return (
-        <>
+        <div className={styles.wrapper}>
             <button
                 ref={ref}
-                className={cn(styles.wrapper, optimisticState && styles.set, small && styles.small)}
+                className={cn(
+                    styles.button,
+                    optimisticState && styles.set,
+                    toggled && styles.toggled,
+                    small && styles.small
+                )}
                 onClick={handleClick}
             >
                 <div className={styles.heartWrapper}>
@@ -72,6 +81,6 @@ export default function HeartButton({ small }: { small?: boolean }) {
                 </div>
             </button>
             <span style={{ minWidth: calculateWidth(localCount) }}>{localCount}</span>
-        </>
+        </div>
     );
 }

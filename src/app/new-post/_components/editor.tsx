@@ -8,6 +8,7 @@ const content = `<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Dui
 
 <p>Integer vitae imperdiet est. Fusce ullamcorper orci eu malesuada luctus. Pellentesque massa eros, aliquet lacinia fringilla vel, semper ac lacus. In quis sodales odio. Curabitur faucibus tincidunt ligula, nec scelerisque lorem imperdiet sed. Curabitur dui quam, aliquet id facilisis vel, ultricies sit amet purus. Pellentesque elementum tellus non turpis dapibus, vel consequat ipsum sodales. Nunc vehicula risus vitae ipsum congue imperdiet. Nulla posuere facilisis faucibus. Etiam vel blandit velit, nec maximus augue. Phasellus interdum nisi a est varius faucibus. Nulla diam nibh, ultricies vel rhoncus eu, vehicula sed ligula. Fusce at lectus eget mi mollis rutrum a sed dolor. Aenean euismod consequat lorem et porta. Integer ante ipsum, semper aliquet nunc vel, fringilla lobortis diam.</p>`;
 
+import { useProgressBar } from '@/app/_components/progress-bar/store';
 import { cn } from '@/lib/helpers';
 import Blockquote from '@tiptap/extension-blockquote';
 import Image from '@tiptap/extension-image';
@@ -17,6 +18,7 @@ import Underline from '@tiptap/extension-underline';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { useNavigationGuard } from 'next-navigation-guard';
+import { usePathname } from 'next/navigation';
 import { Fragment, useEffect, useState } from 'react';
 import { useImages } from '../_hooks/use-images';
 import styles from './editor.module.scss';
@@ -29,13 +31,27 @@ export default function Editor() {
     const api = useEditorStore(state => state.api);
     const submitting = useEditorStore(state => state.submitting);
     const [isDirty, setIsDirty] = useState(false);
+    const progressBar = useProgressBar();
     useImages();
+    const path = usePathname();
 
     useNavigationGuard({
         enabled: isDirty && !submitting,
-        confirm: () =>
-            window.confirm('You have unsaved changes that will be lost.'),
+        confirm: () => {
+            if (window.confirm('You have unsaved changes that will be lost.')) {
+                return true;
+            } else {
+                progressBar.api.setVisible(false);
+                return false;
+            }
+        },
     });
+
+    useEffect(() => {
+        return () => {
+            progressBar.api.setVisible(true);
+        };
+    }, []);
 
     useEffect(() => {
         useEditorStore.subscribe(

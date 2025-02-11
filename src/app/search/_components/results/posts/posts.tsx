@@ -27,7 +27,6 @@ export default function Posts({
         { query, limit },
         {
             getNextPageParam: lastPage => lastPage?.nextCursor,
-            refetchOnMount: false,
         }
     );
 

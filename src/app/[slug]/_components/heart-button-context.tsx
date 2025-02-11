@@ -1,8 +1,7 @@
 'use client';
 
 import revalidate from '@/app/actions';
-import { useDebounce } from '@/lib/hooks/use-debounce';
-import { useUpdateEffect } from '@/lib/hooks/use-update-effect';
+import { debounce } from '@/lib/helpers';
 import { trpc } from '@/trpc/client';
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 
@@ -38,22 +37,45 @@ export const HeartButtonProvider = ({
     const [localCount, setLocalCount] = useState(initialCount);
     const [optimisticState, setOptimisticState] = useState(initialState ?? false);
     const optimisticStateRef = useRef(optimisticState);
+    optimisticStateRef.current = optimisticState;
     const pending = useRef(false);
     const setLike = trpc.post.setLike.useMutation();
 
-    const optimisticDebounced = useDebounce(optimisticState, 1000, { skipFirst: true });
+    const lastState = useRef(initialState ?? false);
 
-    optimisticStateRef.current = optimisticState;
+    const debouncedSetLike = useRef(
+        debounce(
+            async (liked: boolean) => {
+                if (liked === lastState.current) {
+                    pending.current = false;
+                    return;
+                }
+
+                try {
+                    await setLike.mutateAsync({ postId: content.id, liked });
+                    lastState.current = liked;
+                    setOptimisticState(liked);
+                    revalidate('/');
+                } finally {
+                    pending.current = false;
+                }
+            },
+            1000,
+            { skipFirst: true }
+        )
+    ).current;
+
+    function handleState(value: boolean) {
+        pending.current = true;
+        setOptimisticState(value);
+        setLocalCount(prev => (value ? +prev + 1 : +prev - 1));
+        debouncedSetLike(value);
+    }
 
     useEffect(() => {
         function set() {
-            if (!pending.current) return;
-
-            if (optimisticStateRef.current) {
-                setLike.mutate({ postId: content.id, liked: true });
-            } else {
-                setLike.mutate({ postId: content.id, liked: false });
-            }
+            if (!pending.current || optimisticStateRef.current === null) return;
+            setLike.mutate({ postId: content.id, liked: optimisticStateRef.current });
         }
 
         window.addEventListener('beforeunload', set);
@@ -62,24 +84,6 @@ export const HeartButtonProvider = ({
             set();
         };
     }, []);
-
-    useUpdateEffect(() => {
-        (async () => {
-            if (optimisticDebounced) {
-                await setLike.mutateAsync({ postId: content.id, liked: true });
-            } else {
-                await setLike.mutateAsync({ postId: content.id, liked: false });
-            }
-            pending.current = false;
-            revalidate('/');
-        })();
-    }, [optimisticDebounced]);
-
-    function handleState(value: boolean) {
-        setOptimisticState(value);
-        pending.current = true;
-        setLocalCount(prev => (value ? +prev + 1 : +prev - 1));
-    }
 
     return (
         <HeartButtonContext.Provider

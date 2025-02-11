@@ -1,3 +1,4 @@
+export declare const button: string;
 export declare const flash: string;
 export declare const heartWrapper: string;
 export declare const rotate: string;

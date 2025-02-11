@@ -1,14 +1,18 @@
 'use client';
 
 import { AppProgressBar } from 'next-nprogress-bar';
+import { useProgressBar } from './store';
 
 export default function ProgressBar() {
+    const visible = useProgressBar(state => state.visible);
+
     return (
-        <AppProgressBar
-            options={{ showSpinner: false }}
-            shallowRouting
-            delay={200}
-            style={`
+        visible && (
+            <AppProgressBar
+                options={{ showSpinner: false }}
+                shallowRouting
+                delay={200}
+                style={`
             #nprogress {
                 pointer-events: none;
             }
@@ -50,6 +54,7 @@ export default function ProgressBar() {
                         transform: rotate(3deg) translate(0px, -4px);
             }
         `}
-        />
+            />
+        )
     );
 }

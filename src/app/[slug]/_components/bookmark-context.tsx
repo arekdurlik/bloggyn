@@ -74,7 +74,7 @@ export const BookmarkProvider = ({
 
     useEffect(() => {
         function set() {
-            if (!pending.current || !optimisticStateRef.current) return;
+            if (!pending.current || optimisticStateRef.current === null) return;
             setBookmark.mutate({ postId: post.id, bookmarked: optimisticStateRef.current });
         }
 

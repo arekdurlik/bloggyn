@@ -191,7 +191,7 @@ export function Image(props: ImageComponentAttributes) {
                             {zoomedIn && (
                                 <CldImage
                                     ref={originalImageRef}
-                                    className={cn(styles.zoomImage, fade && styles.zoomImageFade)}
+                                    className={cn(styles.zoomImage)}
                                     src={props.publicId}
                                     alt={props.caption || ''}
                                     width={document.documentElement.clientWidth}

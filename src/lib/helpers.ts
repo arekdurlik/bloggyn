@@ -102,7 +102,11 @@ export function debounce<T extends (...args: any[]) => void | Promise<void>>(
     return (...args: Parameters<T>) => {
         if (opts.skipFirst && allowImmediate) {
             func(...args);
-            allowImmediate = false; // Prevent immediate execution until cooldown resets
+            allowImmediate = false;
+
+            timeout = setTimeout(() => {
+                allowImmediate = true;
+            }, delay);
             return;
         }
 
@@ -117,7 +121,7 @@ export function debounce<T extends (...args: any[]) => void | Promise<void>>(
                 func(...pendingArgs);
                 pendingArgs = null;
             }
-            allowImmediate = true; // Reset for next interaction
+            allowImmediate = true;
         }, delay);
     };
 }
