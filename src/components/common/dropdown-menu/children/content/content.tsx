@@ -2,8 +2,8 @@ import AnimatedUnmount from '@/components/common/animate-unmount/animate-unmount
 import { cn } from '@/lib/helpers';
 import { useOutsideClick } from '@/lib/hooks/use-outside-click';
 import { type CSSProperties, useRef } from 'react';
+import { useIsInPortal } from '../../../portal';
 import { useDropdownContext } from '../../dropdown-menu';
-import { useIsInPortal } from '../portal';
 import styles from './content.module.scss';
 
 type Props = {

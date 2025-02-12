@@ -1,6 +1,7 @@
 'use client';
 
 import HeartButton from '@/components/common/heart-button/heart-button';
+import { Tooltip } from '@/components/common/tooltip';
 import { MessageSquare, MoreHorizontal } from 'lucide-react';
 import BookmarkButton from '../../../../components/common/bookmark-button/bookmark-button';
 import { Post } from '../header/header';
@@ -12,7 +13,9 @@ export default function Social({ post }: { post: Post }) {
             <div className={styles.buttons}>
                 <HeartButton />
                 <div className={styles.button}>
-                    <MessageSquare />
+                    <Tooltip text="Comment">
+                        <MessageSquare />
+                    </Tooltip>
                     <span>20</span>
                 </div>
             </div>

@@ -5,7 +5,6 @@ import { Fragment, useRef } from 'react';
 import ThemeSwitcher from './theme-switcher';
 import { useHideOnScroll } from './use-hide-on-scroll';
 
-import Button from '@/components/common/inputs/button';
 import { useSearchState } from '@/stores/search';
 import { trpc } from '@/trpc/client';
 import Link from 'next/link';
@@ -35,7 +34,7 @@ export default function Header({
                         </Link>
                         <ThemeSwitcher theme={theme} />
                     </div>
-                    <Button
+                    {/* <Button
                         onClick={() => unreadAll.mutate()}
                         style={{ minWidth: 'unset', marginRight: 10 }}
                     >
@@ -46,7 +45,7 @@ export default function Header({
                         style={{ minWidth: 'unset', marginRight: 20 }}
                     >
                         Less
-                    </Button>
+                    </Button> */}
                     <Actions unreadNotifications={unreadNotifications} />
                 </div>
             </header>

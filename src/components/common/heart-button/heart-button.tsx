@@ -8,6 +8,7 @@ import { Heart } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
+import { Tooltip } from '../tooltip';
 import styles from './heart-button.module.scss';
 
 export default function HeartButton({ small }: { small?: boolean }) {
@@ -77,7 +78,9 @@ export default function HeartButton({ small }: { small?: boolean }) {
                 onClick={handleClick}
             >
                 <div className={styles.heartWrapper}>
-                    <Heart />
+                    <Tooltip text={optimisticState ? 'Unlike' : 'Like'}>
+                        <Heart />
+                    </Tooltip>
                 </div>
             </button>
             <span style={{ minWidth: calculateWidth(localCount) }}>{localCount}</span>

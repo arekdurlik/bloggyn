@@ -8,6 +8,7 @@ import {
     DropdownMenuContent,
     DropdownMenuTrigger,
 } from '@/components/common/dropdown-menu';
+import { Tooltip } from '@/components/common/tooltip';
 import { Cookie } from '@/lib/constants';
 import { useClientSocket } from '@/lib/hooks/use-client-socket';
 import { useDebounce } from '@/lib/hooks/use-debounce';
@@ -134,21 +135,23 @@ export default function Notifications({ unreadNotifications }: { unreadNotificat
 
     return (
         <DropdownMenu onMount={handleMount} onUnmount={handleUnmount}>
-            <DropdownMenuTrigger
-                className={cn(actionStyles.actionIcon, styles.button, active && styles.active)}
-            >
-                <div ref={countRef} onAnimationEnd={handleAnimationEnd}>
-                    <div
-                        className={cn(
-                            styles.counter,
-                            (active || read || count < 1) && styles.hideAlert
-                        )}
-                    >
-                        <span>{count}</span>
+            <Tooltip text="Notifications">
+                <DropdownMenuTrigger
+                    className={cn(actionStyles.actionIcon, styles.button, active && styles.active)}
+                >
+                    <div ref={countRef} onAnimationEnd={handleAnimationEnd}>
+                        <div
+                            className={cn(
+                                styles.counter,
+                                (active || read || count < 1) && styles.hideAlert
+                            )}
+                        >
+                            <span>{count}</span>
+                        </div>
+                        <Bell className={styles.bell} />
                     </div>
-                    <Bell className={styles.bell} />
-                </div>
-            </DropdownMenuTrigger>
+                </DropdownMenuTrigger>
+            </Tooltip>
             <DropdownMenuContent
                 className={styles.content}
                 stableScrollbarGutter

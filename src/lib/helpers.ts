@@ -27,6 +27,10 @@ export function cn(...classnames: unknown[]) {
     return classnames.filter(c => typeof c === 'string' && c.length).join(' ');
 }
 
+export function anim(...animations: unknown[]) {
+    return animations.filter(c => typeof c === 'string' && c.length).join(', ');
+}
+
 /**
  * Ensures a minimum duration for the execution of a promise.
  *

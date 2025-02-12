@@ -1,0 +1,25 @@
+.container {
+    position: relative;
+    pointer-events: none;
+}
+
+.content {
+    z-index: 2;
+    position: fixed;
+    pointer-events: none;
+    background-color: var(--fgColor-default);
+
+    color: var(--bgColor-default) !important;
+    * {
+        color: var(--bgColor-default) !important;
+    }
+
+    border-radius: var(--rounded-large);
+    padding: var(--spacing-large) var(--spacing-xl);
+    white-space: nowrap;
+    box-shadow: var(--shadow-large);
+}
+
+.trigger {
+    display: flex;
+}
