@@ -6,7 +6,9 @@ const baseContentSchema = z.object({
     type: z.string().optional(),
     attrs: z.record(z.string(), z.any()).optional(),
 
-    marks: z.array(z.object({ type: z.string(), attrs: z.record(z.string(), z.any()) })).optional(),
+    marks: z
+        .array(z.object({ type: z.string(), attrs: z.record(z.string(), z.any()).optional() }))
+        .optional(),
     text: z.string().optional(),
 });
 

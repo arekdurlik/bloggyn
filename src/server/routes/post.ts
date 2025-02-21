@@ -374,21 +374,21 @@ export const postRouter = router({
         }),
 });
 
-function extractFirstTextNode(content: JSONContent): string | undefined {
+function extractFirstParagraph(content: JSONContent): string | undefined {
     const MIN_LENGTH = 5;
-    if (content.text !== undefined && content.text.trim().length >= MIN_LENGTH) {
-        return content.text;
-    }
 
-    if (content.content) {
-        for (const child of content.content) {
-            const text = extractFirstTextNode(child);
-            if (text !== undefined && text.trim().length >= MIN_LENGTH) {
-                return text;
+    for (const node of content.content || []) {
+        if (node.type === 'paragraph' && node.content) {
+            const paragraphText = node.content
+                .filter(child => child.type === 'text' && child.text)
+                .map(child => child.text)
+                .join('');
+
+            if (paragraphText.trim().length >= MIN_LENGTH) {
+                return paragraphText;
             }
         }
     }
-
     return undefined;
 }
 
@@ -405,7 +405,7 @@ function getCardImage(content: JSONContent): string | undefined {
 }
 
 function createPostSummary(content: JSONContent): string {
-    const firstText = extractFirstTextNode(content);
+    const firstText = extractFirstParagraph(content);
     if (firstText) {
         const summary = firstText.slice(0, SUMMARY_STORE_LENGTH);
         return summary;

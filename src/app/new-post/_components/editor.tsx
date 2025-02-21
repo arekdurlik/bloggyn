@@ -18,8 +18,7 @@ import Underline from '@tiptap/extension-underline';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { useNavigationGuard } from 'next-navigation-guard';
-import { usePathname } from 'next/navigation';
-import { Fragment, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useImages } from '../_hooks/use-images';
 import styles from './editor.module.scss';
 import ReactComponent from './image/extension';
@@ -33,7 +32,6 @@ export default function Editor() {
     const [isDirty, setIsDirty] = useState(false);
     const progressBar = useProgressBar();
     useImages();
-    const path = usePathname();
 
     useNavigationGuard({
         enabled: isDirty && !submitting,
@@ -92,12 +90,12 @@ export default function Editor() {
     }, [editor]);
 
     return (
-        <Fragment>
+        <>
             <MenuBar />
             <div className={cn('post-content', styles.editor)}>
                 {editor && <Title />}
                 <EditorContent editor={editor} />
             </div>
-        </Fragment>
+        </>
     );
 }
