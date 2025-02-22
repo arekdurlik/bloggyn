@@ -161,6 +161,7 @@ export const postsRelations = relations(posts, ({ one, many }) => ({
     user: one(users, { fields: [posts.createdById], references: [users.id] }),
     images: many(postImages),
     likes: many(postLikes),
+    comments: many(postComments),
     bookmarks: many(postBookmarks),
 }));
 
@@ -205,6 +206,71 @@ export const postLikes = createTable(
 export const postLikesRelations = relations(postLikes, ({ one }) => ({
     post: one(posts, { fields: [postLikes.postId], references: [posts.id] }),
     user: one(users, { fields: [postLikes.userId], references: [users.id] }),
+}));
+
+export const postComments = createTable(
+    'post_comment',
+    {
+        id: serial('id').primaryKey(),
+        postId: integer('post_id')
+            .notNull()
+            .references(() => posts.id, { onDelete: 'cascade' }),
+        parentId: integer('parent_id'),
+        authorId: text('user_id')
+            .notNull()
+            .references(() => users.id, { onDelete: 'cascade' }),
+        content: text('content').notNull(),
+        createdAt: timestamp('created_at', {
+            mode: 'string',
+            withTimezone: true,
+        })
+            .default(sql`CURRENT_TIMESTAMP`)
+            .notNull(),
+    },
+    table => ({
+        postIdx: index('post_idx').on(table.postId),
+        parentIdx: index('parent_idx').on(table.parentId),
+        authorIdx: index('author_idx').on(table.authorId),
+        createdAtIdx: index('comment_created_at_idx').on(table.createdAt),
+    })
+);
+
+export const PostCommentsRelations = relations(postComments, ({ one }) => ({
+    post: one(posts, { fields: [postComments.postId], references: [posts.id] }),
+    author: one(users, { fields: [postComments.authorId], references: [users.id] }),
+    parent: one(postComments, {
+        fields: [postComments.parentId],
+        references: [postComments.id],
+        relationName: 'replies',
+    }),
+}));
+
+export const commentLikes = createTable(
+    'comment_like',
+    {
+        commentId: integer('comment_id')
+            .notNull()
+            .references(() => postComments.id, { onDelete: 'cascade' }),
+        userId: text('user_id')
+            .notNull()
+            .references(() => users.id),
+        createdAt: timestamp('created_at', {
+            mode: 'string',
+            withTimezone: true,
+        })
+            .default(sql`CURRENT_TIMESTAMP`)
+            .notNull(),
+    },
+    commentLike => ({
+        compoundKey: primaryKey({
+            columns: [commentLike.commentId, commentLike.userId],
+        }),
+    })
+);
+
+export const commentLikesRelations = relations(commentLikes, ({ one }) => ({
+    comment: one(postComments, { fields: [commentLikes.commentId], references: [postComments.id] }),
+    user: one(users, { fields: [commentLikes.userId], references: [users.id] }),
 }));
 
 export const postBookmarks = createTable(
@@ -266,6 +332,6 @@ export const notifications = createTable(
     table => ({
         toIdTypeIdx: index('to_id_type_idx').on(table.toId, table.type),
         targetIdx: index('target_idx').on(table.targetId, table.targetType),
-        createdAtIdx: index('created_at_idx').on(table.createdAt),
+        createdAtIdx: index('notification_created_at_idx').on(table.createdAt),
     })
 );

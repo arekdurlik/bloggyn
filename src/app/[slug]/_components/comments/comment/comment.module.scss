@@ -1,0 +1,49 @@
+.comment {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-large);
+}
+
+.author {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-large);
+
+    img {
+        border-radius: var(--rounded-full);
+    }
+}
+
+.details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-small);
+}
+
+.name {
+    display: flex;
+    gap: var(--spacing-default);
+    & > *:first-child {
+        font-weight: 500;
+    }
+}
+
+.username {
+    color: var(--fgColor-subtle);
+}
+
+.date {
+    color: var(--fgColor-subtle);
+}
+
+.social {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xl);
+
+    svg {
+        width: 20px;
+        height: 20px;
+        stroke-width: 1.25px !important;
+    }
+}

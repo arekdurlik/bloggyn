@@ -11,7 +11,14 @@ import { TRPCError, type inferRouterOutputs } from '@trpc/server';
 import { and, asc, desc, eq, gte, inArray, lte, or, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '../db';
-import { following, notifications, posts, users, type NotificationSchema } from '../db/schema';
+import {
+    following,
+    notifications,
+    postComments,
+    posts,
+    users,
+    type NotificationSchema,
+} from '../db/schema';
 import { handleError } from '../utils';
 
 export type Notification = z.infer<typeof notificationSchema>;
@@ -40,14 +47,15 @@ export type NotificationReturn = {
     id: number;
     fromIds: string[];
     toId: string;
-    type: string;
-    targetType: string;
+    type: NotificationType;
+    targetType: NotificationTargetType;
     targetId: string;
     totalCount: number;
     read: boolean;
     createdAt: string;
     updatedAt: string;
     title: string | null;
+    comment: string | null;
     slug: string | null;
     from?: LatestUsers;
 };
@@ -90,16 +98,31 @@ export const notificationsRouter = router({
                         createdAt: notifications.createdAt,
                         updatedAt: notifications.updatedAt,
                         title: posts.title,
+                        comment: postComments.content,
                         slug: posts.slug,
                     })
                     .from(notifications)
                     .leftJoin(
-                        posts,
+                        postComments,
                         and(
-                            eq(sql`CAST(${posts.id} AS TEXT)`, notifications.targetId),
-                            eq(notifications.targetType, NotificationTargetType.POST)
+                            eq(sql`CAST(${postComments.id} AS TEXT)`, notifications.targetId),
+                            eq(notifications.targetType, NotificationTargetType.COMMENT)
                         )
                     )
+                    .leftJoin(
+                        posts,
+                        or(
+                            and(
+                                eq(sql`CAST(${posts.id} AS TEXT)`, notifications.targetId),
+                                eq(notifications.targetType, NotificationTargetType.POST)
+                            ),
+                            and(
+                                eq(posts.id, postComments.postId),
+                                eq(notifications.targetType, NotificationTargetType.COMMENT)
+                            )
+                        )
+                    )
+
                     .where(
                         and(
                             sql`array_length(${notifications.fromIds}, 1) IS NOT NULL`,
@@ -190,7 +213,7 @@ export const notificationsRouter = router({
                 }
 
                 return {
-                    notifications: onlyWithUsers satisfies NotificationReturn[],
+                    notifications: onlyWithUsers as NotificationReturn[],
                     nextCursor,
                 };
             } catch (e) {
@@ -262,6 +285,7 @@ export const notificationsRouter = router({
         }
     }),
 });
+type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
 
 type PartialNotificationData = Partial<
     Omit<NotificationSchema, 'updatedAt' | 'createdAt' | 'moreCount' | 'fromIds'>
@@ -272,6 +296,8 @@ type StoreNotificationData = PartialNotificationData &
         fromId: string;
         type: NotificationType;
     };
+
+type DeleteNotificationData = Optional<StoreNotificationData, 'toId'>;
 
 export async function storeNotifications(data: StoreNotificationData[]) {
     const logger = new ServerLogger();
@@ -298,7 +324,6 @@ export async function storeNotifications(data: StoreNotificationData[]) {
                             eq(notifications.toId, notification.toId),
                             eq(notifications.targetId, notification.targetId),
                             eq(notifications.type, NotificationType.LIKE),
-                            eq(notifications.targetType, NotificationTargetType.POST),
                             eq(notifications.read, false)
                         )
                     )
@@ -363,7 +388,7 @@ export async function storeNotifications(data: StoreNotificationData[]) {
     }
 }
 
-export async function deleteNotifications(where: StoreNotificationData) {
+export async function deleteNotifications(where: DeleteNotificationData) {
     const notificationWhere = and(
         where.toId ? eq(notifications.toId, where.toId) : undefined,
         where.type ? eq(notifications.type, where.type) : undefined,

@@ -1,0 +1,9 @@
+export declare const actions: string;
+export declare const active: string;
+export declare const collapse: string;
+export declare const content: string;
+export declare const editor: string;
+export declare const expand: string;
+export declare const formatting: string;
+export declare const slideIn: string;
+export declare const slideOut: string;

@@ -39,7 +39,10 @@ export const HeartButtonProvider = ({
     const optimisticStateRef = useRef(optimisticState);
     optimisticStateRef.current = optimisticState;
     const pending = useRef(false);
-    const setLike = trpc.post.setLike.useMutation();
+    const setLike =
+        content.type === 'post'
+            ? trpc.post.setLike.useMutation()
+            : trpc.comment.setLike.useMutation();
 
     const lastState = useRef(initialState ?? false);
 
@@ -52,7 +55,7 @@ export const HeartButtonProvider = ({
                 }
 
                 try {
-                    await setLike.mutateAsync({ postId: content.id, liked });
+                    await setLike.mutateAsync({ id: content.id, liked });
                     lastState.current = liked;
                     setOptimisticState(liked);
                     revalidate('/');
@@ -75,7 +78,7 @@ export const HeartButtonProvider = ({
     useEffect(() => {
         function set() {
             if (!pending.current || optimisticStateRef.current === null) return;
-            setLike.mutate({ postId: content.id, liked: optimisticStateRef.current });
+            setLike.mutate({ id: content.id, liked: optimisticStateRef.current });
         }
 
         window.addEventListener('beforeunload', set);

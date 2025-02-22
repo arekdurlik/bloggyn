@@ -32,6 +32,7 @@ export enum NotificationType {
 
 export enum NotificationTargetType {
     POST = 'post',
+    COMMENT = 'comment',
     USER = 'user',
 }
 

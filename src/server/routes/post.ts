@@ -7,7 +7,15 @@ import { type inferRouterOutputs, TRPCError } from '@trpc/server';
 import { and, desc, eq, ilike, like, lt, lte, or, sql } from 'drizzle-orm';
 import slugify from 'slug';
 import { z } from 'zod';
-import { following, postBookmarks, postImages, postLikes, posts, users } from '../db/schema';
+import {
+    following,
+    postBookmarks,
+    postComments,
+    postImages,
+    postLikes,
+    posts,
+    users,
+} from '../db/schema';
 import { handleError } from '../utils';
 import { deleteNotifications, storeNotifications } from './notification';
 
@@ -64,6 +72,7 @@ export const postRouter = router({
                               AND ${postBookmarks.userId} = ${user}
                           )`,
                         likesCount: sql<number>`(SELECT COUNT(${postLikes.postId}) FROM ${postLikes} WHERE (${postLikes.postId} = ${posts.id}))`,
+                        commentsCount: sql<number>`(SELECT COUNT(${postComments.postId}) FROM ${postComments} WHERE (${postComments.postId} = ${posts.id}))`,
                     })
                     .from(posts)
                     .leftJoin(users, eq(users.id, posts.createdById))
@@ -131,6 +140,7 @@ export const postRouter = router({
                         createdAtFormatted: sql<string>`TO_CHAR(${posts.createdAt}, 'Mon DD')`,
                         readTime: posts.readTime,
                         likesCount: sql<number>`(SELECT COUNT(${postLikes.postId}) FROM ${postLikes} WHERE (${postLikes.postId} = ${posts.id}))`,
+                        commentsCount: sql<number>`(SELECT COUNT(${postComments.postId}) FROM ${postComments} WHERE (${postComments.postId} = ${posts.id}))`,
 
                         avatar: users.image,
                         name: users.name,
@@ -278,39 +288,23 @@ export const postRouter = router({
             }
         }),
     setLike: protectedProcedure
-        .input(z.object({ postId: z.number(), liked: z.boolean() }))
+        .input(z.object({ id: z.number(), liked: z.boolean() }))
         .mutation(async ({ input, ctx }) => {
             const { session, db } = ctx;
             const userId = session.user.id;
 
             try {
-                const [res] = await db
-                    .select({
-                        existingLike: postLikes.userId,
-                        authorId: posts.createdById,
-                    })
-                    .from(posts)
-                    .leftJoin(
-                        postLikes,
-                        and(eq(postLikes.postId, input.postId), eq(postLikes.userId, userId))
-                    )
-                    .where(eq(posts.id, input.postId))
-                    .limit(1);
-
-                if (res?.existingLike && res.authorId && !input.liked) {
+                if (!input.liked) {
                     await db
                         .delete(postLikes)
-                        .where(
-                            and(eq(postLikes.postId, input.postId), eq(postLikes.userId, userId))
-                        );
+                        .where(and(eq(postLikes.postId, input.id), eq(postLikes.userId, userId)));
 
                     try {
                         await deleteNotifications({
                             fromId: userId,
-                            toId: res.authorId,
                             type: NotificationType.LIKE,
                             targetType: NotificationTargetType.POST,
-                            targetId: input.postId.toString(),
+                            targetId: input.id.toString(),
                         });
                     } catch (e) {
                         if (e instanceof TRPCError) {
@@ -319,18 +313,23 @@ export const postRouter = router({
                             }
                         }
                     }
-                } else if (res && !res.existingLike && input.liked) {
+                } else {
                     // add like and notification
-                    await db.insert(postLikes).values({ postId: input.postId, userId });
+                    await db.insert(postLikes).values({ postId: input.id, userId });
 
-                    if (res.authorId) {
+                    const [author] = await db
+                        .select({ id: posts.createdById })
+                        .from(posts)
+                        .where(eq(posts.id, input.id));
+
+                    if (author) {
                         await storeNotifications([
                             {
                                 fromId: userId,
-                                toId: res.authorId,
+                                toId: author.id,
                                 type: NotificationType.LIKE,
                                 targetType: NotificationTargetType.POST,
-                                targetId: input.postId.toString(),
+                                targetId: input.id.toString(),
                             },
                         ]);
                     }

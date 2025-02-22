@@ -1,9 +1,11 @@
+import { NotificationTargetType } from '@/lib/constants';
 import { formatTimeAgo } from '@/lib/helpers';
 import { type NotificationReturnWithUsers } from '@/server/routes/notification';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Fragment, useState } from 'react';
 import styles from './item.module.scss';
+import { getNotificationText } from './utils';
 
 export default function LikeMultiple({
     notification,
@@ -44,10 +46,17 @@ export default function LikeMultiple({
                 )}
                 <span>
                     {' '}
-                    liked your post{' '}
+                    liked your{' '}
+                    {notification.targetType === NotificationTargetType.POST
+                        ? 'post'
+                        : 'comment'}{' '}
                     {notification.slug && notification.slug && (
                         <Link href={notification.slug} className={styles.title}>
-                            “{notification.title}”
+                            “
+                            {notification.targetType == NotificationTargetType.POST
+                                ? notification.title
+                                : getNotificationText(notification.comment ?? '')}
+                            ”
                         </Link>
                     )}
                     . <span className={styles.time}>{time}</span>

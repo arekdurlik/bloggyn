@@ -1,0 +1,142 @@
+@keyframes expand {
+    0% {
+        height: 0px;
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+        height: auto;
+    }
+}
+
+@keyframes collapse {
+    0% {
+        opacity: 1;
+        height: auto;
+    }
+    100% {
+        opacity: 0;
+        height: 0px;
+    }
+}
+
+@keyframes slide-in {
+    0% {
+        opacity: 0;
+        top: -20px;
+    }
+    100% {
+        opacity: 1;
+        top: 0px;
+    }
+}
+
+@keyframes slide-out {
+    0% {
+        opacity: 1;
+        top: 0px;
+    }
+    100% {
+        opacity: 0;
+        top: -20px;
+    }
+}
+
+.editor {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: height var(--transition-default);
+    resize: vertical;
+    overflow-y: auto;
+    min-height: min-content;
+    max-height: 400px;
+
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+        display: none;
+    }
+
+    &.active {
+        .formatting {
+            animation: expand var(--transition-default) forwards;
+
+            button {
+                animation: slide-in var(--transition-default) forwards;
+            }
+        }
+
+        .actions {
+            animation: expand var(--transition-default) forwards;
+        }
+    }
+
+    &.active {
+        .formatting {
+            border-color: var(--border);
+            height: auto;
+            opacity: 1;
+        }
+
+        .actions {
+            height: auto;
+            opacity: 1;
+            padding-bottom: var(--spacing-xl);
+        }
+    }
+}
+
+.formatting {
+    width: 100%;
+    height: 0px;
+    transition: border-color var(--transition-default), height var(--transition-default),
+        opacity var(--transition-default);
+    opacity: 0;
+    position: relative;
+    animation: collapse var(--transition-default) forwards;
+
+    button {
+        position: relative;
+        animation: slide-out var(--transition-default) forwards;
+    }
+
+    &:before {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 1px;
+        background: linear-gradient(to right, var(--border), transparent);
+    }
+}
+
+.content {
+    padding: var(--spacing-large);
+    flex: 1;
+
+    p:first-child::before {
+        content: attr(data-placeholder);
+        color: var(--fgColor-barely-visible);
+        float: left;
+        height: 0;
+        pointer-events: none;
+    }
+}
+
+.actions {
+    display: flex;
+    gap: var(--spacing-large);
+    justify-content: flex-end;
+    height: 0px;
+    overflow: hidden;
+    padding-inline: var(--spacing-xl);
+    transition: height var(--transition-default), opacity var(--transition-default),
+        padding-block var(--transition-default);
+    opacity: 0;
+    animation: collapse var(--transition-default) forwards;
+    pointer-events: none;
+
+    button {
+        pointer-events: all;
+    }
+}

@@ -11,7 +11,7 @@ import { Heart, MessageSquareMore } from 'lucide-react';
 import { CldImage } from 'next-cloudinary';
 import Image from 'next/image';
 import Link from 'next/link';
-import { MouseEvent, useState } from 'react';
+import { type MouseEvent, useState } from 'react';
 import styles from './post-card.module.scss';
 
 export default function PostCard({
@@ -106,12 +106,16 @@ export default function PostCard({
                         </div>
                     </Tooltip>
                     <Tooltip
-                        text={'20 comments'}
+                        text={
+                            post.commentsCount +
+                            ' ' +
+                            (post.commentsCount == 1 ? 'comment' : 'comments')
+                        }
                         open={hoveredElement === 'comment' ? true : false}
                     >
                         <div data-hoverable="comment" className={styles.withIcon}>
                             <MessageSquareMore />
-                            <span>20</span>
+                            <span>{post.commentsCount}</span>
                         </div>
                     </Tooltip>
                 </div>

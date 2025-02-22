@@ -1,6 +1,7 @@
 import { renderContent } from '@/lib/helpers-tsx';
 import { trpc } from '@/trpc/server';
 import { BookmarkProvider } from './_components/bookmark-context';
+import Comments from './_components/comments/comments';
 import Header from './_components/header/header';
 import { HeartButtonProvider } from './_components/heart-button-context';
 import Social from './_components/social/social';
@@ -24,6 +25,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
                     <div>{renderContent(post.content)}</div>
                 </div>
                 <Social post={post} />
+                <Comments postId={post.id} commentsCount={post.commentsCount} />
             </HeartButtonProvider>
         </BookmarkProvider>
     );
