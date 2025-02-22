@@ -28,8 +28,7 @@
     outline-color: transparent;
     outline-offset: -1px;
 
-    transition: border-color var(--transition-default),
-        background-color var(--transition-default);
+    transition: border-color var(--transition-default), background-color var(--transition-default);
     box-shadow: inset var(--shadow-barely-visible);
 
     svg {
@@ -162,6 +161,7 @@
     }
 
     span {
+        color: var(--color-error);
         animation: appear var(--transition-fast);
     }
 }

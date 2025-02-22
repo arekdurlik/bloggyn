@@ -1,4 +1,6 @@
 [data-theme='dark'] {
+    color-scheme: light dark;
+
     --color-github: #fff;
 
     --bgColor-default: var(--color-dark);
@@ -12,11 +14,7 @@
     --control-default-bgColor-hover: hsl(0, 0%, 6%);
     --control-default-bgColor-active: var(--color-base-10);
     --control-default-borderColor-hover: var(--color-base-10);
-    --control-error-bgColor-flash: color-mix(
-        in hsl,
-        var(--color-error),
-        transparent 85%
-    );
+    --control-error-bgColor-flash: color-mix(in hsl, var(--color-error), transparent 85%);
 
     --control-inverted-bgColor-rest: var(--fgColor-heading);
     --control-inverted-bgColor-hover: var(--color-base-80);

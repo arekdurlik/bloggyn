@@ -24,6 +24,13 @@
         line-height: 1.75;
     }
 
+    blockquote {
+        color: var(--fgColor-quote);
+        & > * {
+            color: var(--fgColor-quote);
+        }
+    }
+
     em {
         font-style: italic;
     }
@@ -34,6 +41,11 @@
 
     u {
         text-decoration: underline;
+    }
+
+    a {
+        text-decoration: underline;
+        color: var(--fgColor-link) !important;
     }
 
     p,
@@ -78,5 +90,13 @@
         float: left;
         height: 0;
         pointer-events: none;
+    }
+}
+
+.comment-content {
+    margin-bottom: 0;
+    * {
+        font-size: 1rem;
+        line-height: 1.25rem !important;
     }
 }

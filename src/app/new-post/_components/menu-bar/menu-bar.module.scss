@@ -17,9 +17,10 @@
     background-color: var(--header-bgColor);
 
     button {
-        border-radius: var(--rounded-default);
-        width: 30px;
-        height: 30px;
+        border-radius: var(--rounded-full);
+        padding: var(--spacing-default);
+        width: 32px;
+        height: 32px;
         transition: background-color var(--transition-fast);
 
         svg {

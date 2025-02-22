@@ -146,7 +146,8 @@
 .divider {
     color: var(--fgColor-subtle);
     font-size: var(--text-small);
-    width: 100%;
+    width: calc(100% + 2 * var(--spacing-xxl));
+    margin-inline: calc(-1 * var(--spacing-xxl));
     display: flex;
     align-items: center;
 

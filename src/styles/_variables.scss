@@ -93,6 +93,7 @@
     --bgColor-muted: var(--color-base-93);
     --fgColor-heading: var(--color-base-10);
     --fgColor-default: var(--color-base-20);
+    --fgColor-link: var(--color-info);
     --fgColor-quote: var(--color-base-40);
     --fgColor-subtle: var(--color-base-50);
     --fgColor-barely-visible: var(--color-base-65);
@@ -113,7 +114,7 @@
     --control-default-fgColor-rest: var(--fgColor-default);
     --control-default-bgColor-rest: var(--bgColor-default);
     --control-default-bgColor-hover: var(--color-base-97);
-    --control-default-bgColor-active: var(--color-base-95);
+    --control-default-bgColor-active: var(--color-base-93);
     --control-default-borderColor-rest: var(--border);
     --control-default-borderColor-hover: var(--color-base-80);
     --control-default-borderColor-active: var(--color-base-85);

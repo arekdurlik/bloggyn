@@ -14,8 +14,7 @@
     }
 
     .theme-switcher {
-        transition: height var(--transition-theme),
-            border-color var(--transition-theme) !important;
+        transition: height var(--transition-theme), border-color var(--transition-theme) !important;
     }
 
     div,
@@ -23,8 +22,7 @@
     header,
     a:has(span),
     button {
-        $transition: background-color var(--transition-theme),
-            border-color var(--transition-theme) !important;
+        $transition: background-color var(--transition-theme), border-color var(--transition-theme) !important;
 
         transition: $transition;
 
@@ -51,12 +49,11 @@
     h2,
     h3,
     h4,
-    p,
     a:not(:has(span)),
     span:not(:has(svg)),
     label {
-        transition: background-color var(--transition-theme),
-            color var(--transition-theme), border-color var(--transition-theme) !important;
+        transition: background-color var(--transition-theme), color var(--transition-theme),
+            border-color var(--transition-theme) !important;
 
         & > * {
             transition: none !important;
@@ -64,19 +61,20 @@
     }
 
     svg {
-        transition: color var(--transition-theme) !important;
+        transition: color var(--transition-theme), stroke var(--transition-theme),
+            fill var(--transition-theme) !important;
         & > * {
             transition: none !important;
         }
     }
 
     input {
-        transition: background-color var(--transition-theme),
-            border-color var(--transition-theme), color var(--transition-theme) !important;
+        transition: background-color var(--transition-theme), border-color var(--transition-theme),
+            color var(--transition-theme) !important;
     }
 
     .theme-switcher {
-        transition: background-color var(--transition-theme),
-            border-color var(--transition-theme), height var(--transition-theme);
+        transition: background-color var(--transition-theme), border-color var(--transition-theme),
+            height var(--transition-theme);
     }
 }

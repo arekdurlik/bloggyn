@@ -23,6 +23,7 @@
     }
 
     svg {
+        stroke: var(--_fgColor-rest);
         width: 16px;
         height: 16px;
     }
@@ -39,13 +40,17 @@
 
     &:disabled {
         cursor: default;
-        background-color: var(--_bgColor-hover);
+        background-color: var(--_bgColor-disabled);
         color: var(--_fgColor-disabled);
     }
 }
 
 @mixin control-inverted {
     @include control;
+
+    &:disabled {
+        border-color: var(--_bgColor-disabled);
+    }
 
     &:not(:focus-visible) {
         --_fgColor-rest: var(--control-inverted-fgColor-rest);

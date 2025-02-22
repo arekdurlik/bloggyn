@@ -65,16 +65,6 @@ export default function MenuBar() {
                         </button>
                     </Tooltip>
 
-                    <Tooltip text="Strikethrough">
-                        <button
-                            onClick={() => editor?.chain().focus().toggleStrike().run()}
-                            disabled={editor && !editor?.can().chain().focus().toggleStrike().run()}
-                            className={editor?.isActive('strike') ? styles.active : ''}
-                        >
-                            <Strikethrough />
-                        </button>
-                    </Tooltip>
-
                     <Tooltip text="Underline">
                         <button
                             onClick={() => editor?.chain().focus().toggleUnderline().run()}
@@ -84,6 +74,16 @@ export default function MenuBar() {
                             className={editor?.isActive('underline') ? styles.active : ''}
                         >
                             <Underline />
+                        </button>
+                    </Tooltip>
+
+                    <Tooltip text="Strikethrough">
+                        <button
+                            onClick={() => editor?.chain().focus().toggleStrike().run()}
+                            disabled={editor && !editor?.can().chain().focus().toggleStrike().run()}
+                            className={editor?.isActive('strike') ? styles.active : ''}
+                        >
+                            <Strikethrough />
                         </button>
                     </Tooltip>
 

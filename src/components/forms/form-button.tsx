@@ -1,11 +1,11 @@
-import { use, useEffect, useState, type ReactNode } from 'react';
+import { cn } from '@/lib/helpers';
+import { Check } from 'lucide-react';
+import { type ReactNode } from 'react';
 import Loader from '../common/icons/loader/loader';
 import Button from '../common/inputs/button';
 import { type ButtonProps } from '../common/inputs/button/button';
 import { State, useFormContext } from './context';
-import styles, { hasBrandIcon } from './form-button.module.scss';
-import { cn } from '@/lib/helpers';
-import { Check } from 'lucide-react';
+import styles from './form-button.module.scss';
 
 type Props = ButtonProps & {
     submit?: boolean;

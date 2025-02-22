@@ -5,6 +5,7 @@ export declare const animationAppearSlow: string;
 export declare const animationSlideIn: string;
 export declare const animationSlideInSloth: string;
 export declare const appear: string;
+export declare const commentContent: string;
 export declare const imgOverlay: string;
 export declare const loaderContainer: string;
 export declare const loaderSpinner: string;
